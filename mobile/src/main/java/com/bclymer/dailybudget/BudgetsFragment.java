@@ -20,6 +20,8 @@ public class BudgetsFragment extends BaseFragment {
 
     @InjectView(android.R.id.list)
     protected AbsListView mListView;
+    @InjectView(R.id.fragment_budgets_emptyview)
+    protected ViewGroup mEmptyView;
 
     private BudgetAdapter mBudgetAdapter;
     private List<Budget> mBudgetList;
@@ -52,6 +54,7 @@ public class BudgetsFragment extends BaseFragment {
         mBudgetList = Budget.getDao().queryForAll();
         mBudgetAdapter = new BudgetAdapter();
         mListView.setAdapter(mBudgetAdapter);
+        mListView.setEmptyView(mEmptyView);
     }
 
     @OnItemClick(android.R.id.list)

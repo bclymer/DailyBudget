@@ -3,6 +3,8 @@ package com.bclymer.dailybudget;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * Created by bclymer on 9/26/2014.
  */
@@ -37,69 +39,73 @@ public class AsyncRuntimeExceptionDao<T, ID> extends RuntimeExceptionDao<T, ID> 
     }
 
     public void createAsync(final T data, final DatabaseOperationFinishedCallback databaseOperationFinishedCallback) {
+        final AtomicInteger rows = new AtomicInteger(-1);
         ThreadManager.runInBackgroundThenUi(new Runnable() {
             @Override
             public void run() {
-                create(data);
+                rows.set(create(data));
             }
         }, new Runnable() {
             @Override
             public void run() {
                 if (databaseOperationFinishedCallback != null) {
-                    databaseOperationFinishedCallback.onDatabaseOperationFinished();
+                    databaseOperationFinishedCallback.onDatabaseOperationFinished(rows.get());
                 }
             }
         });
     }
 
     public void createOrUpdateAsync(final T data, final DatabaseOperationFinishedCallback databaseOperationFinishedCallback) {
+        final AtomicInteger rows = new AtomicInteger(-1);
         ThreadManager.runInBackgroundThenUi(new Runnable() {
             @Override
             public void run() {
-                createOrUpdate(data);
+                rows.set(createOrUpdate(data).getNumLinesChanged());
             }
         }, new Runnable() {
             @Override
             public void run() {
                 if (databaseOperationFinishedCallback != null) {
-                    databaseOperationFinishedCallback.onDatabaseOperationFinished();
+                    databaseOperationFinishedCallback.onDatabaseOperationFinished(rows.get());
                 }
             }
         });
     }
 
     public void updateAsync(final T data, final DatabaseOperationFinishedCallback databaseOperationFinishedCallback) {
+        final AtomicInteger rows = new AtomicInteger(-1);
         ThreadManager.runInBackgroundThenUi(new Runnable() {
             @Override
             public void run() {
-                update(data);
+                rows.set(update(data));
             }
         }, new Runnable() {
             @Override
             public void run() {
                 if (databaseOperationFinishedCallback != null) {
-                    databaseOperationFinishedCallback.onDatabaseOperationFinished();
+                    databaseOperationFinishedCallback.onDatabaseOperationFinished(rows.get());
                 }
             }
         });
     }
 
     public void deleteAsync(final T data, final DatabaseOperationFinishedCallback databaseOperationFinishedCallback) {
+        final AtomicInteger rows = new AtomicInteger(-1);
         ThreadManager.runInBackgroundThenUi(new Runnable() {
             @Override
             public void run() {
-                delete(data);
+                rows.set(delete(data));
             }
         }, new Runnable() {
             @Override
             public void run() {
                 if (databaseOperationFinishedCallback != null) {
-                    databaseOperationFinishedCallback.onDatabaseOperationFinished();
+                    databaseOperationFinishedCallback.onDatabaseOperationFinished(rows.get());
                 }
             }
         });
     }
     public interface DatabaseOperationFinishedCallback {
-        public void onDatabaseOperationFinished();
+        public void onDatabaseOperationFinished(int rows);
     }
 }

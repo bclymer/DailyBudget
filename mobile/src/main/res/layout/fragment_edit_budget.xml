@@ -1,7 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_vertical"
+    android:padding="@dimen/activity_horizontal_margin">
 
-</LinearLayout>
+    <EditText
+        android:id="@+id/fragment_edit_budget_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        tools:text="Budget Name" />
+
+    <TextView
+        android:id="@+id/fragment_edit_budget_text_duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fragment_edit_budget_name"
+        android:layout_centerHorizontal="true"
+        android:text="Duration in Days" />
+
+    <EditText
+        android:id="@+id/fragment_edit_budget_numberpicker_duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fragment_edit_budget_text_duration"
+        android:layout_centerHorizontal="true"
+        android:inputType="number"
+        tools:text="1" />
+
+    <TextView
+        android:id="@+id/fragment_edit_budget_text_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/fragment_edit_budget_numberpicker_duration"
+        android:layout_centerHorizontal="true"
+        android:text="Amount per Period" />
+
+    <EditText
+        android:id="@+id/fragment_edit_budget_numberpicker_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/fragment_edit_budget_text_amount"
+        android:layout_centerHorizontal="true"
+        android:inputType="numberDecimal"
+        tools:text="10" />
+
+    <Button
+        android:id="@+id/fragment_edit_budget_button_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/fragment_edit_budget_numberpicker_amount"
+        android:layout_centerHorizontal="true"
+        android:text="Save" />
+</RelativeLayout>
