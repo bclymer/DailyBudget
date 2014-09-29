@@ -12,7 +12,9 @@ import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
@@ -55,12 +57,19 @@ public class Budget extends DatabaseResource<Budget, Integer> {
         final Date today = new Date();
         if (Util.isSameDay(today, cachedDate)) return;
 
-        cachedValue += Util.getDaysBetweenDates(cachedDate, today) * amountPerPeriod;
-        cachedDate = today;
-        updateAsync(new AsyncRuntimeExceptionDao.DatabaseOperationFinishedCallback() {
+        ThreadManager.runInBackground(new Runnable() {
             @Override
-            public void onDatabaseOperationFinished(int rows) {
-                if (rows > 0) {
+            public void run() {
+                long days = Util.getDaysBetweenDates(cachedDate, today);
+                cachedValue += days * amountPerPeriod;
+                Calendar calendar = new GregorianCalendar();
+                calendar.setTime(cachedDate);
+                for (int i = 0; i < days; i++) {
+                    calendar.add(Calendar.DAY_OF_YEAR, 1);
+                    transactions.add(new Transaction(calendar.getTime(), amountPerPeriod));
+                }
+                cachedDate = today;
+                if (update() > 0) {
                     EventBus.getDefault().post(new BudgetUpdatedEvent(Budget.this));
                 }
             }
