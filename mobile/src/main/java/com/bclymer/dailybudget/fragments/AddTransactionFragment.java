@@ -63,9 +63,11 @@ public class AddTransactionFragment extends BaseDialogFragment {
         ThreadManager.runInBackgroundThenUi(new Runnable() {
             @Override
             public void run() {
-                Transaction transaction = new Transaction(new Date(mDatePicker.getCalendarView().getDate()), Double.valueOf(mEditTextAmount.getText().toString()));
+                Transaction transaction = new Transaction(new Date(mDatePicker.getCalendarView().getDate()), -1 * Double.valueOf(mEditTextAmount.getText().toString()));
                 Budget budget = Budget.getDao().queryForId(mBudgetId);
                 budget.transactions.add(transaction);
+                budget.cachedValue += transaction.amount;
+                budget.cachedDate = new Date();
                 budget.update();
             }
         }, new Runnable() {

@@ -3,12 +3,19 @@ package com.bclymer.dailybudget.models;
 import com.bclymer.dailybudget.database.AsyncRuntimeExceptionDao;
 import com.bclymer.dailybudget.database.DatabaseHelper;
 import com.bclymer.dailybudget.database.DatabaseResource;
+import com.bclymer.dailybudget.events.BudgetUpdatedEvent;
+import com.bclymer.dailybudget.utilities.ThreadManager;
+import com.bclymer.dailybudget.utilities.Util;
 import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import de.greenrobot.event.EventBus;
 
 import static com.bclymer.dailybudget.models.Budget.Columns.AMOUNT_PER_PERIOD;
 import static com.bclymer.dailybudget.models.Budget.Columns.CACHED_DATE;
@@ -44,6 +51,41 @@ public class Budget extends DatabaseResource<Budget, Integer> {
     @ForeignCollectionField(columnName = TRANSACTIONS)
     public ForeignCollection<Transaction> transactions;
 
+    public void updateCache() {
+        final Date today = new Date();
+        if (Util.isSameDay(today, cachedDate)) return;
+
+        cachedValue += Util.getDaysBetweenDates(cachedDate, today) * amountPerPeriod;
+        cachedDate = today;
+        updateAsync(new AsyncRuntimeExceptionDao.DatabaseOperationFinishedCallback() {
+            @Override
+            public void onDatabaseOperationFinished(int rows) {
+                if (rows > 0) {
+                    EventBus.getDefault().post(new BudgetUpdatedEvent(Budget.this));
+                }
+            }
+        });
+    }
+
+    public void cloneInto(Budget budget) {
+        budget.cachedValue = cachedValue;
+        budget.cachedDate = cachedDate;
+        budget.transactions = transactions;
+        budget.amountPerPeriod = amountPerPeriod;
+        budget.periodLengthInDays = periodLengthInDays;
+        budget.name = name;
+    }
+
+    public static Budget createBudget() {
+        Budget budget = new Budget();
+        budget.name = "New Budget";
+        budget.amountPerPeriod = 10.0;
+        budget.periodLengthInDays = 1;
+        budget.cachedValue = 0.0;
+        budget.cachedDate = new Date();
+        return budget;
+    }
+
     public static AsyncRuntimeExceptionDao<Budget, Integer> getDao() {
         return DatabaseHelper.getBaseDao(Budget.class, Integer.class);
     }
@@ -56,16 +98,6 @@ public class Budget extends DatabaseResource<Budget, Integer> {
         public static final String CACHED_VALUE = "cached_value";
         public static final String CACHED_DATE = "cached_date";
         public static final String TRANSACTIONS = "transactions";
-    }
-
-    public static Budget createBudget() {
-        Budget budget = new Budget();
-        budget.name = "New Budget";
-        budget.amountPerPeriod = 10.0;
-        budget.periodLengthInDays = 1;
-        budget.cachedValue = 0.0;
-        budget.cachedDate = new Date();
-        return budget;
     }
 
 }

@@ -36,7 +36,7 @@ public class BudgetsFragment extends BaseFragment {
 
     private BudgetSelectedCallback mCallback;
 
-    public static Fragment newInstance() {
+    public static BudgetsFragment newInstance() {
         return new BudgetsFragment();
     }
 
@@ -61,6 +61,9 @@ public class BudgetsFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
         // TODO: Loading indicator. Use Loader to load all budgets from DB. Maybe RxJava?
         mBudgetList = Budget.getDao().queryForAll();
+        for (Budget budget : mBudgetList) {
+            budget.updateCache();
+        }
         mAdapter = new BudgetAdapter();
         mListView.setAdapter(mAdapter);
         mListView.setEmptyView(mEmptyView);
@@ -80,8 +83,8 @@ public class BudgetsFragment extends BaseFragment {
 
     public void onEventMainThread(BudgetUpdatedEvent event) {
         for (Budget budget : mBudgetList) {
-            if (budget.id == event.budgetId) {
-                budget.refresh();
+            if (budget.id == event.budget.id) {
+                event.budget.cloneInto(budget);
                 mAdapter.notifyDataSetChanged();
                 break;
             }
