@@ -11,11 +11,9 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
 
 import de.greenrobot.event.EventBus;
 
@@ -53,6 +51,20 @@ public class Budget extends DatabaseResource<Budget, Integer> {
     @ForeignCollectionField(columnName = TRANSACTIONS)
     public ForeignCollection<Transaction> transactions;
 
+    public static Budget createBudget() {
+        Budget budget = new Budget();
+        budget.name = "New Budget";
+        budget.amountPerPeriod = 10.0;
+        budget.periodLengthInDays = 1;
+        budget.cachedValue = 0.0;
+        budget.cachedDate = new Date();
+        return budget;
+    }
+
+    public static AsyncRuntimeExceptionDao<Budget, Integer> getDao() {
+        return DatabaseHelper.getBaseDao(Budget.class, Integer.class);
+    }
+
     public void updateCache() {
         final Date today = new Date();
         if (Util.isSameDay(today, cachedDate)) return;
@@ -83,20 +95,6 @@ public class Budget extends DatabaseResource<Budget, Integer> {
         budget.amountPerPeriod = amountPerPeriod;
         budget.periodLengthInDays = periodLengthInDays;
         budget.name = name;
-    }
-
-    public static Budget createBudget() {
-        Budget budget = new Budget();
-        budget.name = "New Budget";
-        budget.amountPerPeriod = 10.0;
-        budget.periodLengthInDays = 1;
-        budget.cachedValue = 0.0;
-        budget.cachedDate = new Date();
-        return budget;
-    }
-
-    public static AsyncRuntimeExceptionDao<Budget, Integer> getDao() {
-        return DatabaseHelper.getBaseDao(Budget.class, Integer.class);
     }
 
     public static final class Columns {

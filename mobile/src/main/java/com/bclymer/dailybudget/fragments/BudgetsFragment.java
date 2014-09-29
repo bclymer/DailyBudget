@@ -1,7 +1,6 @@
 package com.bclymer.dailybudget.fragments;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,10 +8,10 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 
+import com.bclymer.dailybudget.R;
 import com.bclymer.dailybudget.events.BudgetUpdatedEvent;
 import com.bclymer.dailybudget.models.Budget;
 import com.bclymer.dailybudget.views.BudgetView;
-import com.bclymer.dailybudget.R;
 
 import java.util.List;
 
@@ -91,6 +90,10 @@ public class BudgetsFragment extends BaseFragment {
         }
     }
 
+    public interface BudgetSelectedCallback {
+        public void onBudgetSelected(int budgetId);
+    }
+
     private class BudgetAdapter extends BaseAdapter {
 
         private LayoutInflater mInflater;
@@ -140,9 +143,5 @@ public class BudgetsFragment extends BaseFragment {
 
             return budgetView;
         }
-    }
-
-    public interface BudgetSelectedCallback {
-        public void onBudgetSelected(int budgetId);
     }
 }
