@@ -1,10 +1,12 @@
 package com.bclymer.dailybudget.fragments;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.bclymer.dailybudget.events.BudgetUpdatedEvent;
 import com.bclymer.dailybudget.models.Budget;
 import com.bclymer.dailybudget.R;
 import com.bclymer.dailybudget.utilities.Util;
@@ -34,9 +36,7 @@ public class EditBudgetFragment extends BaseFragment {
     private int mBudgetId = NO_BUDGET_ID_VALUE;
     private Budget mBudget;
 
-    public static EditBudgetFragment newInstanceForNewBudget() {
-        return newInstance(NO_BUDGET_ID_VALUE);
-    }
+    private BudgetDoneEditingCallback mCallback;
 
     public static EditBudgetFragment newInstance(int budgetId) {
         EditBudgetFragment fragment = new EditBudgetFragment();
@@ -44,6 +44,16 @@ public class EditBudgetFragment extends BaseFragment {
         bundle.putInt(EXTRA_BUDGET_ID, budgetId);
         fragment.setArguments(bundle);
         return fragment;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (!(activity instanceof BudgetDoneEditingCallback)) {
+            throw new RuntimeException("Activity " + activity + " must implement BudgetDoneEditingCallback to display EditBudgetFragment");
+        } else {
+            mCallback = (BudgetDoneEditingCallback) activity;
+        }
     }
 
     @Override
@@ -75,6 +85,10 @@ public class EditBudgetFragment extends BaseFragment {
                 !mEditTextName.getText().toString().equals(mBudget.name);
     }
 
+    public String getBudgetName() {
+        return mBudget.name;
+    }
+
     @OnClick(R.id.fragment_edit_budget_button_save)
     protected void onSave() {
         saveChanges();
@@ -89,10 +103,16 @@ public class EditBudgetFragment extends BaseFragment {
             public void onDatabaseOperationFinished(int rows) {
                 if (rows > 0) {
                     Util.toast("Save Successful");
+                    mEventBus.post(new BudgetUpdatedEvent(mBudgetId));
+                    mCallback.onBudgetDoneEditing();
                 } else {
                     Util.toast("Save Failed");
                 }
             }
         });
+    }
+
+    public interface BudgetDoneEditingCallback {
+        public void onBudgetDoneEditing();
     }
 }

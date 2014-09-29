@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 
+import com.bclymer.dailybudget.events.BudgetUpdatedEvent;
 import com.bclymer.dailybudget.models.Budget;
 import com.bclymer.dailybudget.views.BudgetView;
 import com.bclymer.dailybudget.R;
@@ -30,7 +31,7 @@ public class BudgetsFragment extends BaseFragment {
     @InjectView(android.R.id.empty)
     protected ViewGroup mEmptyView;
 
-    private BudgetAdapter mBudgetAdapter;
+    private BudgetAdapter mAdapter;
     private List<Budget> mBudgetList;
 
     private BudgetSelectedCallback mCallback;
@@ -44,6 +45,8 @@ public class BudgetsFragment extends BaseFragment {
         super.onAttach(activity);
         if (!(activity instanceof BudgetSelectedCallback)) {
             throw new RuntimeException("Activity " + activity + " must implement BudgetSelectedCallback to display BudgetsFragment");
+        } else {
+            mCallback = (BudgetSelectedCallback) activity;
         }
     }
 
@@ -58,14 +61,31 @@ public class BudgetsFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
         // TODO: Loading indicator. Use Loader to load all budgets from DB. Maybe RxJava?
         mBudgetList = Budget.getDao().queryForAll();
-        mBudgetAdapter = new BudgetAdapter();
-        mListView.setAdapter(mBudgetAdapter);
+        mAdapter = new BudgetAdapter();
+        mListView.setAdapter(mAdapter);
         mListView.setEmptyView(mEmptyView);
+        mEventBus.register(this);
+    }
+
+    @Override
+    public void onDestroyView() {
+        mEventBus.unregister(this);
+        super.onDestroyView();
     }
 
     @OnItemClick(android.R.id.list)
     protected void onBudgetClick(int position) {
         mCallback.onBudgetSelected(mBudgetList.get(position).id);
+    }
+
+    public void onEventMainThread(BudgetUpdatedEvent event) {
+        for (Budget budget : mBudgetList) {
+            if (budget.id == event.budgetId) {
+                budget.refresh();
+                mAdapter.notifyDataSetChanged();
+                break;
+            }
+        }
     }
 
     private class BudgetAdapter extends BaseAdapter {
@@ -99,7 +119,7 @@ public class BudgetsFragment extends BaseFragment {
             budgetView.setOnAddTransactionClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // TODO: show dialog fragment to add transaction.
+                    AddTransactionFragment.newInstance(budget.id).show(getFragmentManager(), AddTransactionFragment.TAG);
                 }
             });
             budgetView.setOnEditClickListener(new OnClickListener() {

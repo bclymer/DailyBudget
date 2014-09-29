@@ -84,7 +84,7 @@ public class TransactionView extends LinearLayout {
         return recycledView;
     }
 
-    private final static SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("c MMM d yyyy, K:ma");
+    private final static SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("c MMM d yyyy");
 
     private static class ViewHolder {
         TextView date;

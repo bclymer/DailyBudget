@@ -15,5 +15,10 @@
     <string name="no_transactions">Looks like haven\'t made any transactions under this budget.</string>
     <string name="amount">Amount</string>
     <string name="date">Date</string>
+    <string name="unsaved_changes">Unsaved Changes</string>
+    <string name="cancel">Cancel</string>
+    <string name="discard_changes">Discard Changes</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="unsaved_changes_message">Your budget {0} has unsaved changes. Would you like to save them?</string>
 
 </resources>

@@ -14,6 +14,11 @@ import static com.bclymer.dailybudget.models.Transaction.Columns.DATE;
 @DatabaseTable
 public class Transaction {
 
+    public Transaction(Date date, double amount) {
+        this.date = date;
+        this.amount = amount;
+    }
+
     @DatabaseField(columnName = DATE)
     public Date date;
 

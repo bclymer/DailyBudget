@@ -4,31 +4,35 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.bclymer.dailybudget.fragments.BudgetsFragment;
 import com.bclymer.dailybudget.fragments.EditBudgetFragment;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 import static com.bclymer.dailybudget.fragments.BudgetsFragment.BudgetSelectedCallback;
-import static com.bclymer.dailybudget.fragments.EditBudgetFragment.*;
+import static com.bclymer.dailybudget.fragments.EditBudgetFragment.BudgetDoneEditingCallback;
 
 
-public class MainActivity extends Activity implements BudgetSelectedCallback {
+public class MainActivity extends Activity implements BudgetSelectedCallback, BudgetDoneEditingCallback {
+
+    @InjectView(R.id.activity_main_drawerlayout)
+    protected DrawerLayout mDrawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.inject(this);
 
         getFragmentManager().beginTransaction()
                 .add(R.id.main_activity_fragment_main, BudgetsFragment.newInstance())
                 .commit();
-    }
-
-    @Override
-    public void onBudgetSelected(final int budgetId) {
-        verifyAndShowBudgetFragment(budgetId);
     }
 
     @Override
@@ -48,23 +52,23 @@ public class MainActivity extends Activity implements BudgetSelectedCallback {
     }
 
     private void verifyAndShowNewBudgetFragment() {
-        verifyAndShowBudgetFragment(NO_BUDGET_ID_VALUE);
+        verifyAndShowBudgetFragment(EditBudgetFragment.NO_BUDGET_ID_VALUE);
     }
 
     private void verifyAndShowBudgetFragment(final int budgetId) {
-        final EditBudgetFragment fragment = (EditBudgetFragment) getFragmentManager().findFragmentByTag(TAG);
+        final EditBudgetFragment fragment = (EditBudgetFragment) getFragmentManager().findFragmentByTag(EditBudgetFragment.TAG);
         if (fragment != null && fragment.hasUnsavedContent()) {
             new AlertDialog.Builder(this)
-                    .setTitle("Unsaved Changes")
-                    .setMessage("Your budget {0} has unsaved changes. Would you like to save them?")
-                    .setNegativeButton("Cancel", null)
-                    .setNeutralButton("Discard Changes", new DialogInterface.OnClickListener() {
+                    .setTitle(getString(R.string.unsaved_changes))
+                    .setMessage(getString(R.string.unsaved_changes_message).replace("{0}", fragment.getBudgetName()))
+                    .setNegativeButton(getString(R.string.cancel), null)
+                    .setNeutralButton(getString(R.string.discard_changes), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             displayBudgetFragment(budgetId);
                         }
                     })
-                    .setPositiveButton("Save Changes", new DialogInterface.OnClickListener() {
+                    .setPositiveButton(getString(R.string.save_changes), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             fragment.saveChanges();
@@ -79,7 +83,30 @@ public class MainActivity extends Activity implements BudgetSelectedCallback {
 
     private void displayBudgetFragment(final int budgetId) {
         getFragmentManager().beginTransaction()
-                .replace(R.id.main_activity_fragment_detail, newInstance(budgetId), TAG)
+                .replace(R.id.main_activity_fragment_detail, EditBudgetFragment.newInstance(budgetId), EditBudgetFragment.TAG)
                 .commit();
+        if (!mDrawerLayout.isDrawerOpen(Gravity.END)) {
+            mDrawerLayout.openDrawer(Gravity.END);
+            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, Gravity.END);
+        }
+    }
+
+    @Override
+    public void onBudgetSelected(final int budgetId) {
+        verifyAndShowBudgetFragment(budgetId);
+    }
+
+    @Override
+    public void onBudgetDoneEditing() {
+        final EditBudgetFragment fragment = (EditBudgetFragment) getFragmentManager().findFragmentByTag(EditBudgetFragment.TAG);
+        if (fragment != null) {
+            getFragmentManager().beginTransaction()
+                    .remove(fragment)
+                    .commit();
+        }
+        if (mDrawerLayout.isDrawerOpen(Gravity.END)) {
+            mDrawerLayout.closeDrawer(Gravity.END);
+        }
+        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, Gravity.END);
     }
 }
