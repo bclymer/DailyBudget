@@ -18,13 +18,14 @@ android {
     }
     buildTypes {
         release {
-            runProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            runProguard true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 }
 
 dependencies {
+    compile 'com.android.support:support-v4:20.+'
     compile 'de.greenrobot:eventbus:2.2.1'
     compile 'com.jakewharton:butterknife:5.1.2'
     compile 'com.j256.ormlite:ormlite-android:4.48'
@@ -32,5 +33,4 @@ dependencies {
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
     wearApp project(':wear')
-    compile 'com.google.android.gms:play-services:+'
 }

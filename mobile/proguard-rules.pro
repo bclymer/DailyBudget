@@ -15,3 +15,38 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+# ==============================
+# EventBus
+-keepclassmembers class ** {
+    public void onEvent(**);
+}
+-keepclassmembers class ** {
+    public void onEventMainThread(**);
+}
+-keepclassmembers class ** {
+    public void onEventBackgroundThread(**);
+}
+# ==============================
+
+# ==============================
+# ButterKnife 5.1.2 -- http://jakewharton.github.io/butterknife/
+-dontwarn butterknife.internal.**
+-keep class **$$ViewInjector { *; }
+-keepclasseswithmembernames class * {
+    @butterknife.* <fields>;
+}
+-keepclasseswithmembernames class * {
+    @butterknife.* <methods>;
+}
+# ==============================
+
+# ==============================
+# Ormlite
+-keep class com.j256.**
+-keepclassmembers class com.j256.** { *; }
+-keep enum com.j256.**
+-keepclassmembers enum com.j256.** { *; }
+-keep interface com.j256.**
+-keepclassmembers interface com.j256.** { *; }
+# ==============================
