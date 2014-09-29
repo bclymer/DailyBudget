@@ -14,7 +14,8 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        tools:text="Budget Name" />
+        tools:text="Budget Name"
+        android:inputType="textCapWords" />
 
     <TextView
         android:id="@+id/fragment_edit_budget_text_duration"
@@ -22,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/fragment_edit_budget_name"
         android:layout_centerHorizontal="true"
-        android:text="Duration in Days" />
+        android:text="@string/duration_in_days" />
 
     <EditText
         android:id="@+id/fragment_edit_budget_numberpicker_duration"
@@ -39,7 +40,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/fragment_edit_budget_numberpicker_duration"
         android:layout_centerHorizontal="true"
-        android:text="Amount per Period" />
+        android:text="@string/amount_per_period" />
 
     <EditText
         android:id="@+id/fragment_edit_budget_numberpicker_amount"
@@ -56,5 +57,5 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/fragment_edit_budget_numberpicker_amount"
         android:layout_centerHorizontal="true"
-        android:text="Save" />
+        android:text="@string/save" />
 </RelativeLayout>

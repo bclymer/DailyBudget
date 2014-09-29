@@ -1,10 +1,12 @@
-package com.bclymer.dailybudget;
+package com.bclymer.dailybudget.database;
 
 import android.content.Context;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.bclymer.dailybudget.models.Budget;
+import com.bclymer.dailybudget.models.Transaction;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;

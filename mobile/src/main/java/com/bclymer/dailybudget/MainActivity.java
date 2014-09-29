@@ -7,8 +7,11 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import static com.bclymer.dailybudget.BudgetsFragment.BudgetSelectedCallback;
-import static com.bclymer.dailybudget.EditBudgetFragment.*;
+import com.bclymer.dailybudget.fragments.BudgetsFragment;
+import com.bclymer.dailybudget.fragments.EditBudgetFragment;
+
+import static com.bclymer.dailybudget.fragments.BudgetsFragment.BudgetSelectedCallback;
+import static com.bclymer.dailybudget.fragments.EditBudgetFragment.*;
 
 
 public class MainActivity extends Activity implements BudgetSelectedCallback {

@@ -1,5 +1,6 @@
-package com.bclymer.dailybudget;
+package com.bclymer.dailybudget.database;
 
+import com.bclymer.dailybudget.utilities.ThreadManager;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.RuntimeExceptionDao;
 

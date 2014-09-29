@@ -5,5 +5,15 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="no_budgets">Looks like you don\'t have any budgets set up.</string>
+    <string name="new_budget">Create New Budget</string>
+    <string name="edit_budget">Edit Budget</string>
+    <string name="add_transaction">Add Transaction</string>
+    <string name="duration_in_days">Duration in Days</string>
+    <string name="amount_per_period">Amount per Period</string>
+    <string name="save">Save</string>
+    <string name="no_transactions">Looks like haven\'t made any transactions under this budget.</string>
+    <string name="amount">Amount</string>
+    <string name="date">Date</string>
 
 </resources>

@@ -1,6 +1,8 @@
-package com.bclymer.dailybudget;
+package com.bclymer.dailybudget.utilities;
 
 import android.widget.Toast;
+
+import com.bclymer.dailybudget.BudgetApplication;
 
 /**
  * Created by bclymer on 9/28/2014.

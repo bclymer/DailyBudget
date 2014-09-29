@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <GridView
         android:id="@android:id/list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:columnWidth="@dimen/list_item_budget_width"
+        android:numColumns="auto_fit"
+        android:stretchMode="spacingWidthUniform"
+        tools:listitem="@layout/list_item_budget" />
 
     <RelativeLayout
-        android:id="@+id/fragment_budgets_emptyview"
+        android:id="@android:id/empty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
@@ -21,7 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:text="Looks like you don't have any budgets set up." />
+            android:text="@string/no_budgets" />
 
         <Button
             android:id="@+id/fragment_budgets_emptyview_button_new_budget"
@@ -29,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/fragment_budgets_emptyview_text"
             android:layout_centerHorizontal="true"
-            android:text="Create New Budget" />
+            android:text="@string/new_budget" />
 
     </RelativeLayout>
 

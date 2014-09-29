@@ -1,14 +1,18 @@
-package com.bclymer.dailybudget;
+package com.bclymer.dailybudget.fragments;
 
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.bclymer.dailybudget.models.Budget;
+import com.bclymer.dailybudget.R;
+import com.bclymer.dailybudget.utilities.Util;
+
 import butterknife.InjectView;
 import butterknife.OnClick;
 
-import static com.bclymer.dailybudget.AsyncRuntimeExceptionDao.DatabaseOperationFinishedCallback;
+import static com.bclymer.dailybudget.database.AsyncRuntimeExceptionDao.DatabaseOperationFinishedCallback;
 
 /**
  * Created by bclymer on 9/26/2014.

@@ -1,4 +1,4 @@
-package com.bclymer.dailybudget;
+package com.bclymer.dailybudget.utilities;
 
 import android.os.Handler;
 import android.os.Looper;

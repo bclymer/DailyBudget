@@ -1,6 +1,6 @@
-package com.bclymer.dailybudget;
+package com.bclymer.dailybudget.fragments;
 
-import android.app.Fragment;
+import android.app.DialogFragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +11,7 @@ import butterknife.ButterKnife;
 /**
  * Created by bclymer on 9/26/2014.
  */
-public class BaseFragment extends Fragment {
+public class BaseDialogFragment extends DialogFragment {
 
     protected int mLayoutId = -1;
 

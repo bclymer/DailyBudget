@@ -1,8 +1,8 @@
-package com.bclymer.dailybudget;
+package com.bclymer.dailybudget.database;
 
 import com.j256.ormlite.dao.Dao;
 
-import static com.bclymer.dailybudget.AsyncRuntimeExceptionDao.DatabaseOperationFinishedCallback;
+import static com.bclymer.dailybudget.database.AsyncRuntimeExceptionDao.DatabaseOperationFinishedCallback;
 
 /**
  * Created by bclymer on 9/28/2014.

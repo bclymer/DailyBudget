@@ -2,6 +2,8 @@ package com.bclymer.dailybudget;
 
 import android.app.Application;
 
+import com.bclymer.dailybudget.database.DatabaseHelper;
+
 /**
  * Created by bclymer on 9/26/2014.
  */

@@ -1,12 +1,12 @@
-package com.bclymer.dailybudget;
+package com.bclymer.dailybudget.models;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.Date;
 
-import static com.bclymer.dailybudget.Transaction.Columns.AMOUNT;
-import static com.bclymer.dailybudget.Transaction.Columns.DATE;
+import static com.bclymer.dailybudget.models.Transaction.Columns.AMOUNT;
+import static com.bclymer.dailybudget.models.Transaction.Columns.DATE;
 
 /**
  * Created by bclymer on 9/26/2014.

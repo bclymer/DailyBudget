@@ -1,17 +1,24 @@
-package com.bclymer.dailybudget;
+package com.bclymer.dailybudget.fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 
+import com.bclymer.dailybudget.models.Budget;
+import com.bclymer.dailybudget.views.BudgetView;
+import com.bclymer.dailybudget.R;
+
 import java.util.List;
 
 import butterknife.InjectView;
 import butterknife.OnItemClick;
+
+import static android.view.View.OnClickListener;
 
 /**
  * Created by bclymer on 9/26/2014.
@@ -20,7 +27,7 @@ public class BudgetsFragment extends BaseFragment {
 
     @InjectView(android.R.id.list)
     protected AbsListView mListView;
-    @InjectView(R.id.fragment_budgets_emptyview)
+    @InjectView(android.R.id.empty)
     protected ViewGroup mEmptyView;
 
     private BudgetAdapter mBudgetAdapter;
@@ -49,7 +56,6 @@ public class BudgetsFragment extends BaseFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         // TODO: Loading indicator. Use Loader to load all budgets from DB. Maybe RxJava?
         mBudgetList = Budget.getDao().queryForAll();
         mBudgetAdapter = new BudgetAdapter();
@@ -63,6 +69,12 @@ public class BudgetsFragment extends BaseFragment {
     }
 
     private class BudgetAdapter extends BaseAdapter {
+
+        private LayoutInflater mInflater;
+
+        public BudgetAdapter() {
+            mInflater = getActivity().getLayoutInflater();
+        }
 
         @Override
         public int getCount() {
@@ -81,7 +93,29 @@ public class BudgetsFragment extends BaseFragment {
 
         @Override
         public View getView(int position, View view, ViewGroup viewGroup) {
-            return null;
+            final Budget budget = mBudgetList.get(position);
+            BudgetView budgetView = BudgetView.createBudgetView(mInflater, (BudgetView) view, viewGroup, budget);
+
+            budgetView.setOnAddTransactionClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // TODO: show dialog fragment to add transaction.
+                }
+            });
+            budgetView.setOnEditClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mCallback.onBudgetSelected(budget.id);
+                }
+            });
+            budgetView.setOnBudgetClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    BudgetTransactionsFragment.newInstance(budget.id).show(getFragmentManager(), BudgetTransactionsFragment.TAG);
+                }
+            });
+
+            return budgetView;
         }
     }
 
