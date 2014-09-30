@@ -18,6 +18,13 @@ import static com.bclymer.dailybudget.models.Transaction.Columns.ID;
 @DatabaseTable
 public class Transaction extends DatabaseResource<Transaction, Integer> {
 
+    public Transaction() {}
+
+    public Transaction(Date date, double amount) {
+        this.date = date;
+        this.amount = amount;
+    }
+
     @DatabaseField(columnName = ID, generatedId = true, index = true)
     public int id;
 
