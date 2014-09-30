@@ -125,7 +125,7 @@ public class BudgetsFragment extends BaseFragment {
             budgetView.setOnAddTransactionClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    AddTransactionFragment.newInstance(budget.id).show(getFragmentManager(), AddTransactionFragment.TAG);
+                    EditTransactionFragment.newInstance(budget.id).show(getFragmentManager(), EditTransactionFragment.TAG);
                 }
             });
             budgetView.setOnEditClickListener(new OnClickListener() {

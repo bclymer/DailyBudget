@@ -23,15 +23,18 @@ public class EditBudgetFragment extends BaseFragment {
 
     public static final String TAG = "EditBudgetFragment";
     public static final int NO_BUDGET_ID_VALUE = -1;
-    private int mBudgetId = NO_BUDGET_ID_VALUE;
+
     private static final String EXTRA_BUDGET_ID = "extra_budget_id";
+
     @InjectView(R.id.fragment_edit_budget_name)
     protected TextView mEditTextName;
     @InjectView(R.id.fragment_edit_budget_numberpicker_duration)
     protected EditText mEditTextDuration;
     @InjectView(R.id.fragment_edit_budget_numberpicker_amount)
     protected EditText mEditTextAmount;
+
     private Budget mBudget;
+    private int mBudgetId = NO_BUDGET_ID_VALUE;
 
     private BudgetDoneEditingCallback mCallback;
 

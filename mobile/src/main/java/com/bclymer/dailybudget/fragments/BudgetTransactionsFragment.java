@@ -86,7 +86,15 @@ public class BudgetTransactionsFragment extends BaseDialogFragment {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            return TransactionView.createTransactionView(mInflater, (TransactionView) convertView, parent, mTransactionList.get(position));
+            final Transaction transaction = mTransactionList.get(position);
+            TransactionView transactionView = TransactionView.createTransactionView(mInflater, (TransactionView) convertView, parent, transaction);
+            transactionView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    EditTransactionFragment.newInstance(mBudgetId, transaction.id).show(getFragmentManager(), EditTransactionFragment.TAG);
+                }
+            });
+            return transactionView;
         }
     }
 }

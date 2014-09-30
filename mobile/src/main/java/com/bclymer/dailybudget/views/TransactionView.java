@@ -15,7 +15,6 @@ import java.text.SimpleDateFormat;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import butterknife.OnClick;
 
 /**
  * Created by bclymer on 9/28/2014.
@@ -26,9 +25,6 @@ public class TransactionView extends LinearLayout {
     protected TextView mTextViewDate;
     @InjectView(R.id.list_item_transaction_textview_amount)
     protected TextView mTextViewAmount;
-
-    private OnClickListener mOnDateClickListener;
-    private OnClickListener mOnAmountClickListener;
 
     public TransactionView(Context context) {
         super(context);
@@ -45,28 +41,6 @@ public class TransactionView extends LinearLayout {
     public void init(Context context) {
         View.inflate(context, R.layout.list_item_transaction, this);
         ButterKnife.inject(this, this);
-    }
-
-    public void setOnDateClickListener(OnClickListener onDateClickListener) {
-        mOnDateClickListener = onDateClickListener;
-    }
-
-    public void setOnAmountClickListener(OnClickListener onAmountClickListener) {
-        mOnAmountClickListener = onAmountClickListener;
-    }
-
-    @OnClick(R.id.list_item_transaction_textview_date)
-    protected void dateClick() {
-        if (mOnDateClickListener != null) {
-            mOnDateClickListener.onClick(this);
-        }
-    }
-
-    @OnClick(R.id.list_item_transaction_textview_amount)
-    protected void amountClick() {
-        if (mOnAmountClickListener != null) {
-            mOnAmountClickListener.onClick(this);
-        }
     }
 
     public static TransactionView createTransactionView(LayoutInflater inflater, TransactionView recycledView, ViewGroup parent, Transaction transaction) {
