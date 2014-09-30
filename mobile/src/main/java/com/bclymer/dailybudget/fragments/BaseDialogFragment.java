@@ -7,13 +7,21 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import butterknife.ButterKnife;
+import de.greenrobot.event.EventBus;
 
 /**
  * Created by bclymer on 9/26/2014.
  */
 public class BaseDialogFragment extends DialogFragment {
 
+    protected EventBus mEventBus;
     protected int mLayoutId = -1;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mEventBus = EventBus.getDefault();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

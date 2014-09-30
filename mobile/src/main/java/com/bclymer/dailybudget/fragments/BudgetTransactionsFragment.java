@@ -8,8 +8,10 @@ import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 
 import com.bclymer.dailybudget.R;
+import com.bclymer.dailybudget.events.BudgetUpdatedEvent;
 import com.bclymer.dailybudget.models.Budget;
 import com.bclymer.dailybudget.models.Transaction;
+import com.bclymer.dailybudget.utilities.ThreadManager;
 import com.bclymer.dailybudget.views.TransactionView;
 
 import java.util.ArrayList;
@@ -59,6 +61,31 @@ public class BudgetTransactionsFragment extends BaseDialogFragment {
         mAdapter = new TransactionAdapter();
         mListView.setAdapter(mAdapter);
         mListView.setEmptyView(mEmptyView);
+        mEventBus.register(this);
+    }
+
+    @Override
+    public void onDestroyView() {
+        mEventBus.unregister(this);
+        super.onDestroyView();
+    }
+
+    public void onEvent(final BudgetUpdatedEvent event) {
+        if (event.budget.id != mBudgetId) return;
+
+        ThreadManager.runInBackgroundThenUi(new Runnable() {
+            @Override
+            public void run() {
+                mTransactionList = new ArrayList<>(event.budget.transactions);
+            }
+        }, new Runnable() {
+            @Override
+            public void run() {
+                if (!isVisible() || mListView == null) return;
+
+                mAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     private class TransactionAdapter extends BaseAdapter {

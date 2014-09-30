@@ -6,6 +6,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 
 import com.bclymer.dailybudget.R;
+import com.bclymer.dailybudget.events.BudgetUpdatedEvent;
 import com.bclymer.dailybudget.models.Budget;
 import com.bclymer.dailybudget.models.Transaction;
 import com.bclymer.dailybudget.utilities.ThreadManager;
@@ -97,6 +98,7 @@ public class EditTransactionFragment extends BaseDialogFragment {
                 mBudget.cachedValue += mTransaction.amount;
                 mBudget.cachedDate = new Date();
                 mBudget.update();
+                mEventBus.post(new BudgetUpdatedEvent(mBudget));
             }
         }, new Runnable() {
             @Override
