@@ -10,6 +10,7 @@ import java.util.Date;
 
 import static com.bclymer.dailybudget.models.Transaction.Columns.AMOUNT;
 import static com.bclymer.dailybudget.models.Transaction.Columns.DATE;
+import static com.bclymer.dailybudget.models.Transaction.Columns.FOREIGN_BUDGET;
 import static com.bclymer.dailybudget.models.Transaction.Columns.ID;
 
 /**
@@ -34,6 +35,9 @@ public class Transaction extends DatabaseResource<Transaction, Integer> {
     @DatabaseField(columnName = AMOUNT)
     public double amount;
 
+    @DatabaseField(columnName = FOREIGN_BUDGET, foreign = true)
+    public Budget budget;
+
     public static AsyncRuntimeExceptionDao<Transaction, Integer> getDao() {
         return DatabaseHelper.getBaseDao(Transaction.class, Integer.class);
     }
@@ -42,6 +46,7 @@ public class Transaction extends DatabaseResource<Transaction, Integer> {
         public static final String ID = "id";
         public static final String DATE = "date";
         public static final String AMOUNT = "amount";
+        public static final String FOREIGN_BUDGET = "budget_id";
     }
 
 }

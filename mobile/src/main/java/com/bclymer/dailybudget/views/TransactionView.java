@@ -21,11 +21,6 @@ import butterknife.InjectView;
  */
 public class TransactionView extends LinearLayout {
 
-    @InjectView(R.id.list_item_transaction_textview_date)
-    protected TextView mTextViewDate;
-    @InjectView(R.id.list_item_transaction_textview_amount)
-    protected TextView mTextViewAmount;
-
     public TransactionView(Context context) {
         super(context);
     }
@@ -38,18 +33,14 @@ public class TransactionView extends LinearLayout {
         super(context, attrs, defStyle);
     }
 
-    public void init(Context context) {
-        View.inflate(context, R.layout.list_item_transaction, this);
-        ButterKnife.inject(this, this);
-    }
-
     public static TransactionView createTransactionView(LayoutInflater inflater, TransactionView recycledView, ViewGroup parent, Transaction transaction) {
         ViewHolder holder;
         if (recycledView == null) {
-            recycledView = (TransactionView) inflater.inflate(R.layout.list_item_transaction, parent);
+            recycledView = (TransactionView) inflater.inflate(R.layout.list_item_transaction, parent, false);
             holder = new ViewHolder();
-            holder.date = recycledView.mTextViewDate;
-            holder.amount = recycledView.mTextViewAmount;
+            holder.date = (TextView) recycledView.findViewById(R.id.list_item_transaction_textview_date);
+            holder.amount = (TextView) recycledView.findViewById(R.id.list_item_transaction_textview_amount);
+            recycledView.setTag(holder);
         } else {
             holder = (ViewHolder) recycledView.getTag();
         }

@@ -2,6 +2,7 @@ package com.bclymer.dailybudget.fragments;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
@@ -18,6 +19,8 @@ import java.util.Date;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
+import static android.view.View.VISIBLE;
+
 /**
  * Created by bclymer on 9/28/2014.
  */
@@ -33,6 +36,10 @@ public class EditTransactionFragment extends BaseDialogFragment {
     protected EditText mEditTextAmount;
     @InjectView(R.id.fragment_edit_transaction_datepicker_date)
     protected DatePicker mDatePicker;
+    @InjectView(R.id.fragment_edit_transaction_button_add_transaction)
+    protected Button mButtonSave;
+    @InjectView(R.id.fragment_edit_transaction_button_delete_transaction)
+    protected Button mButtonDelete;
 
     private Budget mBudget;
     private Transaction mTransaction;
@@ -61,6 +68,7 @@ public class EditTransactionFragment extends BaseDialogFragment {
         mBudget = Budget.getDao().queryForId(budgetId);
         if (transactionId == -1) {
             mTransaction = new Transaction();
+            mTransaction.budget = mBudget;
         } else {
             mTransaction = Transaction.getDao().queryForId(transactionId);
             mEditingTransaction = true;
@@ -71,10 +79,13 @@ public class EditTransactionFragment extends BaseDialogFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        getDialog().setTitle(mBudget.name);
         Calendar cal = Calendar.getInstance();
         if (mEditingTransaction) {
             cal.setTime(mTransaction.date);
-            mEditTextAmount.setText(Double.toString(mTransaction.amount));
+            mEditTextAmount.setText(Double.toString(-1 * mTransaction.amount));
+            mButtonSave.setText(R.string.update_transaction);
+            mButtonDelete.setVisibility(VISIBLE);
         }
         int year = cal.get(Calendar.YEAR);
         int month = cal.get(Calendar.MONTH);
@@ -88,6 +99,9 @@ public class EditTransactionFragment extends BaseDialogFragment {
         ThreadManager.runInBackgroundThenUi(new Runnable() {
             @Override
             public void run() {
+                if (mEditingTransaction) {
+                    mBudget.cachedValue -= mTransaction.amount; // this will be undone later.
+                }
                 mTransaction.date = new Date(mDatePicker.getCalendarView().getDate());
                 mTransaction.amount = -1 * Double.valueOf(mEditTextAmount.getText().toString());
                 if (mEditingTransaction) {
@@ -107,5 +121,15 @@ public class EditTransactionFragment extends BaseDialogFragment {
                 dismissAllowingStateLoss();
             }
         });
+    }
+
+    @OnClick(R.id.fragment_edit_transaction_button_delete_transaction)
+    protected void deleteTransaction() {
+        mTransaction.delete();
+        mBudget.transactions.remove(mTransaction);
+        mBudget.cachedValue -= mTransaction.amount;
+        mEventBus.post(new BudgetUpdatedEvent(mBudget));
+        Util.toast("Transaction Deleted");
+        dismissAllowingStateLoss();
     }
 }

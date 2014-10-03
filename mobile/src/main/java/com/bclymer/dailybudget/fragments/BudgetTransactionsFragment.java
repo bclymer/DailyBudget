@@ -57,6 +57,7 @@ public class BudgetTransactionsFragment extends BaseDialogFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Budget budget = Budget.getDao().queryForId(mBudgetId);
+        getDialog().setTitle(budget.name);
         mTransactionList = new ArrayList<>(budget.transactions);
         mAdapter = new TransactionAdapter();
         mListView.setAdapter(mAdapter);

@@ -77,7 +77,7 @@ public class MainActivity extends Activity implements BudgetSelectedCallback, Bu
                     })
                     .show();
         } else {
-            verifyAndShowBudgetFragment(budgetId);
+            displayBudgetFragment(budgetId);
         }
     }
 
@@ -108,5 +108,36 @@ public class MainActivity extends Activity implements BudgetSelectedCallback, Bu
             mDrawerLayout.closeDrawer(Gravity.END);
         }
         mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, Gravity.END);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mDrawerLayout.isDrawerOpen(Gravity.END)) {
+            final EditBudgetFragment fragment = (EditBudgetFragment) getFragmentManager().findFragmentByTag(EditBudgetFragment.TAG);
+            if (fragment != null && fragment.hasUnsavedContent()) {
+                new AlertDialog.Builder(this)
+                        .setTitle(getString(R.string.unsaved_changes))
+                        .setMessage(getString(R.string.unsaved_changes_message).replace("{0}", fragment.getBudgetName()))
+                        .setNegativeButton(getString(R.string.cancel), null)
+                        .setNeutralButton(getString(R.string.discard_changes), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mDrawerLayout.closeDrawer(Gravity.END);
+                            }
+                        })
+                        .setPositiveButton(getString(R.string.save_changes), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                fragment.saveChanges();
+                                mDrawerLayout.closeDrawer(Gravity.END);
+                            }
+                        })
+                        .show();
+            } else {
+                mDrawerLayout.closeDrawer(Gravity.END);
+            }
+        } else {
+            super.onBackPressed();
+        }
     }
 }

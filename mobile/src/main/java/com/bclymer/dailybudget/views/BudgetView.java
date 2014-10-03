@@ -20,29 +20,26 @@ import butterknife.OnClick;
  */
 public class BudgetView extends RelativeLayout {
 
-    @InjectView(R.id.list_item_budget_textview_name)
-    protected TextView mTextViewName;
-    @InjectView(R.id.list_item_budget_textview_amount)
-    protected TextView mTextViewAmount;
-
     private OnClickListener mOnEditClickListener;
     private OnClickListener mOnAddTransactionClickListener;
     private OnClickListener mOnBudgetClickListener;
 
     public BudgetView(Context context) {
         super(context);
+        init();
     }
 
     public BudgetView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init();
     }
 
     public BudgetView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        init();
     }
 
-    public void init(Context context) {
-        View.inflate(context, R.layout.list_item_budget, this);
+    private void init() {
         ButterKnife.inject(this, this);
     }
 
@@ -58,34 +55,39 @@ public class BudgetView extends RelativeLayout {
         mOnBudgetClickListener = onBudgetClickListener;
     }
 
-    @OnClick(R.id.list_item_budget_imagebutton_addtransaction)
-    protected void addTransaction() {
-        if (mOnAddTransactionClickListener != null) {
-            mOnAddTransactionClickListener.onClick(this);
-        }
-    }
-
-    @OnClick(R.id.list_item_budget_imagebutton_edit)
-    protected void edit() {
-        if (mOnEditClickListener != null) {
-            mOnEditClickListener.onClick(this);
-        }
-    }
-
-    @OnClick(R.id.list_item_budget)
-    protected void budgetClicked() {
-        if (mOnBudgetClickListener != null) {
-            mOnBudgetClickListener.onClick(this);
-        }
-    }
-
     public static BudgetView createBudgetView(LayoutInflater inflater, BudgetView recycledView, ViewGroup parent, Budget budget) {
         ViewHolder holder;
         if (recycledView == null) {
-            recycledView = (BudgetView) inflater.inflate(R.layout.list_item_budget, parent);
+            recycledView = (BudgetView) inflater.inflate(R.layout.list_item_budget, parent, false);
             holder = new ViewHolder();
-            holder.name = recycledView.mTextViewName;
-            holder.amount = recycledView.mTextViewAmount;
+            holder.name = (TextView) recycledView.findViewById(R.id.list_item_budget_textview_name);
+            holder.amount = (TextView) recycledView.findViewById(R.id.list_item_budget_textview_amount);
+            final BudgetView finalRecycledView = recycledView;
+            recycledView.findViewById(R.id.list_item_budget_imagebutton_addtransaction).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (finalRecycledView.mOnAddTransactionClickListener != null) {
+                        finalRecycledView.mOnAddTransactionClickListener.onClick(finalRecycledView);
+                    }
+                }
+            });
+            recycledView.findViewById(R.id.list_item_budget_imagebutton_edit).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (finalRecycledView.mOnEditClickListener != null) {
+                        finalRecycledView.mOnEditClickListener.onClick(finalRecycledView);
+                    }
+                }
+            });
+            recycledView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (finalRecycledView.mOnBudgetClickListener != null) {
+                        finalRecycledView.mOnBudgetClickListener.onClick(finalRecycledView);
+                    }
+                }
+            });
+            recycledView.setTag(holder);
         } else {
             holder = (ViewHolder) recycledView.getTag();
         }

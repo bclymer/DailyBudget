@@ -58,6 +58,7 @@ public class Budget extends DatabaseResource<Budget, Integer> {
         budget.periodLengthInDays = 1;
         budget.cachedValue = 0.0;
         budget.cachedDate = new Date();
+        budget.transactions = getDao().getEmptyForeignCollection(Columns.TRANSACTIONS);
         return budget;
     }
 
@@ -78,7 +79,9 @@ public class Budget extends DatabaseResource<Budget, Integer> {
                 calendar.setTime(cachedDate);
                 for (int i = 0; i < days; i++) {
                     calendar.add(Calendar.DAY_OF_YEAR, 1);
-                    transactions.add(new Transaction(calendar.getTime(), amountPerPeriod));
+                    Transaction transaction = new Transaction(calendar.getTime(), amountPerPeriod);
+                    transaction.budget = Budget.this;
+                    transactions.add(transaction);
                 }
                 cachedDate = today;
                 if (update() > 0) {

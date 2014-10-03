@@ -20,5 +20,8 @@
     <string name="discard_changes">Discard Changes</string>
     <string name="save_changes">Save Changes</string>
     <string name="unsaved_changes_message">Your budget {0} has unsaved changes. Would you like to save them?</string>
+    <string name="update_transaction">Update Transaction</string>
+    <string name="delete">Delete</string>
+    <string name="delete_transaction">Delete Transaction</string>
 
 </resources>

@@ -16,9 +16,12 @@ import com.bclymer.dailybudget.views.BudgetView;
 import java.util.List;
 
 import butterknife.InjectView;
+import butterknife.OnClick;
 import butterknife.OnItemClick;
 
+import static android.view.View.NO_ID;
 import static android.view.View.OnClickListener;
+import static com.bclymer.dailybudget.fragments.EditBudgetFragment.NO_BUDGET_ID_VALUE;
 
 /**
  * Created by bclymer on 9/26/2014.
@@ -80,14 +83,23 @@ public class BudgetsFragment extends BaseFragment {
         mCallback.onBudgetSelected(mBudgetList.get(position).id);
     }
 
+    @OnClick(R.id.fragment_budgets_emptyview_button_new_budget)
+    protected void onCreateBudgetClick() {
+        mCallback.onBudgetSelected(NO_BUDGET_ID_VALUE);
+    }
+
     public void onEventMainThread(BudgetUpdatedEvent event) {
-        for (Budget budget : mBudgetList) {
-            if (budget.id == event.budget.id) {
-                event.budget.cloneInto(budget);
-                mAdapter.notifyDataSetChanged();
-                break;
+        if (event.budget != null) {
+            for (Budget budget : mBudgetList) {
+                if (budget.id == event.budget.id) {
+                    event.budget.cloneInto(budget);
+                    mAdapter.notifyDataSetChanged();
+                    break;
+                }
             }
         }
+        mBudgetList = Budget.getDao().queryForAll();
+        mAdapter.notifyDataSetChanged();
     }
 
     public interface BudgetSelectedCallback {

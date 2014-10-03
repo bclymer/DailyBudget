@@ -3,17 +3,22 @@ package com.bclymer.dailybudget.fragments;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.bclymer.dailybudget.R;
 import com.bclymer.dailybudget.events.BudgetUpdatedEvent;
 import com.bclymer.dailybudget.models.Budget;
+import com.bclymer.dailybudget.models.Transaction;
 import com.bclymer.dailybudget.utilities.Util;
+
+import java.util.Date;
 
 import butterknife.InjectView;
 import butterknife.OnClick;
 
+import static android.view.View.VISIBLE;
 import static com.bclymer.dailybudget.database.AsyncRuntimeExceptionDao.DatabaseOperationFinishedCallback;
 
 /**
@@ -28,15 +33,18 @@ public class EditBudgetFragment extends BaseFragment {
 
     @InjectView(R.id.fragment_edit_budget_name)
     protected TextView mEditTextName;
-    @InjectView(R.id.fragment_edit_budget_numberpicker_duration)
+    @InjectView(R.id.fragment_edit_budget_edittext_duration)
     protected EditText mEditTextDuration;
-    @InjectView(R.id.fragment_edit_budget_numberpicker_amount)
+    @InjectView(R.id.fragment_edit_budget_edittext_amount)
     protected EditText mEditTextAmount;
+    @InjectView(R.id.fragment_edit_budget_button_delete)
+    protected Button mButtonDelete;
 
     private Budget mBudget;
     private int mBudgetId = NO_BUDGET_ID_VALUE;
 
     private BudgetDoneEditingCallback mCallback;
+    private boolean mNewBudget = false;
 
     public static EditBudgetFragment newInstance(int budgetId) {
         EditBudgetFragment fragment = new EditBudgetFragment();
@@ -66,6 +74,7 @@ public class EditBudgetFragment extends BaseFragment {
         if (mBudgetId != NO_BUDGET_ID_VALUE) {
             mBudget = Budget.getDao().queryForId(mBudgetId); // should be very very fast. Can run on main thread.
         } else {
+            mNewBudget = true;
             mBudget = Budget.createBudget();
         }
     }
@@ -75,8 +84,11 @@ public class EditBudgetFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
 
         mEditTextName.setText(mBudget.name);
-        mEditTextDuration.setText(Double.toString(mBudget.amountPerPeriod));
-        mEditTextAmount.setText(Double.toString(mBudget.periodLengthInDays));
+        mEditTextDuration.setText(Integer.toString(mBudget.periodLengthInDays));
+        mEditTextAmount.setText(Double.toString(mBudget.amountPerPeriod));
+        if (!mNewBudget) {
+            mButtonDelete.setVisibility(VISIBLE);
+        }
     }
 
     public boolean hasUnsavedContent() {
@@ -94,11 +106,26 @@ public class EditBudgetFragment extends BaseFragment {
         saveChanges();
     }
 
+    @OnClick(R.id.fragment_edit_budget_button_delete)
+    protected void onDelete() {
+        mBudget.delete();
+        mCallback.onBudgetDoneEditing();
+        mEventBus.post(new BudgetUpdatedEvent(null));
+        Util.toast("Delete Successful");
+    }
+
     public void saveChanges() {
         mBudget.amountPerPeriod = Double.valueOf(mEditTextAmount.getText().toString());
         mBudget.periodLengthInDays = Integer.valueOf(mEditTextDuration.getText().toString());
         mBudget.name = mEditTextName.getText().toString();
-        mBudget.createOrUpdateAsync(new DatabaseOperationFinishedCallback() {
+        if (mNewBudget) {
+            mBudget.create();
+            Transaction transaction = new Transaction(new Date(), mBudget.amountPerPeriod);
+            transaction.budget = mBudget;
+            mBudget.transactions.add(transaction);
+            mBudget.cachedValue = mBudget.amountPerPeriod;
+        }
+        mBudget.updateAsync(new DatabaseOperationFinishedCallback() {
             @Override
             public void onDatabaseOperationFinished(int rows) {
                 if (rows > 0) {
