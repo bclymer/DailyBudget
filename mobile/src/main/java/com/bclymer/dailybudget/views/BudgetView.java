@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.bclymer.dailybudget.R;
 import com.bclymer.dailybudget.models.Budget;
+import com.bclymer.dailybudget.utilities.Util;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -92,7 +93,7 @@ public class BudgetView extends RelativeLayout {
             holder = (ViewHolder) recycledView.getTag();
         }
         holder.name.setText(budget.name);
-        holder.amount.setText(Double.toString(budget.cachedValue));
+        holder.amount.setText(Util.makeLikeMoney(budget.cachedValue));
         return recycledView;
     }
 

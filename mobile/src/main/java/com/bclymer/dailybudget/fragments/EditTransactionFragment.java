@@ -7,6 +7,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 
 import com.bclymer.dailybudget.R;
+import com.bclymer.dailybudget.database.AsyncRuntimeExceptionDao;
 import com.bclymer.dailybudget.events.BudgetUpdatedEvent;
 import com.bclymer.dailybudget.models.Budget;
 import com.bclymer.dailybudget.models.Transaction;
@@ -20,6 +21,7 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 
 import static android.view.View.VISIBLE;
+import static com.bclymer.dailybudget.database.AsyncRuntimeExceptionDao.DatabaseOperationFinishedCallback;
 
 /**
  * Created by bclymer on 9/28/2014.
@@ -128,8 +130,17 @@ public class EditTransactionFragment extends BaseDialogFragment {
         mTransaction.delete();
         mBudget.transactions.remove(mTransaction);
         mBudget.cachedValue -= mTransaction.amount;
-        mEventBus.post(new BudgetUpdatedEvent(mBudget));
-        Util.toast("Transaction Deleted");
-        dismissAllowingStateLoss();
+        mBudget.updateAsync(new DatabaseOperationFinishedCallback() {
+            @Override
+            public void onDatabaseOperationFinished(int rows) {
+                if (rows > 0){
+                    mEventBus.post(new BudgetUpdatedEvent(mBudget));
+                    Util.toast("Transaction Deleted");
+                    dismissAllowingStateLoss();
+                } else {
+                    Util.toast("Delete Failed");
+                }
+            }
+        });
     }
 }

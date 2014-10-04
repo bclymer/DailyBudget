@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.bclymer.dailybudget.R;
 import com.bclymer.dailybudget.models.Transaction;
+import com.bclymer.dailybudget.utilities.Util;
 
 import java.text.SimpleDateFormat;
 
@@ -45,7 +46,7 @@ public class TransactionView extends LinearLayout {
             holder = (ViewHolder) recycledView.getTag();
         }
         holder.date.setText(SIMPLE_DATE_FORMAT.format(transaction.date));
-        holder.amount.setText(Double.toString(transaction.amount));
+        holder.amount.setText(Util.makeLikeMoney(transaction.amount));
         return recycledView;
     }
 

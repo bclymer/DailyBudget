@@ -4,6 +4,7 @@ import android.widget.Toast;
 
 import com.bclymer.dailybudget.BudgetApplication;
 
+import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -76,6 +77,10 @@ public class Util {
     public static void setCalendarToBeginningOfDay(Calendar calendar) {
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
+    }
+
+    public static String makeLikeMoney(double value) {
+        return NumberFormat.getCurrencyInstance().format(value);
     }
 
 }
