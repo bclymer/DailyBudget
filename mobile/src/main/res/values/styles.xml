@@ -2,7 +2,35 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+        <item name="android:buttonStyle">@style/Button.Blue</item>
+        <item name="android:fitsSystemWindows">true</item>
+        <item name="android:actionBarStyle">@style/ActionBar.Solid.BlueStyle</item>
+    </style>
+
+    <style name="ActionBar.Solid.BlueStyle" parent="@android:style/Widget.Holo.Light.ActionBar.Solid">
+        <item name="android:background">@color/blue_dark</item>
+        <item name="android:titleTextStyle">@style/ActionBar.TitleTextStyle</item>
+    </style>
+
+    <style name="ActionBar.TitleTextStyle" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="Button" parent="android:style/Widget.Button">
+        <item name="android:paddingLeft">15dp</item>
+        <item name="android:paddingRight">15dp</item>
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingBottom">10dp</item>
+    </style>
+
+    <style name="Button.Blue" parent="Button">
+        <item name="android:background">@drawable/btn_light_blue</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="Button.Red" parent="Button">
+        <item name="android:background">@drawable/btn_light_red</item>
+        <item name="android:textColor">@android:color/white</item>
     </style>
 
 </resources>

@@ -6,7 +6,9 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:visibility="gone"
-    android:padding="20dp"
+    android:paddingTop="20dp"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp"
     tools:visibility="visible">
 
     <TextView
@@ -19,13 +21,5 @@
         android:paddingRight="20dp"
         android:text="@string/no_transactions"
         android:textSize="18sp" />
-
-    <Button
-        android:id="@+id/fragment_budget_transactions_emptyview_button_new_transaction"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/fragment_budget_transactions_emptyview_text"
-        android:layout_centerHorizontal="true"
-        android:text="@string/add_transaction" />
 
 </RelativeLayout>

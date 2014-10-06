@@ -11,38 +11,40 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/amount" />
+        android:gravity="center_horizontal"
+        android:text="@string/amount_descriptive" />
 
     <EditText
         android:id="@+id/fragment_edit_transaction_edittext_amount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="$5.31"
-        android:inputType="numberDecimal|numberSigned" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/date" />
+        android:inputType="numberDecimal|numberSigned"
+        tools:text="5.31" />
 
     <DatePicker
         android:id="@+id/fragment_edit_transaction_datepicker_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:calendarViewShown="true"
-        android:spinnersShown="false" />
+        android:calendarViewShown="false"
+        android:spinnersShown="true" />
 
     <Button
         android:id="@+id/fragment_edit_transaction_button_add_transaction"
+        style="@style/Button.Blue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:width="180dp"
         android:text="@string/add_transaction" />
 
     <Button
         android:id="@+id/fragment_edit_transaction_button_delete_transaction"
+        style="@style/Button.Red"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:text="@string/delete_transaction" />
+        android:layout_margin="5dp"
+        android:width="180dp"
+        android:text="@string/delete_transaction"
+        android:visibility="gone" />
 
 </LinearLayout>

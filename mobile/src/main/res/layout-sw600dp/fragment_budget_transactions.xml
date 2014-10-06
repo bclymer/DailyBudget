@@ -7,15 +7,27 @@
 
     <GridView
         android:id="@android:id/list"
-        android:columnWidth="200dp"
-        android:numColumns="auto_fit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:columnWidth="200dp"
+        android:horizontalSpacing="5dp"
+        android:numColumns="auto_fit"
+        android:verticalSpacing="5dp"
         tools:listitem="@layout/list_item_transaction" />
 
-    <include layout="@layout/include_no_transactions"
+    <include
+        layout="@layout/include_no_transactions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true" />
+
+    <Button
+        android:id="@+id/fragment_budget_transactions_button_new_transaction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_margin="10dp"
+        android:text="@string/add_transaction" />
 
 </RelativeLayout>

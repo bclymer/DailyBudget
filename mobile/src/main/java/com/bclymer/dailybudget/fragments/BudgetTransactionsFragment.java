@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.InjectView;
+import butterknife.OnClick;
 
 /**
  * Created by bclymer on 9/28/2014.
@@ -69,6 +70,11 @@ public class BudgetTransactionsFragment extends BaseDialogFragment {
     public void onDestroyView() {
         mEventBus.unregister(this);
         super.onDestroyView();
+    }
+
+    @OnClick(R.id.fragment_budget_transactions_button_new_transaction)
+    protected void addTransaction() {
+        EditTransactionFragment.newInstance(mBudgetId).show(getFragmentManager(), EditTransactionFragment.TAG);
     }
 
     public void onEvent(final BudgetUpdatedEvent event) {
