@@ -12,6 +12,7 @@ import static com.bclymer.dailybudget.models.Transaction.Columns.AMOUNT;
 import static com.bclymer.dailybudget.models.Transaction.Columns.DATE;
 import static com.bclymer.dailybudget.models.Transaction.Columns.FOREIGN_BUDGET;
 import static com.bclymer.dailybudget.models.Transaction.Columns.ID;
+import static com.bclymer.dailybudget.models.Transaction.Columns.NOTES;
 
 /**
  * Created by bclymer on 9/26/2014.
@@ -35,6 +36,9 @@ public class Transaction extends DatabaseResource<Transaction, Integer> {
     @DatabaseField(columnName = AMOUNT)
     public double amount;
 
+    @DatabaseField(columnName = NOTES)
+    public String notes;
+
     @DatabaseField(columnName = FOREIGN_BUDGET, foreign = true)
     public Budget budget;
 
@@ -46,6 +50,7 @@ public class Transaction extends DatabaseResource<Transaction, Integer> {
         public static final String ID = "id";
         public static final String DATE = "date";
         public static final String AMOUNT = "amount";
+        public static final String NOTES = "notes";
         public static final String FOREIGN_BUDGET = "budget_id";
     }
 

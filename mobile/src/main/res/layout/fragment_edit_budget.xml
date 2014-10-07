@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:text="Budget Name" />
+        android:text="@string/budget_name" />
 
     <EditText
         android:id="@+id/fragment_edit_budget_name"

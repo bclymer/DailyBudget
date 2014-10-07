@@ -1,9 +1,9 @@
 package com.bclymer.dailybudget.views;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -13,9 +13,6 @@ import com.bclymer.dailybudget.models.Transaction;
 import com.bclymer.dailybudget.utilities.Util;
 
 import java.text.SimpleDateFormat;
-
-import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 /**
  * Created by bclymer on 9/28/2014.
@@ -41,12 +38,19 @@ public class TransactionView extends LinearLayout {
             holder = new ViewHolder();
             holder.date = (TextView) recycledView.findViewById(R.id.list_item_transaction_textview_date);
             holder.amount = (TextView) recycledView.findViewById(R.id.list_item_transaction_textview_amount);
+            holder.notes = (TextView) recycledView.findViewById(R.id.list_item_transaction_textview_notes);
             recycledView.setTag(holder);
         } else {
             holder = (ViewHolder) recycledView.getTag();
         }
         holder.date.setText(SIMPLE_DATE_FORMAT.format(transaction.date));
         holder.amount.setText(Util.makeLikeMoney(transaction.amount));
+        if (TextUtils.isEmpty(transaction.notes)) {
+            holder.notes.setVisibility(GONE);
+        } else {
+            holder.notes.setVisibility(VISIBLE);
+            holder.notes.setText(transaction.notes);
+        }
         return recycledView;
     }
 
@@ -55,5 +59,6 @@ public class TransactionView extends LinearLayout {
     private static class ViewHolder {
         TextView date;
         TextView amount;
+        TextView notes;
     }
 }

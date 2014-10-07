@@ -7,7 +7,6 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 
 import com.bclymer.dailybudget.R;
-import com.bclymer.dailybudget.database.AsyncRuntimeExceptionDao;
 import com.bclymer.dailybudget.events.BudgetUpdatedEvent;
 import com.bclymer.dailybudget.models.Budget;
 import com.bclymer.dailybudget.models.Transaction;
@@ -36,6 +35,8 @@ public class EditTransactionFragment extends BaseDialogFragment {
 
     @InjectView(R.id.fragment_edit_transaction_edittext_amount)
     protected EditText mEditTextAmount;
+    @InjectView(R.id.fragment_edit_transaction_edittext_notes)
+    protected EditText mEditTextNotes;
     @InjectView(R.id.fragment_edit_transaction_datepicker_date)
     protected DatePicker mDatePicker;
     @InjectView(R.id.fragment_edit_transaction_button_add_transaction)
@@ -86,6 +87,7 @@ public class EditTransactionFragment extends BaseDialogFragment {
         if (mEditingTransaction) {
             cal.setTime(mTransaction.date);
             mEditTextAmount.setText(Double.toString(-1 * mTransaction.amount));
+            mEditTextNotes.setText(mTransaction.notes);
             mButtonSave.setText(R.string.update_transaction);
             mButtonDelete.setVisibility(VISIBLE);
         }
@@ -106,6 +108,7 @@ public class EditTransactionFragment extends BaseDialogFragment {
                 }
                 mTransaction.date = new Date(mDatePicker.getCalendarView().getDate());
                 mTransaction.amount = -1 * Double.valueOf(mEditTextAmount.getText().toString());
+                mTransaction.notes = mEditTextNotes.getText().toString();
                 if (mEditingTransaction) {
                     mTransaction.update();
                 } else {

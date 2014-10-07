@@ -107,7 +107,7 @@ public class BudgetsFragment extends BaseFragment {
 
     private class BudgetAdapter extends BaseAdapter {
 
-        private LayoutInflater mInflater;
+        private final LayoutInflater mInflater;
 
         public BudgetAdapter() {
             mInflater = getActivity().getLayoutInflater();

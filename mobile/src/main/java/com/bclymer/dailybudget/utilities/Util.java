@@ -53,19 +53,19 @@ public class Util {
         }
         Calendar startCal = new GregorianCalendar();
         startCal.setTime(startDate);
-        setCalendarToBeginningOfDay(startCal);
         Calendar endCal = new GregorianCalendar();
         endCal.setTime(endDate);
-        setCalendarToBeginningOfDay(endCal);
-        endCal.set(Calendar.MINUTE, 1); // make sure it's 1 minute past, incase seconds make a differenc.
         return getDaysBetweenDates(startCal, endCal);
     }
 
-    public static long getDaysBetweenDates(Calendar startDate, Calendar endDate) {
-        if (startDate == null || endDate == null) {
+    public static long getDaysBetweenDates(Calendar startCal, Calendar endCal) {
+        if (startCal == null || endCal == null) {
             return Long.MIN_VALUE;
         }
-        long diff = endDate.getTimeInMillis() - startDate.getTimeInMillis();
+        setCalendarToBeginningOfDay(startCal);
+        setCalendarToBeginningOfDay(endCal);
+        endCal.set(Calendar.MINUTE, 1); // make sure it's 1 minute past, in case seconds make a difference.
+        long diff = endCal.getTimeInMillis() - startCal.getTimeInMillis();
         return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
     }
 

@@ -14,8 +14,6 @@ import com.bclymer.dailybudget.models.Transaction;
 import com.bclymer.dailybudget.utilities.ThreadManager;
 import com.bclymer.dailybudget.views.TransactionView;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.InjectView;
@@ -98,7 +96,7 @@ public class BudgetTransactionsFragment extends BaseDialogFragment {
 
     private class TransactionAdapter extends BaseAdapter {
 
-        private LayoutInflater mInflater;
+        private final LayoutInflater mInflater;
 
         public TransactionAdapter() {
             mInflater = getActivity().getLayoutInflater();

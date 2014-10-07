@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">DailyBudget</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="app_name">Daily Budget</string>
     <string name="no_budgets">Looks like you don\'t have any budgets set up.</string>
     <string name="new_budget">Create New Budget</string>
     <string name="edit_budget">Edit Budget</string>
@@ -25,5 +22,7 @@
     <string name="delete_transaction">Delete Transaction</string>
     <string name="amount_descriptive">Amount\n(Negative to Increase Budget)</string>
     <string name="view_transactions">View Transactions</string>
+    <string name="transaction_description">Transaction Description</string>
+    <string name="budget_name">Budget Name</string>
 
 </resources>

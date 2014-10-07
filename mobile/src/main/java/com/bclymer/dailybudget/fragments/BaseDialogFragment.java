@@ -12,7 +12,7 @@ import de.greenrobot.event.EventBus;
 /**
  * Created by bclymer on 9/26/2014.
  */
-public class BaseDialogFragment extends DialogFragment {
+public abstract class BaseDialogFragment extends DialogFragment {
 
     protected EventBus mEventBus;
     protected int mLayoutId = -1;

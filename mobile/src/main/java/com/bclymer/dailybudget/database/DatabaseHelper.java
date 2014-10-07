@@ -59,7 +59,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     }
 
-    private Map<Class, AsyncRuntimeExceptionDao> mDaos = new HashMap<>();
+    private final Map<Class, AsyncRuntimeExceptionDao> mDaos = new HashMap<>();
 
     /**
      * @see //getRuntimeExceptionDao()

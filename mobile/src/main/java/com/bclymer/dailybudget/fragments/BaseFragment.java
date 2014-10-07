@@ -12,7 +12,7 @@ import de.greenrobot.event.EventBus;
 /**
  * Created by bclymer on 9/26/2014.
  */
-public class BaseFragment extends Fragment {
+public abstract class BaseFragment extends Fragment {
 
     protected EventBus mEventBus;
     protected int mLayoutId = -1;
