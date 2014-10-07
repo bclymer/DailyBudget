@@ -88,5 +88,5 @@
         android:layout_marginTop="5dp"
         android:width="100dp"
         android:text="@string/delete"
-        android:visibility="visible" />
+        android:visibility="gone" />
 </RelativeLayout>

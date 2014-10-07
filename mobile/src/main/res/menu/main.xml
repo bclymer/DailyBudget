@@ -3,7 +3,7 @@
     tools:context=".MainActivity">
     <item
         android:id="@+id/menu_new_budget"
-        android:icon="@android:drawable/ic_menu_add"
+        android:icon="@drawable/ic_plus"
         android:showAsAction="ifRoom"
         android:title="@string/new_budget" />
 </menu>

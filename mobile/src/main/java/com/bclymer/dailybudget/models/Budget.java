@@ -11,9 +11,11 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import de.greenrobot.event.EventBus;
 
@@ -89,6 +91,22 @@ public class Budget extends DatabaseResource<Budget, Integer> {
                 }
             }
         });
+    }
+
+    public List<Transaction> getSortedTransactions() {
+        return getSortedTransactions(id);
+    }
+
+    public static List<Transaction> getSortedTransactions(int budgetId) {
+        try {
+            return Transaction.getDao().queryBuilder()
+                    .orderBy(Transaction.Columns.DATE, false)
+                    .where()
+                    .eq(Transaction.Columns.FOREIGN_BUDGET, budgetId)
+                    .query();
+        } catch (SQLException e) {
+            return null;
+        }
     }
 
     public void cloneInto(Budget budget) {

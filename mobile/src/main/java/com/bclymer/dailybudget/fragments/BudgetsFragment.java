@@ -19,7 +19,6 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import butterknife.OnItemClick;
 
-import static android.view.View.NO_ID;
 import static android.view.View.OnClickListener;
 import static com.bclymer.dailybudget.fragments.EditBudgetFragment.NO_BUDGET_ID_VALUE;
 
@@ -134,10 +133,10 @@ public class BudgetsFragment extends BaseFragment {
             final Budget budget = mBudgetList.get(position);
             BudgetView budgetView = BudgetView.createBudgetView(mInflater, (BudgetView) view, viewGroup, budget);
 
-            budgetView.setOnAddTransactionClickListener(new OnClickListener() {
+            budgetView.setOnViewTransactionsClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    EditTransactionFragment.newInstance(budget.id).show(getFragmentManager(), EditTransactionFragment.TAG);
+                    BudgetTransactionsFragment.newInstance(budget.id).show(getFragmentManager(), BudgetTransactionsFragment.TAG);
                 }
             });
             budgetView.setOnEditClickListener(new OnClickListener() {
@@ -149,7 +148,7 @@ public class BudgetsFragment extends BaseFragment {
             budgetView.setOnBudgetClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    BudgetTransactionsFragment.newInstance(budget.id).show(getFragmentManager(), BudgetTransactionsFragment.TAG);
+                    EditTransactionFragment.newInstance(budget.id).show(getFragmentManager(), EditTransactionFragment.TAG);
                 }
             });
 

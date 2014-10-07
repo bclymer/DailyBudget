@@ -14,6 +14,7 @@ import com.bclymer.dailybudget.models.Transaction;
 import com.bclymer.dailybudget.utilities.ThreadManager;
 import com.bclymer.dailybudget.views.TransactionView;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,7 +60,7 @@ public class BudgetTransactionsFragment extends BaseDialogFragment {
         super.onViewCreated(view, savedInstanceState);
         Budget budget = Budget.getDao().queryForId(mBudgetId);
         getDialog().setTitle(budget.name);
-        mTransactionList = new ArrayList<>(budget.transactions);
+        mTransactionList = budget.getSortedTransactions();
         mAdapter = new TransactionAdapter();
         mListView.setAdapter(mAdapter);
         mListView.setEmptyView(mEmptyView);
@@ -83,7 +84,7 @@ public class BudgetTransactionsFragment extends BaseDialogFragment {
         ThreadManager.runInBackgroundThenUi(new Runnable() {
             @Override
             public void run() {
-                mTransactionList = new ArrayList<>(event.budget.transactions);
+                mTransactionList = event.budget.getSortedTransactions();
             }
         }, new Runnable() {
             @Override

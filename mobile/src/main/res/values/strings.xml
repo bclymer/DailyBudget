@@ -24,5 +24,6 @@
     <string name="delete">Delete</string>
     <string name="delete_transaction">Delete Transaction</string>
     <string name="amount_descriptive">Amount\n(Negative to Increase Budget)</string>
+    <string name="view_transactions">View Transactions</string>
 
 </resources>

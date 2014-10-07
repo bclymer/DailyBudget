@@ -13,8 +13,6 @@ import com.bclymer.dailybudget.models.Budget;
 import com.bclymer.dailybudget.utilities.Util;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
-import butterknife.OnClick;
 
 /**
  * Created by bclymer on 9/28/2014.
@@ -22,7 +20,7 @@ import butterknife.OnClick;
 public class BudgetView extends RelativeLayout {
 
     private OnClickListener mOnEditClickListener;
-    private OnClickListener mOnAddTransactionClickListener;
+    private OnClickListener mOnViewTransactionsClickListener;
     private OnClickListener mOnBudgetClickListener;
 
     public BudgetView(Context context) {
@@ -48,8 +46,8 @@ public class BudgetView extends RelativeLayout {
         mOnEditClickListener = onEditClickListener;
     }
 
-    public void setOnAddTransactionClickListener(OnClickListener onAddTransactionClickListener) {
-        mOnAddTransactionClickListener = onAddTransactionClickListener;
+    public void setOnViewTransactionsClickListener(OnClickListener onViewTransactionsClickListener) {
+        mOnViewTransactionsClickListener = onViewTransactionsClickListener;
     }
 
     public void setOnBudgetClickListener(OnClickListener onBudgetClickListener) {
@@ -64,11 +62,11 @@ public class BudgetView extends RelativeLayout {
             holder.name = (TextView) recycledView.findViewById(R.id.list_item_budget_textview_name);
             holder.amount = (TextView) recycledView.findViewById(R.id.list_item_budget_textview_amount);
             final BudgetView finalRecycledView = recycledView;
-            recycledView.findViewById(R.id.list_item_budget_imagebutton_addtransaction).setOnClickListener(new OnClickListener() {
+            recycledView.findViewById(R.id.list_item_budget_imagebutton_viewtransactions).setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (finalRecycledView.mOnAddTransactionClickListener != null) {
-                        finalRecycledView.mOnAddTransactionClickListener.onClick(finalRecycledView);
+                    if (finalRecycledView.mOnViewTransactionsClickListener != null) {
+                        finalRecycledView.mOnViewTransactionsClickListener.onClick(finalRecycledView);
                     }
                 }
             });

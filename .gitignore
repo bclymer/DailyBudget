@@ -18,3 +18,5 @@ build/
 *.ipr
 *~
 *.swp
+
+Thumbs.db
