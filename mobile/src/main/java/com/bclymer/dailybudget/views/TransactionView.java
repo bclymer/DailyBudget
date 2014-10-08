@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.bclymer.dailybudget.R;
 import com.bclymer.dailybudget.models.Transaction;
+import com.bclymer.dailybudget.utilities.DisplayUtility;
 import com.bclymer.dailybudget.utilities.Util;
 
 import java.text.SimpleDateFormat;
@@ -29,6 +30,16 @@ public class TransactionView extends LinearLayout {
 
     public TransactionView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+    }
+
+    private float firstY = Integer.MIN_VALUE;
+    @Override
+    protected void dispatchSetPressed(boolean pressed) {
+        super.dispatchSetPressed(pressed);
+        if (firstY == Integer.MIN_VALUE) {
+            firstY = getY();
+        }
+        setY(firstY + (pressed ? DisplayUtility.dpToPixels(2) : 0));
     }
 
     public static TransactionView createTransactionView(LayoutInflater inflater, TransactionView recycledView, ViewGroup parent, Transaction transaction) {

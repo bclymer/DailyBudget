@@ -5,12 +5,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.BaseAdapter;
+import android.widget.GridView;
 
 import com.bclymer.dailybudget.R;
 import com.bclymer.dailybudget.events.BudgetUpdatedEvent;
 import com.bclymer.dailybudget.models.Budget;
+import com.bclymer.dailybudget.utilities.ThreadManager;
 import com.bclymer.dailybudget.views.BudgetView;
 
 import java.util.List;
@@ -28,7 +29,7 @@ import static com.bclymer.dailybudget.fragments.EditBudgetFragment.NO_BUDGET_ID_
 public class BudgetsFragment extends BaseFragment {
 
     @InjectView(android.R.id.list)
-    protected AbsListView mListView;
+    protected GridView mGridView;
     @InjectView(android.R.id.empty)
     protected ViewGroup mEmptyView;
 
@@ -66,8 +67,8 @@ public class BudgetsFragment extends BaseFragment {
             budget.updateCache();
         }
         mAdapter = new BudgetAdapter();
-        mListView.setAdapter(mAdapter);
-        mListView.setEmptyView(mEmptyView);
+        mGridView.setAdapter(mAdapter);
+        mGridView.setEmptyView(mEmptyView);
         mEventBus.register(this);
     }
 

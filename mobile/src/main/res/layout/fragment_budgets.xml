@@ -7,7 +7,7 @@
 
     <GridView
         android:id="@android:id/list"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:clipToPadding="false"
@@ -15,7 +15,7 @@
         android:horizontalSpacing="5dp"
         android:numColumns="auto_fit"
         android:padding="10dp"
-        android:stretchMode="spacingWidthUniform"
+        android:stretchMode="columnWidth"
         android:verticalSpacing="5dp"
         tools:listitem="@layout/list_item_budget" />
 
