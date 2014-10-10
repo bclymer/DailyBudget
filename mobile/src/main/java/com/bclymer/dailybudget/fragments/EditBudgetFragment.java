@@ -110,7 +110,7 @@ public class EditBudgetFragment extends BaseFragment {
     protected void onDelete() {
         mBudget.delete();
         mCallback.onBudgetDoneEditing();
-        mEventBus.post(new BudgetUpdatedEvent(null));
+        mEventBus.post(new BudgetUpdatedEvent(mBudget, true));
         Util.toast("Delete Successful");
     }
 

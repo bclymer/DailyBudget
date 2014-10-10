@@ -2,6 +2,7 @@ package com.bclymer.dailybudget.fragments;
 
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -96,6 +97,8 @@ public class EditTransactionFragment extends BaseDialogFragment {
         int day = cal.get(Calendar.DAY_OF_MONTH);
         mDatePicker.init(year, month, day, null);
         mEditTextAmount.requestFocus();
+        // show keyboard
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
     }
 
     @OnClick(R.id.fragment_edit_transaction_button_add_transaction)

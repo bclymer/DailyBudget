@@ -2,6 +2,7 @@ package com.bclymer.dailybudget.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +14,12 @@ import com.bclymer.dailybudget.events.BudgetUpdatedEvent;
 import com.bclymer.dailybudget.models.Budget;
 import com.bclymer.dailybudget.utilities.ThreadManager;
 import com.bclymer.dailybudget.views.BudgetView;
+import com.nhaarman.listviewanimations.appearance.AnimationAdapter;
+import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
+import com.nhaarman.listviewanimations.appearance.simple.ScaleInAnimationAdapter;
+import com.nhaarman.listviewanimations.util.Insertable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.InjectView;
@@ -33,7 +39,7 @@ public class BudgetsFragment extends BaseFragment {
     @InjectView(android.R.id.empty)
     protected ViewGroup mEmptyView;
 
-    private BudgetAdapter mAdapter;
+    private AnimationAdapter mAdapter;
     private List<Budget> mBudgetList;
 
     private BudgetSelectedCallback mCallback;
@@ -66,7 +72,11 @@ public class BudgetsFragment extends BaseFragment {
         for (Budget budget : mBudgetList) {
             budget.updateCache();
         }
-        mAdapter = new BudgetAdapter();
+
+        BudgetAdapter budgetAdapter = new BudgetAdapter();
+        mAdapter = new ScaleInAnimationAdapter(budgetAdapter);
+        mAdapter.setAbsListView(mGridView);
+        mAdapter.getViewAnimator().setAnimationDurationMillis(1000);
         mGridView.setAdapter(mAdapter);
         mGridView.setEmptyView(mEmptyView);
         mEventBus.register(this);
@@ -89,16 +99,20 @@ public class BudgetsFragment extends BaseFragment {
     }
 
     public void onEventMainThread(BudgetUpdatedEvent event) {
-        if (event.budget != null) {
-            for (Budget budget : mBudgetList) {
-                if (budget.id == event.budget.id) {
+        List<Budget> copiedList = new ArrayList<>(mBudgetList);
+        for (Budget budget : copiedList) {
+            if (budget.id == event.budget.id) {
+                if (event.deleted) {
+                    mBudgetList.remove(event.budget);
+                } else {
                     event.budget.cloneInto(budget);
-                    mAdapter.notifyDataSetChanged();
-                    break;
                 }
+                mAdapter.notifyDataSetChanged();
+                return;
             }
         }
-        mBudgetList = Budget.getDao().queryForAll();
+
+        mBudgetList.add(event.budget);
         mAdapter.notifyDataSetChanged();
     }
 

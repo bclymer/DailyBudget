@@ -68,6 +68,35 @@ public class Budget extends DatabaseResource<Budget, Integer> {
         return DatabaseHelper.getBaseDao(Budget.class, Integer.class);
     }
 
+    public static List<Transaction> getSortedTransactions(int budgetId) {
+        try {
+            return Transaction.getDao().queryBuilder()
+                    .orderBy(Transaction.Columns.DATE, false)
+                    .where()
+                    .eq(Transaction.Columns.FOREIGN_BUDGET, budgetId)
+                    .query();
+        } catch (SQLException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Budget budget = (Budget) o;
+
+        if (id != budget.id) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
+
     public void updateCache() {
         final Date today = new Date();
         if (Util.isSameDay(today, cachedDate)) return;
@@ -95,18 +124,6 @@ public class Budget extends DatabaseResource<Budget, Integer> {
 
     public List<Transaction> getSortedTransactions() {
         return getSortedTransactions(id);
-    }
-
-    public static List<Transaction> getSortedTransactions(int budgetId) {
-        try {
-            return Transaction.getDao().queryBuilder()
-                    .orderBy(Transaction.Columns.DATE, false)
-                    .where()
-                    .eq(Transaction.Columns.FOREIGN_BUDGET, budgetId)
-                    .query();
-        } catch (SQLException e) {
-            return null;
-        }
     }
 
     public void cloneInto(Budget budget) {
