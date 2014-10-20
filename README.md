@@ -6,4 +6,5 @@ A very small app that allows you to set rolling budgets. I made it for personal 
 This project was also a challenge. I'm writing the entire thing without running it, and then hoping it all works.
 
 Status of the challenge
-Still haven't run it yet.
+===========
+Failed miserably. There were 3 runtime errors that arose (all db init related), as well as a couple pretty critical bugs that caused strange calculations.
