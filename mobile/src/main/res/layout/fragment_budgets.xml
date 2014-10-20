@@ -36,8 +36,9 @@
             android:text="@string/no_budgets"
             android:textSize="22sp" />
 
-        <Button
+        <com.bclymer.dailybudget.views.RaisedButton
             android:id="@+id/fragment_budgets_emptyview_button_new_budget"
+            style="@style/Button.Blue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/fragment_budgets_emptyview_text"

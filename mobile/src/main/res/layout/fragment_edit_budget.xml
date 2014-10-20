@@ -68,8 +68,9 @@
         android:minWidth="100dp"
         tools:text="10" />
 
-    <Button
+    <com.bclymer.dailybudget.views.RaisedButton
         android:id="@+id/fragment_edit_budget_button_save"
+        style="@style/Button.Blue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/fragment_edit_budget_edittext_amount"
@@ -78,7 +79,7 @@
         android:width="100dp"
         android:text="@string/save" />
 
-    <Button
+    <com.bclymer.dailybudget.views.RaisedButton
         android:id="@+id/fragment_edit_budget_button_delete"
         style="@style/Button.Red"
         android:layout_width="wrap_content"

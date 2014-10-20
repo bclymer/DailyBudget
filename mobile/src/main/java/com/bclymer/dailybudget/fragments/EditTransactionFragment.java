@@ -13,6 +13,7 @@ import com.bclymer.dailybudget.models.Budget;
 import com.bclymer.dailybudget.models.Transaction;
 import com.bclymer.dailybudget.utilities.ThreadManager;
 import com.bclymer.dailybudget.utilities.Util;
+import com.wrapp.floatlabelededittext.FloatLabeledEditText;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -37,7 +38,7 @@ public class EditTransactionFragment extends BaseDialogFragment {
     @InjectView(R.id.fragment_edit_transaction_edittext_amount)
     protected EditText mEditTextAmount;
     @InjectView(R.id.fragment_edit_transaction_edittext_notes)
-    protected EditText mEditTextNotes;
+    protected FloatLabeledEditText mEditTextNotes;
     @InjectView(R.id.fragment_edit_transaction_datepicker_date)
     protected DatePicker mDatePicker;
     @InjectView(R.id.fragment_edit_transaction_button_add_transaction)

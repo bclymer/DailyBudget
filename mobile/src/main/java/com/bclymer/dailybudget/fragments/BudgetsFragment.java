@@ -76,7 +76,6 @@ public class BudgetsFragment extends BaseFragment {
         BudgetAdapter budgetAdapter = new BudgetAdapter();
         mAdapter = new ScaleInAnimationAdapter(budgetAdapter);
         mAdapter.setAbsListView(mGridView);
-        mAdapter.getViewAnimator().setAnimationDurationMillis(1000);
         mGridView.setAdapter(mAdapter);
         mGridView.setEmptyView(mEmptyView);
         mEventBus.register(this);

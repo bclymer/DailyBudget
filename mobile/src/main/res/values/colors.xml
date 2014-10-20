@@ -3,8 +3,35 @@
     <color name="blue_light">#33b5e5</color>
     <color name="blue_bright">#00ddff</color>
     <color name="blue_dark">#0099cc</color>
+    <color name="blue_darker">#3c6cd2</color>
+    <color name="blue_darkest">#1c52a2</color>
     <color name="red_dark">#cc0000</color>
+    <color name="red_darker">#aa0000</color>
     <color name="red_light">#ff4444</color>
+    <color name="red_bright">#ff7474</color>
     <color name="background">#eeeeee</color>
     <color name="white_selected">#88f0f0f0</color>
+    <color name="text_hint">#999999</color>
+
+    <color name="flat_blue_darker">@color/blue_darkest</color>
+    <color name="flat_blue_dark">@color/blue_darker</color>
+    <color name="flat_blue_primary">@color/blue_dark</color>
+    <color name="flat_blue_light">@color/blue_light</color>
+    <integer-array name="flat_blue_theme">
+        <item>@color/flat_blue_darker</item>
+        <item>@color/flat_blue_dark</item>
+        <item>@color/flat_blue_primary</item>
+        <item>@color/flat_blue_light</item>
+    </integer-array>
+
+    <color name="flat_red_darker">@color/red_darker</color>
+    <color name="flat_red_dark">@color/red_dark</color>
+    <color name="flat_red_primary">@color/red_light</color>
+    <color name="flat_red_light">@color/red_bright</color>
+    <integer-array name="flat_red_theme">
+        <item>@color/flat_red_darker</item>
+        <item>@color/flat_red_dark</item>
+        <item>@color/flat_red_primary</item>
+        <item>@color/flat_red_light</item>
+    </integer-array>
 </resources>

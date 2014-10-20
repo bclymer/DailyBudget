@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:float="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -32,16 +33,19 @@
             android:calendarViewShown="false"
             android:spinnersShown="true" />
 
-        <EditText
+        <com.wrapp.floatlabelededittext.FloatLabeledEditText
             android:id="@+id/fragment_edit_transaction_edittext_notes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_margin="5dp"
             android:gravity="center"
-            android:hint="@string/transaction_description"
-            android:minWidth="100dp" />
+            android:minWidth="100dp"
+            float:fletHintTextColor="@color/text_hint"
+            float:fletFloatingHint="@string/transaction_description"
+            float:fletSingleLine="true" />
 
-        <Button
+        <com.bclymer.dailybudget.views.RaisedButton
             android:id="@+id/fragment_edit_transaction_button_add_transaction"
             style="@style/Button.Blue"
             android:layout_width="wrap_content"
@@ -50,7 +54,7 @@
             android:width="180dp"
             android:text="@string/add_transaction" />
 
-        <Button
+        <com.bclymer.dailybudget.views.RaisedButton
             android:id="@+id/fragment_edit_transaction_button_delete_transaction"
             style="@style/Button.Red"
             android:layout_width="wrap_content"
