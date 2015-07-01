@@ -9,6 +9,10 @@
     <color name="red_darker">#aa0000</color>
     <color name="red_light">#ff4444</color>
     <color name="red_bright">#ff7474</color>
+    <color name="gray_dark">#777</color>
+    <color name="gray_darker">#444</color>
+    <color name="gray_light">#aaa</color>
+    <color name="gray_bright">#ccc</color>
     <color name="background">#eeeeee</color>
     <color name="white_selected">#88f0f0f0</color>
     <color name="text_hint">#999999</color>

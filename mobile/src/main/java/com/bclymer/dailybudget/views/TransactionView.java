@@ -20,6 +20,9 @@ import java.text.SimpleDateFormat;
  */
 public class TransactionView extends LinearLayout {
 
+    private final static SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("c MMM d yyyy");
+    private float firstY = Integer.MIN_VALUE;
+
     public TransactionView(Context context) {
         super(context);
     }
@@ -32,16 +35,6 @@ public class TransactionView extends LinearLayout {
         super(context, attrs, defStyle);
     }
 
-    private float firstY = Integer.MIN_VALUE;
-    @Override
-    protected void dispatchSetPressed(boolean pressed) {
-        super.dispatchSetPressed(pressed);
-        if (firstY == Integer.MIN_VALUE) {
-            firstY = getY();
-        }
-        setY(firstY + (pressed ? DisplayUtility.dpToPixels(2) : 0));
-    }
-
     public static TransactionView createTransactionView(LayoutInflater inflater, TransactionView recycledView, ViewGroup parent, Transaction transaction) {
         ViewHolder holder;
         if (recycledView == null) {
@@ -50,6 +43,7 @@ public class TransactionView extends LinearLayout {
             holder.date = (TextView) recycledView.findViewById(R.id.list_item_transaction_textview_date);
             holder.amount = (TextView) recycledView.findViewById(R.id.list_item_transaction_textview_amount);
             holder.notes = (TextView) recycledView.findViewById(R.id.list_item_transaction_textview_notes);
+            holder.paidForSomeone = (TextView) recycledView.findViewById(R.id.list_item_transaction_textview_paidforsomeone);
             recycledView.setTag(holder);
         } else {
             holder = (ViewHolder) recycledView.getTag();
@@ -62,14 +56,23 @@ public class TransactionView extends LinearLayout {
             holder.notes.setVisibility(VISIBLE);
             holder.notes.setText(transaction.notes);
         }
+        holder.paidForSomeone.setVisibility(transaction.paidForSomeone ? VISIBLE : GONE);
         return recycledView;
     }
 
-    private final static SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("c MMM d yyyy");
+    @Override
+    protected void dispatchSetPressed(boolean pressed) {
+        super.dispatchSetPressed(pressed);
+        if (firstY == Integer.MIN_VALUE) {
+            firstY = getY();
+        }
+        setY(firstY + (pressed ? DisplayUtility.dpToPixels(2) : 0));
+    }
 
     private static class ViewHolder {
         TextView date;
         TextView amount;
         TextView notes;
+        TextView paidForSomeone;
     }
 }

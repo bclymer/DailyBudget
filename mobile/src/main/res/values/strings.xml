@@ -24,5 +24,7 @@
     <string name="view_transactions">View Transactions</string>
     <string name="transaction_description">Transaction Description</string>
     <string name="budget_name">Budget Name</string>
+    <string name="paid_for_someone">Paid for Someone</string>
+    <string name="budget_stats">Budget Stats</string>
 
 </resources>

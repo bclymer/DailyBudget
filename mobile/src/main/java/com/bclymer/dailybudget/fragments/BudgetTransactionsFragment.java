@@ -38,6 +38,9 @@ public class BudgetTransactionsFragment extends BaseDialogFragment {
 
     private int mBudgetId;
 
+    public BudgetTransactionsFragment() {
+    }
+
     public static BudgetTransactionsFragment newInstance(int budgetId) {
         BudgetTransactionsFragment fragment = new BudgetTransactionsFragment();
         Bundle bundle = new Bundle(1);
@@ -72,8 +75,13 @@ public class BudgetTransactionsFragment extends BaseDialogFragment {
     }
 
     @OnClick(R.id.fragment_budget_transactions_button_new_transaction)
-    protected void addTransaction() {
+    protected void clickedAddTransaction() {
         EditTransactionFragment.newInstance(mBudgetId).show(getFragmentManager(), EditTransactionFragment.TAG);
+    }
+
+    @OnClick(R.id.fragment_budget_transactions_button_stats)
+    protected void clickedBudgetStats() {
+        BudgetStatsFragment.newInstance(mBudgetId).show(getFragmentManager(), BudgetStatsFragment.TAG);
     }
 
     public void onEvent(final BudgetUpdatedEvent event) {

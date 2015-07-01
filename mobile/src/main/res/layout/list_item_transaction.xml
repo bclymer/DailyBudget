@@ -67,13 +67,23 @@
 
     <TextView
         android:id="@+id/list_item_transaction_textview_notes"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:gravity="center_horizontal"
-        android:padding="10dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingTop="5dp"
         android:singleLine="true"
         android:visibility="gone"
         tools:text="Notes about the transaction." />
+
+    <TextView
+        android:id="@+id/list_item_transaction_textview_paidforsomeone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:singleLine="true"
+        android:text="@string/paid_for_someone"
+        android:visibility="gone" />
 
 </com.bclymer.dailybudget.views.TransactionView>

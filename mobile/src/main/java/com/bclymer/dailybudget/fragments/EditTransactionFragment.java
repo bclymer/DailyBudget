@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
@@ -45,6 +46,8 @@ public class EditTransactionFragment extends BaseDialogFragment {
     protected Button mButtonSave;
     @InjectView(R.id.fragment_edit_transaction_button_delete_transaction)
     protected Button mButtonDelete;
+    @InjectView(R.id.fragment_edit_transaction_checkbox_paidforsomeone)
+    protected CheckBox mCheckBoxPaidForSomeone;
 
     private Budget mBudget;
     private Transaction mTransaction;
@@ -90,6 +93,7 @@ public class EditTransactionFragment extends BaseDialogFragment {
             cal.setTime(mTransaction.date);
             mEditTextAmount.setText(Double.toString(-1 * mTransaction.amount));
             mEditTextNotes.setText(mTransaction.notes);
+            mCheckBoxPaidForSomeone.setChecked(mTransaction.paidForSomeone);
             mButtonSave.setText(R.string.update_transaction);
             mButtonDelete.setVisibility(VISIBLE);
         }
@@ -110,6 +114,7 @@ public class EditTransactionFragment extends BaseDialogFragment {
                 if (mEditingTransaction) {
                     mBudget.cachedValue -= mTransaction.amount; // this will be undone later.
                 }
+                mTransaction.paidForSomeone = mCheckBoxPaidForSomeone.isChecked();
                 mTransaction.date = new Date(mDatePicker.getCalendarView().getDate());
                 mTransaction.amount = -1 * Double.valueOf(mEditTextAmount.getText().toString());
                 mTransaction.notes = mEditTextNotes.getText().toString();
@@ -140,7 +145,7 @@ public class EditTransactionFragment extends BaseDialogFragment {
         mBudget.updateAsync(new DatabaseOperationFinishedCallback() {
             @Override
             public void onDatabaseOperationFinished(int rows) {
-                if (rows > 0){
+                if (rows > 0) {
                     mEventBus.post(new BudgetUpdatedEvent(mBudget));
                     Util.toast("Transaction Deleted");
                     dismissAllowingStateLoss();

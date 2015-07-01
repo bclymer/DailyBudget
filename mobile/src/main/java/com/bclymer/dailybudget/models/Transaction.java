@@ -13,6 +13,7 @@ import static com.bclymer.dailybudget.models.Transaction.Columns.DATE;
 import static com.bclymer.dailybudget.models.Transaction.Columns.FOREIGN_BUDGET;
 import static com.bclymer.dailybudget.models.Transaction.Columns.ID;
 import static com.bclymer.dailybudget.models.Transaction.Columns.NOTES;
+import static com.bclymer.dailybudget.models.Transaction.Columns.PAID_FOR_SOMEONE;
 
 /**
  * Created by bclymer on 9/26/2014.
@@ -20,27 +21,26 @@ import static com.bclymer.dailybudget.models.Transaction.Columns.NOTES;
 @DatabaseTable
 public class Transaction extends DatabaseResource<Transaction, Integer> {
 
-    public Transaction() {}
+    @DatabaseField(columnName = ID, generatedId = true, index = true)
+    public int id;
+    @DatabaseField(columnName = DATE)
+    public Date date;
+    @DatabaseField(columnName = AMOUNT)
+    public double amount;
+    @DatabaseField(columnName = NOTES)
+    public String notes;
+    @DatabaseField(columnName = PAID_FOR_SOMEONE)
+    public boolean paidForSomeone;
+    @DatabaseField(columnName = FOREIGN_BUDGET, foreign = true)
+    public Budget budget;
+
+    public Transaction() {
+    }
 
     public Transaction(Date date, double amount) {
         this.date = date;
         this.amount = amount;
     }
-
-    @DatabaseField(columnName = ID, generatedId = true, index = true)
-    public int id;
-
-    @DatabaseField(columnName = DATE)
-    public Date date;
-
-    @DatabaseField(columnName = AMOUNT)
-    public double amount;
-
-    @DatabaseField(columnName = NOTES)
-    public String notes;
-
-    @DatabaseField(columnName = FOREIGN_BUDGET, foreign = true)
-    public Budget budget;
 
     public static AsyncRuntimeExceptionDao<Transaction, Integer> getDao() {
         return DatabaseHelper.getBaseDao(Transaction.class, Integer.class);
@@ -51,6 +51,7 @@ public class Transaction extends DatabaseResource<Transaction, Integer> {
         public static final String DATE = "date";
         public static final String AMOUNT = "amount";
         public static final String NOTES = "notes";
+        public static final String PAID_FOR_SOMEONE = "paid_for_someone";
         public static final String FOREIGN_BUDGET = "budget_id";
     }
 

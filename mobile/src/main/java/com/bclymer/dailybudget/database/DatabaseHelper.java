@@ -21,45 +21,23 @@ import java.util.Map;
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     private static final String DATABASE_NAME = "dailybudget.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
-    private static final Class[] tableClasses = new Class[] {
+    private static final Class[] tableClasses = new Class[]{
             Budget.class,
             Transaction.class,
     };
 
     private static DatabaseHelper mInstance;
-
-    public static void init(Context ctx) {
-        mInstance = new DatabaseHelper(ctx);
-    }
+    private final Map<Class, AsyncRuntimeExceptionDao> mDaos = new HashMap<>();
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
-    @Override
-    public void onCreate(SQLiteDatabase database, ConnectionSource connectionSource) {
-        createDatabase(connectionSource);
+    public static void init(Context ctx) {
+        mInstance = new DatabaseHelper(ctx);
     }
-
-    private void createDatabase(ConnectionSource connectionSource) {
-        try {
-            for (Class tableClass : tableClasses) {
-                TableUtils.createTable(connectionSource, tableClass);
-            }
-        } catch (SQLException | java.sql.SQLException e) {
-            Log.e(DatabaseHelper.class.getName(), "Can't create database", e);
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public void onUpgrade(SQLiteDatabase db, ConnectionSource connectionSource, int oldVersion, int newVersion) {
-
-    }
-
-    private final Map<Class, AsyncRuntimeExceptionDao> mDaos = new HashMap<>();
 
     /**
      * @see //getRuntimeExceptionDao()
@@ -84,6 +62,29 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             return castDao;
         } catch (java.sql.SQLException e) {
             throw new RuntimeException("Could not create BaseDao for class " + clazz, e);
+        }
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase database, ConnectionSource connectionSource) {
+        createDatabase(connectionSource);
+    }
+
+    private void createDatabase(ConnectionSource connectionSource) {
+        try {
+            for (Class tableClass : tableClasses) {
+                TableUtils.createTable(connectionSource, tableClass);
+            }
+        } catch (SQLException | java.sql.SQLException e) {
+            Log.e(DatabaseHelper.class.getName(), "Can't create database", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, ConnectionSource connectionSource, int oldVersion, int newVersion) {
+        if (oldVersion < 2) {
+            db.execSQL("ALTER TABLE `transaction` ADD COLUMN `" + Transaction.Columns.PAID_FOR_SOMEONE + "` BOOLEAN NOT NULL DEFAULT 0");
         }
     }
 }
