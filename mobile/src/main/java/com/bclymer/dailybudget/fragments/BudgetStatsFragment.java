@@ -107,17 +107,17 @@ public class BudgetStatsFragment extends BaseDialogFragment {
                 places.put(transaction.notes, -transaction.amount);
             }
         }
-        mTextViewTotalAmount.setText("Total: $" + totalSpent);
+        mTextViewTotalAmount.setText("Total: " + Util.makeLikeMoney(totalSpent));
 
         // + 1 because today counts.
         long daysSinceFirstTransaction = Util.getDaysBetweenDates(firstTransaction.date, new Date()) + 1;
-        mTextViewAmountPerDay.setText("Per Day: " + (totalSpent / daysSinceFirstTransaction));
+        mTextViewAmountPerDay.setText("Per Day: " + Util.makeLikeMoney(totalSpent / daysSinceFirstTransaction));
 
         places = sortByValue(places);
 
         StringBuilder stringBuilder = new StringBuilder("Favorite Places\n");
         for (Map.Entry<String, Double> entry : places.entrySet()) {
-            stringBuilder.append(entry.getKey()).append(": $").append(Math.round(entry.getValue())).append("\n");
+            stringBuilder.append(entry.getKey()).append(": ").append(Util.makeLikeMoney(entry.getValue())).append("\n");
         }
         mTextViewSortedPlaces.setText(stringBuilder.toString());
     }
