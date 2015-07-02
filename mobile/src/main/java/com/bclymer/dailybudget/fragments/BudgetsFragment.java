@@ -2,7 +2,6 @@ package com.bclymer.dailybudget.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,17 +11,14 @@ import android.widget.GridView;
 import com.bclymer.dailybudget.R;
 import com.bclymer.dailybudget.events.BudgetUpdatedEvent;
 import com.bclymer.dailybudget.models.Budget;
-import com.bclymer.dailybudget.utilities.ThreadManager;
 import com.bclymer.dailybudget.views.BudgetView;
 import com.nhaarman.listviewanimations.appearance.AnimationAdapter;
-import com.nhaarman.listviewanimations.appearance.simple.AlphaInAnimationAdapter;
 import com.nhaarman.listviewanimations.appearance.simple.ScaleInAnimationAdapter;
-import com.nhaarman.listviewanimations.util.Insertable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 import butterknife.OnItemClick;
 
@@ -34,9 +30,9 @@ import static com.bclymer.dailybudget.fragments.EditBudgetFragment.NO_BUDGET_ID_
  */
 public class BudgetsFragment extends BaseFragment {
 
-    @InjectView(android.R.id.list)
+    @Bind(android.R.id.list)
     protected GridView mGridView;
-    @InjectView(android.R.id.empty)
+    @Bind(android.R.id.empty)
     protected ViewGroup mEmptyView;
 
     private AnimationAdapter mAdapter;

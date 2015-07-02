@@ -12,8 +12,8 @@ import android.view.MenuItem;
 import com.bclymer.dailybudget.fragments.BudgetsFragment;
 import com.bclymer.dailybudget.fragments.EditBudgetFragment;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 import static com.bclymer.dailybudget.fragments.BudgetsFragment.BudgetSelectedCallback;
 import static com.bclymer.dailybudget.fragments.EditBudgetFragment.BudgetDoneEditingCallback;
@@ -21,14 +21,14 @@ import static com.bclymer.dailybudget.fragments.EditBudgetFragment.BudgetDoneEdi
 
 public class MainActivity extends Activity implements BudgetSelectedCallback, BudgetDoneEditingCallback {
 
-    @InjectView(R.id.activity_main_drawerlayout)
+    @Bind(R.id.activity_main_drawerlayout)
     protected DrawerLayout mDrawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         getFragmentManager().beginTransaction()
                 .add(R.id.main_activity_fragment_main, BudgetsFragment.newInstance())

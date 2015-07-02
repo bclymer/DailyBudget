@@ -29,7 +29,7 @@ public abstract class BaseDialogFragment extends DialogFragment {
         View view;
         if (mLayoutId != -1) {
             view = inflater.inflate(mLayoutId, container, false);
-            ButterKnife.inject(this, view);
+            ButterKnife.bind(this, view);
         } else {
             return null;
         }
@@ -40,7 +40,7 @@ public abstract class BaseDialogFragment extends DialogFragment {
     public void onDestroyView() {
         super.onDestroyView();
         if (mLayoutId != -1) {
-            ButterKnife.reset(this);
+            ButterKnife.unbind(this);
         }
     }
 }

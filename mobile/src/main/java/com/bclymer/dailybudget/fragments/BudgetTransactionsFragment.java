@@ -16,7 +16,7 @@ import com.bclymer.dailybudget.views.TransactionView;
 
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 
 /**
@@ -28,9 +28,9 @@ public class BudgetTransactionsFragment extends BaseDialogFragment {
 
     private static final String EXTRA_BUDGET_ID = "extra_budget_id";
 
-    @InjectView(android.R.id.list)
+    @Bind(android.R.id.list)
     protected AbsListView mListView;
-    @InjectView(android.R.id.empty)
+    @Bind(android.R.id.empty)
     protected ViewGroup mEmptyView;
 
     private TransactionAdapter mAdapter;

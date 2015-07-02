@@ -19,7 +19,7 @@ import com.wrapp.floatlabelededittext.FloatLabeledEditText;
 import java.util.Calendar;
 import java.util.Date;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 
 import static android.view.View.VISIBLE;
@@ -36,17 +36,17 @@ public class EditTransactionFragment extends BaseDialogFragment {
     private static final String EXTRA_BUDGET_ID = "extra_budget_id";
     private static final String EXTRA_TRANSACTION_ID = "extra_transaction_id";
 
-    @InjectView(R.id.fragment_edit_transaction_edittext_amount)
+    @Bind(R.id.fragment_edit_transaction_edittext_amount)
     protected EditText mEditTextAmount;
-    @InjectView(R.id.fragment_edit_transaction_edittext_notes)
+    @Bind(R.id.fragment_edit_transaction_edittext_notes)
     protected FloatLabeledEditText mEditTextNotes;
-    @InjectView(R.id.fragment_edit_transaction_datepicker_date)
+    @Bind(R.id.fragment_edit_transaction_datepicker_date)
     protected DatePicker mDatePicker;
-    @InjectView(R.id.fragment_edit_transaction_button_add_transaction)
+    @Bind(R.id.fragment_edit_transaction_button_add_transaction)
     protected Button mButtonSave;
-    @InjectView(R.id.fragment_edit_transaction_button_delete_transaction)
+    @Bind(R.id.fragment_edit_transaction_button_delete_transaction)
     protected Button mButtonDelete;
-    @InjectView(R.id.fragment_edit_transaction_checkbox_paidforsomeone)
+    @Bind(R.id.fragment_edit_transaction_checkbox_paidforsomeone)
     protected CheckBox mCheckBoxPaidForSomeone;
 
     private Budget mBudget;

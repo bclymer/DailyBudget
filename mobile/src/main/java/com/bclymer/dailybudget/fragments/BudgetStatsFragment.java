@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 
 /**
  * Created by bclymer on 12/8/14.
@@ -39,13 +39,13 @@ public class BudgetStatsFragment extends BaseDialogFragment {
 
     private static final String EXTRA_BUDGET_ID = "extra_budget_id";
 
-    @InjectView(R.id.fragment_budget_stats_layout_root)
+    @Bind(R.id.fragment_budget_stats_layout_root)
     protected ViewGroup mViewGroupRoot;
-    @InjectView(R.id.fragment_budget_stats_textview_totalamount)
+    @Bind(R.id.fragment_budget_stats_textview_totalamount)
     protected TextView mTextViewTotalAmount;
-    @InjectView(R.id.fragment_budget_stats_textview_amountperday)
+    @Bind(R.id.fragment_budget_stats_textview_amountperday)
     protected TextView mTextViewAmountPerDay;
-    @InjectView(R.id.fragment_budget_stats_textview_sortedplaces)
+    @Bind(R.id.fragment_budget_stats_textview_sortedplaces)
     protected TextView mTextViewSortedPlaces;
 
     private int mBudgetId;

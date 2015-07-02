@@ -23,6 +23,7 @@ public class BudgetView extends RelativeLayout {
     private OnClickListener mOnEditClickListener;
     private OnClickListener mOnViewTransactionsClickListener;
     private OnClickListener mOnBudgetClickListener;
+    private float firstY = Integer.MIN_VALUE;
 
     public BudgetView(Context context) {
         super(context);
@@ -37,32 +38,6 @@ public class BudgetView extends RelativeLayout {
     public BudgetView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init();
-    }
-
-    private void init() {
-        ButterKnife.inject(this, this);
-    }
-
-    private float firstY = Integer.MIN_VALUE;
-    @Override
-    protected void dispatchSetPressed(boolean pressed) {
-        super.dispatchSetPressed(pressed);
-        if (firstY == Integer.MIN_VALUE) {
-            firstY = getY();
-        }
-        setY(firstY + (pressed ? DisplayUtility.dpToPixels(2) : 0));
-    }
-
-    public void setOnEditClickListener(OnClickListener onEditClickListener) {
-        mOnEditClickListener = onEditClickListener;
-    }
-
-    public void setOnViewTransactionsClickListener(OnClickListener onViewTransactionsClickListener) {
-        mOnViewTransactionsClickListener = onViewTransactionsClickListener;
-    }
-
-    public void setOnBudgetClickListener(OnClickListener onBudgetClickListener) {
-        mOnBudgetClickListener = onBudgetClickListener;
     }
 
     public static BudgetView createBudgetView(LayoutInflater inflater, BudgetView recycledView, ViewGroup parent, Budget budget) {
@@ -104,6 +79,31 @@ public class BudgetView extends RelativeLayout {
         holder.name.setText(budget.name);
         holder.amount.setText(Util.makeLikeMoney(budget.cachedValue));
         return recycledView;
+    }
+
+    private void init() {
+        ButterKnife.bind(this, this);
+    }
+
+    @Override
+    protected void dispatchSetPressed(boolean pressed) {
+        super.dispatchSetPressed(pressed);
+        if (firstY == Integer.MIN_VALUE) {
+            firstY = getY();
+        }
+        setY(firstY + (pressed ? DisplayUtility.dpToPixels(2) : 0));
+    }
+
+    public void setOnEditClickListener(OnClickListener onEditClickListener) {
+        mOnEditClickListener = onEditClickListener;
+    }
+
+    public void setOnViewTransactionsClickListener(OnClickListener onViewTransactionsClickListener) {
+        mOnViewTransactionsClickListener = onViewTransactionsClickListener;
+    }
+
+    public void setOnBudgetClickListener(OnClickListener onBudgetClickListener) {
+        mOnBudgetClickListener = onBudgetClickListener;
     }
 
     private static class ViewHolder {

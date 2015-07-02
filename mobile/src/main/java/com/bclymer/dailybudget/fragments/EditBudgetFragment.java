@@ -15,7 +15,7 @@ import com.bclymer.dailybudget.utilities.Util;
 
 import java.util.Date;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 
 import static android.view.View.VISIBLE;
@@ -31,13 +31,13 @@ public class EditBudgetFragment extends BaseFragment {
 
     private static final String EXTRA_BUDGET_ID = "extra_budget_id";
 
-    @InjectView(R.id.fragment_edit_budget_name)
+    @Bind(R.id.fragment_edit_budget_name)
     protected TextView mEditTextName;
-    @InjectView(R.id.fragment_edit_budget_edittext_duration)
+    @Bind(R.id.fragment_edit_budget_edittext_duration)
     protected EditText mEditTextDuration;
-    @InjectView(R.id.fragment_edit_budget_edittext_amount)
+    @Bind(R.id.fragment_edit_budget_edittext_amount)
     protected EditText mEditTextAmount;
-    @InjectView(R.id.fragment_edit_budget_button_delete)
+    @Bind(R.id.fragment_edit_budget_button_delete)
     protected Button mButtonDelete;
 
     private Budget mBudget;
