@@ -53,6 +53,33 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingBottom="5dp"
+                android:text="@string/amount_other" />
+
+            <TextView
+                android:id="@+id/list_item_transaction_textview_amount_other"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="$7.35" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:background="#ccc" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.8"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="5dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="5dp"
                 android:text="@string/date" />
 
             <TextView

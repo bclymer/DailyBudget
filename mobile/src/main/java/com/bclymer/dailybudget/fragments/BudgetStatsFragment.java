@@ -91,20 +91,20 @@ public class BudgetStatsFragment extends BaseDialogFragment {
         Map<String, Double> places = new HashMap<>();
 
         for (Transaction transaction : transactions) {
-            if (transaction.notes == null || transaction.notes.trim().length() == 0 || transaction.amount > 0)
+            if (transaction.notes == null || transaction.notes.trim().length() == 0 || transaction.getTotalAmount() > 0)
                 continue;
 
-            totalSpent -= transaction.amount;
+            totalSpent -= transaction.getTotalAmount();
             boolean foundMatch = false;
             for (Map.Entry<String, Double> entry : places.entrySet()) {
                 if (TextBrew.compareAndGiveBestScore(entry.getKey(), transaction.notes) > 0.9) {
-                    entry.setValue(entry.getValue() - transaction.amount);
+                    entry.setValue(entry.getValue() - transaction.getTotalAmount());
                     foundMatch = true;
                     break;
                 }
             }
             if (!foundMatch) {
-                places.put(transaction.notes, -transaction.amount);
+                places.put(transaction.notes, -transaction.getTotalAmount());
             }
         }
         mTextViewTotalAmount.setText("Total: " + Util.makeLikeMoney(totalSpent));

@@ -9,6 +9,7 @@ import com.j256.ormlite.table.DatabaseTable;
 import java.util.Date;
 
 import static com.bclymer.dailybudget.models.Transaction.Columns.AMOUNT;
+import static com.bclymer.dailybudget.models.Transaction.Columns.AMOUNT_OTHER;
 import static com.bclymer.dailybudget.models.Transaction.Columns.DATE;
 import static com.bclymer.dailybudget.models.Transaction.Columns.FOREIGN_BUDGET;
 import static com.bclymer.dailybudget.models.Transaction.Columns.ID;
@@ -27,6 +28,8 @@ public class Transaction extends DatabaseResource<Transaction, Integer> {
     public Date date;
     @DatabaseField(columnName = AMOUNT)
     public double amount;
+    @DatabaseField(columnName = AMOUNT_OTHER)
+    public double amountOther;
     @DatabaseField(columnName = NOTES)
     public String notes;
     @DatabaseField(columnName = PAID_FOR_SOMEONE)
@@ -46,10 +49,15 @@ public class Transaction extends DatabaseResource<Transaction, Integer> {
         return DatabaseHelper.getBaseDao(Transaction.class, Integer.class);
     }
 
+    public double getTotalAmount() {
+        return amount + amountOther;
+    }
+
     public static final class Columns {
         public static final String ID = "id";
         public static final String DATE = "date";
         public static final String AMOUNT = "amount";
+        public static final String AMOUNT_OTHER = "amount_other";
         public static final String NOTES = "notes";
         public static final String PAID_FOR_SOMEONE = "paid_for_someone";
         public static final String FOREIGN_BUDGET = "budget_id";

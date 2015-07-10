@@ -21,7 +21,7 @@ import java.util.Map;
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     private static final String DATABASE_NAME = "dailybudget.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     private static final Class[] tableClasses = new Class[]{
             Budget.class,
@@ -85,6 +85,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, ConnectionSource connectionSource, int oldVersion, int newVersion) {
         if (oldVersion < 2) {
             db.execSQL("ALTER TABLE `transaction` ADD COLUMN `" + Transaction.Columns.PAID_FOR_SOMEONE + "` BOOLEAN NOT NULL DEFAULT 0");
+        }
+        if (oldVersion < 3) {
+            db.execSQL("ALTER TABLE `transaction` ADD COLUMN `" + Transaction.Columns.AMOUNT_OTHER + "` INTEGER NOT NULL DEFAULT 0");
         }
     }
 }

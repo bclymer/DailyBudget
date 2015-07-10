@@ -2,6 +2,7 @@ package com.bclymer.dailybudget.fragments;
 
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -20,8 +21,10 @@ import java.util.Calendar;
 import java.util.Date;
 
 import butterknife.Bind;
+import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 
+import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.bclymer.dailybudget.database.AsyncRuntimeExceptionDao.DatabaseOperationFinishedCallback;
 
@@ -38,6 +41,8 @@ public class EditTransactionFragment extends BaseDialogFragment {
 
     @Bind(R.id.fragment_edit_transaction_edittext_amount)
     protected EditText mEditTextAmount;
+    @Bind(R.id.fragment_edit_transaction_edittext_amount_other)
+    protected EditText mEditTextAmountOther;
     @Bind(R.id.fragment_edit_transaction_edittext_notes)
     protected FloatLabeledEditText mEditTextNotes;
     @Bind(R.id.fragment_edit_transaction_datepicker_date)
@@ -48,6 +53,8 @@ public class EditTransactionFragment extends BaseDialogFragment {
     protected Button mButtonDelete;
     @Bind(R.id.fragment_edit_transaction_checkbox_paidforsomeone)
     protected CheckBox mCheckBoxPaidForSomeone;
+    @Bind(R.id.fragment_edit_transaction_layout_other)
+    protected ViewGroup mLayoutOther;
 
     private Budget mBudget;
     private Transaction mTransaction;
@@ -92,6 +99,8 @@ public class EditTransactionFragment extends BaseDialogFragment {
         if (mEditingTransaction) {
             cal.setTime(mTransaction.date);
             mEditTextAmount.setText(Double.toString(-1 * mTransaction.amount));
+            mEditTextAmountOther.setText(Double.toString(-1 * mTransaction.amountOther));
+            mLayoutOther.setVisibility(mTransaction.paidForSomeone ? VISIBLE : GONE);
             mEditTextNotes.setText(mTransaction.notes);
             mCheckBoxPaidForSomeone.setChecked(mTransaction.paidForSomeone);
             mButtonSave.setText(R.string.update_transaction);
@@ -112,18 +121,24 @@ public class EditTransactionFragment extends BaseDialogFragment {
             @Override
             public void run() {
                 if (mEditingTransaction) {
-                    mBudget.cachedValue -= mTransaction.amount; // this will be undone later.
+                    mBudget.cachedValue -= mTransaction.getTotalAmount(); // this will be undone later.
                 }
                 mTransaction.paidForSomeone = mCheckBoxPaidForSomeone.isChecked();
                 mTransaction.date = new Date(mDatePicker.getCalendarView().getDate());
+
                 mTransaction.amount = -1 * Double.valueOf(mEditTextAmount.getText().toString());
+                if (mTransaction.paidForSomeone) {
+                    mTransaction.amountOther = -1 * Double.valueOf(mEditTextAmountOther.getText().toString());
+                } else {
+                    mTransaction.amountOther = 0;
+                }
                 mTransaction.notes = mEditTextNotes.getText().toString();
                 if (mEditingTransaction) {
                     mTransaction.update();
                 } else {
                     mBudget.transactions.add(mTransaction);
                 }
-                mBudget.cachedValue += mTransaction.amount;
+                mBudget.cachedValue += mTransaction.getTotalAmount();
                 mBudget.cachedDate = new Date();
                 mBudget.update();
                 mEventBus.post(new BudgetUpdatedEvent(mBudget));
@@ -141,7 +156,7 @@ public class EditTransactionFragment extends BaseDialogFragment {
     protected void deleteTransaction() {
         mTransaction.delete();
         mBudget.transactions.remove(mTransaction);
-        mBudget.cachedValue -= mTransaction.amount;
+        mBudget.cachedValue -= mTransaction.getTotalAmount();
         mBudget.updateAsync(new DatabaseOperationFinishedCallback() {
             @Override
             public void onDatabaseOperationFinished(int rows) {
@@ -154,5 +169,10 @@ public class EditTransactionFragment extends BaseDialogFragment {
                 }
             }
         });
+    }
+
+    @OnCheckedChanged(R.id.fragment_edit_transaction_checkbox_paidforsomeone)
+    protected void checkedPaidForSomeone() {
+        mLayoutOther.setVisibility(mCheckBoxPaidForSomeone.isChecked() ? VISIBLE : GONE);
     }
 }

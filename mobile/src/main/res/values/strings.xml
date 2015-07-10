@@ -10,7 +10,8 @@
     <string name="amount_per_period">Amount per Period</string>
     <string name="save">Save</string>
     <string name="no_transactions">Looks like haven\'t made any transactions under this budget.</string>
-    <string name="amount">Amount</string>
+    <string name="amount">Myself</string>
+    <string name="amount_other">Others</string>
     <string name="date">Date</string>
     <string name="unsaved_changes">Unsaved Changes</string>
     <string name="cancel">Cancel</string>
