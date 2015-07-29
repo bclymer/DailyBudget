@@ -23,7 +23,6 @@ import java.util.Locale;
 public class TransactionView extends LinearLayout {
 
     private static SimpleDateFormat SIMPLE_DATE_FORMAT;
-    private float firstY = Integer.MIN_VALUE;
 
     public TransactionView(Context context) {
         super(context);
@@ -62,12 +61,12 @@ public class TransactionView extends LinearLayout {
         }
         holder.date.setText(SIMPLE_DATE_FORMAT.format(transaction.date));
         holder.amount.setText(Util.makeLikeMoney(transaction.amount));
-        if (TextUtils.isEmpty(transaction.notes)) {
+        if (TextUtils.isEmpty(transaction.location)) {
             holder.notes.setVisibility(GONE);
             holder.amountOther.setVisibility(GONE);
         } else {
             holder.notes.setVisibility(VISIBLE);
-            holder.notes.setText(transaction.notes);
+            holder.notes.setText(transaction.location);
             holder.amountOther.setVisibility(VISIBLE);
             holder.amountOther.setText(Util.makeLikeMoney(transaction.amountOther));
         }
@@ -79,15 +78,6 @@ public class TransactionView extends LinearLayout {
         if (SIMPLE_DATE_FORMAT == null && !isInEditMode()) {
             SIMPLE_DATE_FORMAT = new SimpleDateFormat("c MMM d yyyy", Locale.getDefault());
         }
-    }
-
-    @Override
-    protected void dispatchSetPressed(boolean pressed) {
-        super.dispatchSetPressed(pressed);
-        if (firstY == Integer.MIN_VALUE) {
-            firstY = getY();
-        }
-        //setY(firstY + (pressed ? DisplayUtility.dpToPixels(2) : 0));
     }
 
     private static class ViewHolder {

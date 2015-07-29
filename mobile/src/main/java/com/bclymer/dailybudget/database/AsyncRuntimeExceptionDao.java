@@ -106,7 +106,8 @@ public class AsyncRuntimeExceptionDao<T, ID> extends RuntimeExceptionDao<T, ID> 
             }
         });
     }
+
     public interface DatabaseOperationFinishedCallback {
-        public void onDatabaseOperationFinished(int rows);
+        void onDatabaseOperationFinished(int rows);
     }
 }

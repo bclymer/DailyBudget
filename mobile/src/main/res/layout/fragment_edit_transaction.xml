@@ -61,7 +61,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="numberDecimal|numberSigned"
                     tools:text="7.51" />
-                
+
             </LinearLayout>
 
             <LinearLayout
@@ -104,7 +104,7 @@
             android:layout_margin="5dp"
             android:gravity="center"
             android:minWidth="100dp"
-            float:fletFloatingHint="@string/transaction_description"
+            float:fletFloatingHint="@string/transaction_location"
             float:fletHintTextColor="@color/text_hint"
             float:fletSingleLine="true" />
 

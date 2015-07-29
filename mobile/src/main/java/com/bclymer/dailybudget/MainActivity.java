@@ -4,8 +4,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -85,9 +85,9 @@ public class MainActivity extends Activity implements BudgetSelectedCallback, Bu
         getFragmentManager().beginTransaction()
                 .replace(R.id.main_activity_fragment_detail, EditBudgetFragment.newInstance(budgetId), EditBudgetFragment.TAG)
                 .commit();
-        if (!mDrawerLayout.isDrawerOpen(Gravity.END)) {
-            mDrawerLayout.openDrawer(Gravity.END);
-            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, Gravity.END);
+        if (!mDrawerLayout.isDrawerOpen(GravityCompat.END)) {
+            mDrawerLayout.openDrawer(GravityCompat.END);
+            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.END);
         }
     }
 
@@ -104,15 +104,15 @@ public class MainActivity extends Activity implements BudgetSelectedCallback, Bu
                     .remove(fragment)
                     .commit();
         }
-        if (mDrawerLayout.isDrawerOpen(Gravity.END)) {
-            mDrawerLayout.closeDrawer(Gravity.END);
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.END)) {
+            mDrawerLayout.closeDrawer(GravityCompat.END);
         }
-        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, Gravity.END);
+        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.END);
     }
 
     @Override
     public void onBackPressed() {
-        if (mDrawerLayout.isDrawerOpen(Gravity.END)) {
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.END)) {
             final EditBudgetFragment fragment = (EditBudgetFragment) getFragmentManager().findFragmentByTag(EditBudgetFragment.TAG);
             if (fragment != null && fragment.hasUnsavedContent()) {
                 new AlertDialog.Builder(this)
@@ -122,19 +122,19 @@ public class MainActivity extends Activity implements BudgetSelectedCallback, Bu
                         .setNeutralButton(getString(R.string.discard_changes), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                mDrawerLayout.closeDrawer(Gravity.END);
+                                mDrawerLayout.closeDrawer(GravityCompat.END);
                             }
                         })
                         .setPositiveButton(getString(R.string.save_changes), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 fragment.saveChanges();
-                                mDrawerLayout.closeDrawer(Gravity.END);
+                                mDrawerLayout.closeDrawer(GravityCompat.END);
                             }
                         })
                         .show();
             } else {
-                mDrawerLayout.closeDrawer(Gravity.END);
+                mDrawerLayout.closeDrawer(GravityCompat.END);
             }
         } else {
             super.onBackPressed();

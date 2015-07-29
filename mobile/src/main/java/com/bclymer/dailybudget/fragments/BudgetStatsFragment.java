@@ -2,7 +2,6 @@ package com.bclymer.dailybudget.fragments;
 
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.bclymer.dailybudget.R;
@@ -39,8 +38,6 @@ public class BudgetStatsFragment extends BaseDialogFragment {
 
     private static final String EXTRA_BUDGET_ID = "extra_budget_id";
 
-    @Bind(R.id.fragment_budget_stats_layout_root)
-    protected ViewGroup mViewGroupRoot;
     @Bind(R.id.fragment_budget_stats_textview_totalamount)
     protected TextView mTextViewTotalAmount;
     @Bind(R.id.fragment_budget_stats_textview_amountperday)
@@ -91,20 +88,21 @@ public class BudgetStatsFragment extends BaseDialogFragment {
         Map<String, Double> places = new HashMap<>();
 
         for (Transaction transaction : transactions) {
-            if (transaction.notes == null || transaction.notes.trim().length() == 0 || transaction.getTotalAmount() > 0)
+            if (transaction.location == null || transaction.location.trim().length() == 0 || transaction.getTotalAmount() > 0) {
                 continue;
+            }
 
             totalSpent -= transaction.getTotalAmount();
             boolean foundMatch = false;
             for (Map.Entry<String, Double> entry : places.entrySet()) {
-                if (TextBrew.compareAndGiveBestScore(entry.getKey(), transaction.notes) > 0.9) {
+                if (TextBrew.compareAndGiveBestScore(entry.getKey(), transaction.location) > 0.9) {
                     entry.setValue(entry.getValue() - transaction.getTotalAmount());
                     foundMatch = true;
                     break;
                 }
             }
             if (!foundMatch) {
-                places.put(transaction.notes, -transaction.getTotalAmount());
+                places.put(transaction.location, -transaction.getTotalAmount());
             }
         }
         mTextViewTotalAmount.setText("Total: " + Util.makeLikeMoney(totalSpent));
@@ -122,23 +120,23 @@ public class BudgetStatsFragment extends BaseDialogFragment {
         mTextViewSortedPlaces.setText(stringBuilder.toString());
     }
 
-    public Map sortByValue(Map unsortedMap) {
-        Map sortedMap = new TreeMap(new ValueComparator(unsortedMap));
+    public Map<String, Double> sortByValue(Map<String, Double> unsortedMap) {
+        Map<String, Double> sortedMap = new TreeMap<>(new ValueComparator(unsortedMap));
         sortedMap.putAll(unsortedMap);
         return sortedMap;
     }
 
-    static class ValueComparator implements Comparator {
+    static class ValueComparator implements Comparator<String> {
 
-        Map map;
+        final Map<String, Double> map;
 
-        public ValueComparator(Map map) {
+        public ValueComparator(Map<String, Double> map) {
             this.map = map;
         }
 
-        public int compare(Object keyA, Object keyB) {
-            Comparable valueA = (Comparable) map.get(keyA);
-            Comparable valueB = (Comparable) map.get(keyB);
+        public int compare(String keyA, String keyB) {
+            Double valueA = map.get(keyA);
+            Comparable<Double> valueB = map.get(keyB);
             return valueB.compareTo(valueA);
         }
     }

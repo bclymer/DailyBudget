@@ -18,7 +18,7 @@ import java.util.Map;
 /**
  * Created by bclymer on 9/26/2014.
  */
-public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
+public class DatabaseManager extends OrmLiteSqliteOpenHelper {
 
     private static final String DATABASE_NAME = "dailybudget.db";
     private static final int DATABASE_VERSION = 3;
@@ -28,15 +28,15 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
             Transaction.class,
     };
 
-    private static DatabaseHelper mInstance;
+    private static DatabaseManager mInstance;
     private final Map<Class, AsyncRuntimeExceptionDao> mDaos = new HashMap<>();
 
-    public DatabaseHelper(Context context) {
+    public DatabaseManager(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     public static void init(Context ctx) {
-        mInstance = new DatabaseHelper(ctx);
+        mInstance = new DatabaseManager(ctx);
     }
 
     /**
@@ -76,7 +76,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
                 TableUtils.createTable(connectionSource, tableClass);
             }
         } catch (SQLException | java.sql.SQLException e) {
-            Log.e(DatabaseHelper.class.getName(), "Can't create database", e);
+            Log.e(DatabaseManager.class.getName(), "Can't create database", e);
             throw new RuntimeException(e);
         }
     }

@@ -101,7 +101,7 @@ public class EditTransactionFragment extends BaseDialogFragment {
             mEditTextAmount.setText(Double.toString(-1 * mTransaction.amount));
             mEditTextAmountOther.setText(Double.toString(-1 * mTransaction.amountOther));
             mLayoutOther.setVisibility(mTransaction.paidForSomeone ? VISIBLE : GONE);
-            mEditTextNotes.setText(mTransaction.notes);
+            mEditTextNotes.setText(mTransaction.location);
             mCheckBoxPaidForSomeone.setChecked(mTransaction.paidForSomeone);
             mButtonSave.setText(R.string.update_transaction);
             mButtonDelete.setVisibility(VISIBLE);
@@ -132,7 +132,7 @@ public class EditTransactionFragment extends BaseDialogFragment {
                 } else {
                     mTransaction.amountOther = 0;
                 }
-                mTransaction.notes = mEditTextNotes.getText().toString();
+                mTransaction.location = mEditTextNotes.getText().toString();
                 if (mEditingTransaction) {
                     mTransaction.update();
                 } else {

@@ -23,7 +23,7 @@
     <string name="delete_transaction">Delete Transaction</string>
     <string name="amount_descriptive">Amount\n(Negative to Increase Budget)</string>
     <string name="view_transactions">View Transactions</string>
-    <string name="transaction_description">Transaction Description</string>
+    <string name="transaction_location">Transaction Location</string>
     <string name="budget_name">Budget Name</string>
     <string name="paid_for_someone">Paid for Someone</string>
     <string name="budget_stats">Budget Stats</string>

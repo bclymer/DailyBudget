@@ -112,7 +112,7 @@ public class BudgetsFragment extends BaseFragment {
     }
 
     public interface BudgetSelectedCallback {
-        public void onBudgetSelected(int budgetId);
+        void onBudgetSelected(int budgetId);
     }
 
     private class BudgetAdapter extends BaseAdapter {

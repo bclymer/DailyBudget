@@ -10,7 +10,6 @@ import android.widget.TextView;
 
 import com.bclymer.dailybudget.R;
 import com.bclymer.dailybudget.models.Budget;
-import com.bclymer.dailybudget.utilities.DisplayUtility;
 import com.bclymer.dailybudget.utilities.Util;
 
 import butterknife.ButterKnife;
@@ -23,7 +22,6 @@ public class BudgetView extends RelativeLayout {
     private OnClickListener mOnEditClickListener;
     private OnClickListener mOnViewTransactionsClickListener;
     private OnClickListener mOnBudgetClickListener;
-    private float firstY = Integer.MIN_VALUE;
 
     public BudgetView(Context context) {
         super(context);
@@ -83,15 +81,6 @@ public class BudgetView extends RelativeLayout {
 
     private void init() {
         ButterKnife.bind(this, this);
-    }
-
-    @Override
-    protected void dispatchSetPressed(boolean pressed) {
-        super.dispatchSetPressed(pressed);
-        if (firstY == Integer.MIN_VALUE) {
-            firstY = getY();
-        }
-        setY(firstY + (pressed ? DisplayUtility.dpToPixels(2) : 0));
     }
 
     public void setOnEditClickListener(OnClickListener onEditClickListener) {

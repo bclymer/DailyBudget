@@ -10,9 +10,10 @@ import static com.bclymer.dailybudget.database.AsyncRuntimeExceptionDao.Database
 public abstract class DatabaseResource<T, ID> {
 
     private AsyncRuntimeExceptionDao<T, ID> baseDao;
+
     public AsyncRuntimeExceptionDao<T, ID> getBaseDao() {
         if (baseDao == null) {
-            baseDao = (AsyncRuntimeExceptionDao<T, ID>) DatabaseHelper.getBaseDao(this.getClass());
+            baseDao = (AsyncRuntimeExceptionDao<T, ID>) DatabaseManager.getBaseDao(this.getClass());
         }
         return baseDao;
     }

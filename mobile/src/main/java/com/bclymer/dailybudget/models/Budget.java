@@ -1,7 +1,7 @@
 package com.bclymer.dailybudget.models;
 
 import com.bclymer.dailybudget.database.AsyncRuntimeExceptionDao;
-import com.bclymer.dailybudget.database.DatabaseHelper;
+import com.bclymer.dailybudget.database.DatabaseManager;
 import com.bclymer.dailybudget.database.DatabaseResource;
 import com.bclymer.dailybudget.events.BudgetUpdatedEvent;
 import com.bclymer.dailybudget.utilities.ThreadManager;
@@ -65,7 +65,7 @@ public class Budget extends DatabaseResource<Budget, Integer> {
     }
 
     public static AsyncRuntimeExceptionDao<Budget, Integer> getDao() {
-        return DatabaseHelper.getBaseDao(Budget.class, Integer.class);
+        return DatabaseManager.getBaseDao(Budget.class, Integer.class);
     }
 
     public static List<Transaction> getSortedTransactions(int budgetId) {
@@ -87,9 +87,7 @@ public class Budget extends DatabaseResource<Budget, Integer> {
 
         Budget budget = (Budget) o;
 
-        if (id != budget.id) return false;
-
-        return true;
+        return id == budget.id;
     }
 
     @Override
