@@ -1,6 +1,7 @@
 package com.bclymer.dailybudget.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -95,7 +96,11 @@ public class BudgetStatsFragment extends BaseDialogFragment {
             totalSpent -= transaction.getTotalAmount();
             boolean foundMatch = false;
             for (Map.Entry<String, Double> entry : places.entrySet()) {
-                if (TextBrew.compareAndGiveBestScore(entry.getKey(), transaction.location) > 0.9) {
+                double ranking = TextBrew.compareAndGiveBestScore(entry.getKey().toLowerCase(), transaction.location.toLowerCase());
+                if (ranking > 0.8) {
+                    if (ranking < 1) {
+                        Log.v(TAG, "Matched " + transaction.location + " to " + entry.getKey() + " at " + ranking);
+                    }
                     entry.setValue(entry.getValue() - transaction.getTotalAmount());
                     foundMatch = true;
                     break;
