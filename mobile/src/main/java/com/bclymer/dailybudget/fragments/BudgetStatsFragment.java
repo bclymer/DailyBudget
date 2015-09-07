@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import com.bclymer.dailybudget.R;
 import com.bclymer.dailybudget.models.Budget;
+import com.bclymer.dailybudget.models.BudgetStats;
 import com.bclymer.dailybudget.models.Transaction;
 import com.bclymer.dailybudget.utilities.TextBrew;
 import com.bclymer.dailybudget.utilities.Util;
@@ -73,6 +74,8 @@ public class BudgetStatsFragment extends BaseDialogFragment {
         Budget budget = Budget.getDao().queryForId(mBudgetId);
 
         getDialog().setTitle(budget.name);
+
+        BudgetStats stats = new BudgetStats(budget);
 
         List<Transaction> transactions = budget.getSortedTransactions();
         if (transactions.size() == 0) {

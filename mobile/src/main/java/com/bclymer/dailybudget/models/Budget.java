@@ -53,6 +53,8 @@ public class Budget extends DatabaseResource<Budget, Integer> {
     @ForeignCollectionField(columnName = TRANSACTIONS)
     public ForeignCollection<Transaction> transactions;
 
+    public BudgetStats budgetStats;
+
     public static Budget createBudget() {
         Budget budget = new Budget();
         budget.name = "New Budget";
@@ -77,6 +79,12 @@ public class Budget extends DatabaseResource<Budget, Integer> {
                     .query();
         } catch (SQLException e) {
             return null;
+        }
+    }
+
+    public void generateStats() {
+        if (budgetStats == null) {
+            budgetStats = new BudgetStats(this);
         }
     }
 
