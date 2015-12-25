@@ -67,6 +67,7 @@ public class BudgetTransactionsFragment extends BaseDialogFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Budget budget = Budget.getDao().queryForId(mBudgetId);
+
         getDialog().setTitle(budget.name);
         mTransactionList = budget.getSortedTransactions();
         mTransactionListFiltered = new ArrayList<>(mTransactionList);
@@ -111,7 +112,7 @@ public class BudgetTransactionsFragment extends BaseDialogFragment {
 
     private void filterFullList() {
         final String filter = mEditTextFilter.getText().toString();
-        if (filter == null || filter.length() == 0) {
+        if (filter.length() == 0) {
             mTransactionListFiltered = new ArrayList<>(mTransactionList);
         }
         mTransactionListFiltered.clear();

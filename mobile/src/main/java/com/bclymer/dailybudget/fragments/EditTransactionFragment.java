@@ -1,9 +1,14 @@
 package com.bclymer.dailybudget.fragments;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
@@ -15,10 +20,13 @@ import com.bclymer.dailybudget.models.Budget;
 import com.bclymer.dailybudget.models.Transaction;
 import com.bclymer.dailybudget.utilities.ThreadManager;
 import com.bclymer.dailybudget.utilities.Util;
-import com.wrapp.floatlabelededittext.FloatLabeledEditText;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.OnCheckedChanged;
@@ -44,7 +52,7 @@ public class EditTransactionFragment extends BaseDialogFragment {
     @Bind(R.id.fragment_edit_transaction_edittext_amount_other)
     protected EditText mEditTextAmountOther;
     @Bind(R.id.fragment_edit_transaction_edittext_notes)
-    protected FloatLabeledEditText mEditTextNotes;
+    protected AutoCompleteTextView mEditTextNotes;
     @Bind(R.id.fragment_edit_transaction_datepicker_date)
     protected DatePicker mDatePicker;
     @Bind(R.id.fragment_edit_transaction_button_add_transaction)
@@ -113,6 +121,38 @@ public class EditTransactionFragment extends BaseDialogFragment {
         mEditTextAmount.requestFocus();
         // show keyboard
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
+        mEditTextNotes.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                try {
+                    List<Transaction> trans = Transaction.getDao().queryBuilder()
+                            .where()
+                            .like(Transaction.Columns.LOCATION, "%" + s.toString() + "%")
+                            .query();
+                    HashSet<String> unique = new HashSet<>();
+                    for (Transaction t : trans) {
+                        unique.add(t.location);
+                    }
+                    for (String location : unique) {
+                        Log.v(EditTransactionFragment.this.getClass().getSimpleName(), "Found similar location to " + s.toString() + " - " + location);
+                    }
+                    List<String> finalUgh = new ArrayList<>(unique);
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, finalUgh);
+                    mEditTextNotes.setAdapter(adapter);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     @OnClick(R.id.fragment_edit_transaction_button_add_transaction)
