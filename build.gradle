@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.2.3'
+        classpath 'com.android.tools.build:gradle:2.0.0-alpha3'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -17,3 +17,9 @@ allprojects {
         jcenter()
     }
 }
+
+ext.application_id = "com.bclymer.dailybudget"
+ext.build_ToolsVersion = "23.0.2"
+ext.compile_SdkVersion = 23
+ext.min_SdkVersion = 20
+ext.target_SdkVersion = 23

@@ -20,8 +20,8 @@ import java.util.Map;
  */
 public class DatabaseManager extends OrmLiteSqliteOpenHelper {
 
-    private static final String DATABASE_NAME = "dailybudget.db";
-    private static final int DATABASE_VERSION = 3;
+    public static final String DATABASE_NAME = "dailybudget.db";
+    private static final int DATABASE_VERSION = 4;
 
     private static final Class[] tableClasses = new Class[]{
             Budget.class,
