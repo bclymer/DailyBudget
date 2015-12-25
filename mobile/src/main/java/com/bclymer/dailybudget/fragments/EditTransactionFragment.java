@@ -3,7 +3,6 @@ package com.bclymer.dailybudget.fragments;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -135,6 +134,7 @@ public class EditTransactionFragment extends BaseDialogFragment {
             public void afterTextChanged(Editable s) {
                 try {
                     List<Transaction> trans = Transaction.getDao().queryBuilder()
+                            .selectColumns(Transaction.Columns.LOCATION)
                             .where()
                             .like(Transaction.Columns.LOCATION, "%" + s.toString() + "%")
                             .query();
@@ -142,16 +142,12 @@ public class EditTransactionFragment extends BaseDialogFragment {
                     for (Transaction t : trans) {
                         unique.add(t.location);
                     }
-                    for (String location : unique) {
-                        Log.v(EditTransactionFragment.this.getClass().getSimpleName(), "Found similar location to " + s.toString() + " - " + location);
-                    }
                     List<String> finalUgh = new ArrayList<>(unique);
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, finalUgh);
                     mEditTextNotes.setAdapter(adapter);
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-            }
         });
     }
 
