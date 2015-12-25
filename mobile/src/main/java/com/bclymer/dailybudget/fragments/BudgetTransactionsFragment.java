@@ -1,11 +1,14 @@
 package com.bclymer.dailybudget.fragments;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 
 import com.bclymer.dailybudget.R;
 import com.bclymer.dailybudget.events.BudgetUpdatedEvent;
@@ -14,6 +17,7 @@ import com.bclymer.dailybudget.models.Transaction;
 import com.bclymer.dailybudget.utilities.ThreadManager;
 import com.bclymer.dailybudget.views.TransactionView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -32,9 +36,12 @@ public class BudgetTransactionsFragment extends BaseDialogFragment {
     protected AbsListView mListView;
     @Bind(android.R.id.empty)
     protected ViewGroup mEmptyView;
+    @Bind(R.id.fragment_budget_transactions_edittext_filter)
+    protected EditText mEditTextFilter;
 
     private TransactionAdapter mAdapter;
     private List<Transaction> mTransactionList;
+    private List<Transaction> mTransactionListFiltered;
 
     private int mBudgetId;
 
@@ -62,9 +69,27 @@ public class BudgetTransactionsFragment extends BaseDialogFragment {
         Budget budget = Budget.getDao().queryForId(mBudgetId);
         getDialog().setTitle(budget.name);
         mTransactionList = budget.getSortedTransactions();
+        mTransactionListFiltered = new ArrayList<>(mTransactionList);
         mAdapter = new TransactionAdapter();
         mListView.setAdapter(mAdapter);
         mListView.setEmptyView(mEmptyView);
+
+        mEditTextFilter.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                filterFullList();
+                mAdapter.notifyDataSetChanged();
+            }
+        });
+
         mEventBus.register(this);
     }
 
@@ -84,6 +109,20 @@ public class BudgetTransactionsFragment extends BaseDialogFragment {
         BudgetStatsFragment.newInstance(mBudgetId).show(getFragmentManager(), BudgetStatsFragment.TAG);
     }
 
+    private void filterFullList() {
+        final String filter = mEditTextFilter.getText().toString();
+        if (filter == null || filter.length() == 0) {
+            mTransactionListFiltered = new ArrayList<>(mTransactionList);
+        }
+        mTransactionListFiltered.clear();
+        for (Transaction t : mTransactionList) {
+            if (t.location == null) continue;
+            if (t.location.toLowerCase().contains(filter.toLowerCase())) {
+                mTransactionListFiltered.add(t);
+            }
+        }
+    }
+
     public void onEvent(final BudgetUpdatedEvent event) {
         if (event.budget.id != mBudgetId) return;
 
@@ -91,6 +130,7 @@ public class BudgetTransactionsFragment extends BaseDialogFragment {
             @Override
             public void run() {
                 mTransactionList = event.budget.getSortedTransactions();
+                filterFullList();
             }
         }, new Runnable() {
             @Override
@@ -112,12 +152,12 @@ public class BudgetTransactionsFragment extends BaseDialogFragment {
 
         @Override
         public int getCount() {
-            return mTransactionList != null ? mTransactionList.size() : 0;
+            return mTransactionListFiltered != null ? mTransactionListFiltered.size() : 0;
         }
 
         @Override
         public Transaction getItem(int position) {
-            return mTransactionList.get(position);
+            return mTransactionListFiltered.get(position);
         }
 
         @Override
@@ -127,7 +167,7 @@ public class BudgetTransactionsFragment extends BaseDialogFragment {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            final Transaction transaction = mTransactionList.get(position);
+            final Transaction transaction = mTransactionListFiltered.get(position);
             final TransactionView transactionView = TransactionView.createTransactionView(mInflater, (TransactionView) convertView, parent, transaction);
             transactionView.setOnClickListener(new View.OnClickListener() {
                 @Override
