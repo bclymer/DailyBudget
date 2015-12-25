@@ -6,11 +6,13 @@ import com.bclymer.dailybudget.utilities.TextBrew;
 import com.bclymer.dailybudget.utilities.Util;
 
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Created by brianclymer on 9/7/15.
@@ -31,6 +33,7 @@ public class BudgetStats {
 
         List<Transaction> transactions = budget.getSortedTransactions();
         if (transactions.size() == 0) {
+            Util.toast("No Transactions");
             return;
         }
 
@@ -65,6 +68,8 @@ public class BudgetStats {
                 places.put(transaction.location, -transaction.getTotalAmount());
             }
         }
+
+        places = sortByValue(places);
     }
 
     public double getSpentPerDay() {
@@ -75,4 +80,24 @@ public class BudgetStats {
         return budget.cachedValue;
     }
 
+    public Map<String, Double> sortByValue(Map<String, Double> unsortedMap) {
+        Map<String, Double> sortedMap = new TreeMap<>(new ValueComparator(unsortedMap));
+        sortedMap.putAll(unsortedMap);
+        return sortedMap;
+    }
+
+    static class ValueComparator implements Comparator<String> {
+
+        final Map<String, Double> map;
+
+        public ValueComparator(Map<String, Double> map) {
+            this.map = map;
+        }
+
+        public int compare(String keyA, String keyB) {
+            Double valueA = map.get(keyA);
+            Comparable<Double> valueB = map.get(keyB);
+            return valueB.compareTo(valueA);
+        }
+    }
 }
