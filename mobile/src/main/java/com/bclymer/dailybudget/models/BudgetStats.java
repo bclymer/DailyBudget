@@ -1,8 +1,5 @@
 package com.bclymer.dailybudget.models;
 
-import android.util.Log;
-
-import com.bclymer.dailybudget.utilities.TextBrew;
 import com.bclymer.dailybudget.utilities.Util;
 
 import java.util.Calendar;
@@ -52,19 +49,9 @@ public class BudgetStats {
             }
 
             totalSpent -= transaction.getTotalAmount();
-            boolean foundMatch = false;
-            for (Map.Entry<String, Double> entry : places.entrySet()) {
-                double ranking = TextBrew.compareAndGiveBestScore(entry.getKey().toLowerCase(), transaction.location.toLowerCase());
-                if (ranking > 0.8) {
-                    if (ranking < 1) {
-                        Log.v(TAG, "Matched " + transaction.location + " to " + entry.getKey() + " at " + ranking);
-                    }
-                    entry.setValue(entry.getValue() - transaction.getTotalAmount());
-                    foundMatch = true;
-                    break;
-                }
-            }
-            if (!foundMatch) {
+            if (places.containsKey(transaction.location)) {
+                places.put(transaction.location, places.get(transaction.location) - transaction.getTotalAmount());
+            } else {
                 places.put(transaction.location, -transaction.getTotalAmount());
             }
         }

@@ -9,7 +9,6 @@ import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
@@ -23,12 +22,14 @@ import com.bclymer.dailybudget.utilities.Util;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.Bind;
-import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 
 import static android.view.View.GONE;
@@ -58,14 +59,15 @@ public class EditTransactionFragment extends BaseDialogFragment {
     protected Button mButtonSave;
     @Bind(R.id.fragment_edit_transaction_button_delete_transaction)
     protected Button mButtonDelete;
-    @Bind(R.id.fragment_edit_transaction_checkbox_paidforsomeone)
-    protected CheckBox mCheckBoxPaidForSomeone;
+    @Bind(R.id.fragment_edit_transaction_button_split)
+    protected Button mButtonSplit;
     @Bind(R.id.fragment_edit_transaction_layout_other)
     protected ViewGroup mLayoutOther;
 
     private Budget mBudget;
     private Transaction mTransaction;
     private boolean mEditingTransaction = false;
+    private boolean isSplit = false;
 
     public static EditTransactionFragment newInstance(int budgetId) {
         return newInstance(budgetId, NO_TRANSACTION_ID_VALUE);
@@ -109,7 +111,8 @@ public class EditTransactionFragment extends BaseDialogFragment {
             mEditTextAmountOther.setText(Double.toString(-1 * mTransaction.amountOther));
             mLayoutOther.setVisibility(mTransaction.paidForSomeone ? VISIBLE : GONE);
             mEditTextNotes.setText(mTransaction.location);
-            mCheckBoxPaidForSomeone.setChecked(mTransaction.paidForSomeone);
+            isSplit = mTransaction.paidForSomeone;
+            mButtonSplit.setText(isSplit ? "Merge" : "Split");
             mButtonSave.setText(R.string.update_transaction);
             mButtonDelete.setVisibility(VISIBLE);
         }
@@ -117,7 +120,7 @@ public class EditTransactionFragment extends BaseDialogFragment {
         int month = cal.get(Calendar.MONTH);
         int day = cal.get(Calendar.DAY_OF_MONTH);
         mDatePicker.init(year, month, day, null);
-        mEditTextAmount.requestFocus();
+        mEditTextNotes.requestFocus();
         // show keyboard
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 
@@ -134,20 +137,47 @@ public class EditTransactionFragment extends BaseDialogFragment {
             public void afterTextChanged(Editable s) {
                 try {
                     List<Transaction> trans = Transaction.getDao().queryBuilder()
-                            .selectColumns(Transaction.Columns.LOCATION)
+                            .selectColumns(
+                                    Transaction.Columns.LOCATION,
+                                    Transaction.Columns.AMOUNT,
+                                    Transaction.Columns.AMOUNT_OTHER)
                             .where()
                             .like(Transaction.Columns.LOCATION, "%" + s.toString() + "%")
                             .query();
-                    HashSet<String> unique = new HashSet<>();
+                    HashMap<String, Double> unique = new HashMap<>();
                     for (Transaction t : trans) {
-                        unique.add(t.location);
+                        if (t.location == null) continue;
+                        if (unique.containsKey(t.location)) {
+                            double oldValue = unique.get(t.location);
+                            unique.put(t.location, oldValue + t.getTotalAmount());
+                        } else {
+                            unique.put(t.location, t.getTotalAmount());
+                        }
                     }
-                    List<String> finalUgh = new ArrayList<>(unique);
+                    List<Map.Entry<String, Double>> list = new ArrayList<>(unique.entrySet());
+                    Collections.sort(list, new Comparator<Map.Entry<String, Double>>() {
+                        @Override
+                        public int compare(Map.Entry<String, Double> lhs, Map.Entry<String, Double> rhs) {
+                            if (lhs.getValue() < rhs.getValue()) {
+                                return -1;
+                            } else if (lhs.getValue() > rhs.getValue()) {
+                                return 1;
+                            } else {
+                                return 0;
+                            }
+                        }
+                    });
+                    List<String> finalUgh = new ArrayList<>();
+                    for (Map.Entry<String, Double> entry : list) {
+                        finalUgh.add(entry.getKey());
+                    }
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_dropdown_item_1line, finalUgh);
                     mEditTextNotes.setAdapter(adapter);
+                    mEditTextNotes.showDropDown();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
+            }
         });
     }
 
@@ -159,7 +189,7 @@ public class EditTransactionFragment extends BaseDialogFragment {
                 if (mEditingTransaction) {
                     mBudget.cachedValue -= mTransaction.getTotalAmount(); // this will be undone later.
                 }
-                mTransaction.paidForSomeone = mCheckBoxPaidForSomeone.isChecked();
+                mTransaction.paidForSomeone = isSplit;
                 mTransaction.date = new Date(mDatePicker.getCalendarView().getDate());
 
                 mTransaction.amount = -1 * Double.valueOf(mEditTextAmount.getText().toString());
@@ -207,8 +237,31 @@ public class EditTransactionFragment extends BaseDialogFragment {
         });
     }
 
-    @OnCheckedChanged(R.id.fragment_edit_transaction_checkbox_paidforsomeone)
-    protected void checkedPaidForSomeone() {
-        mLayoutOther.setVisibility(mCheckBoxPaidForSomeone.isChecked() ? VISIBLE : GONE);
+    @OnClick(R.id.fragment_edit_transaction_button_split)
+    protected void splitEvenly() {
+        if (isSplit) {
+            double currentValue = valueFromEditText(mEditTextAmount);
+            double otherValue = valueFromEditText(mEditTextAmountOther);
+            double sum = (double) Math.round((currentValue + otherValue) * 100) / 100d;
+            mEditTextAmount.setText(Double.toString(sum));
+            mEditTextAmountOther.setText(null);
+        } else {
+            double currentValue = valueFromEditText(mEditTextAmount);
+            double myValue = Math.ceil(currentValue * 50) / 100;
+            double herValue = Math.floor(currentValue * 50) / 100;
+            mEditTextAmount.setText(Double.toString(myValue));
+            mEditTextAmountOther.setText(Double.toString(herValue));
+        }
+        isSplit = !isSplit;
+        mLayoutOther.setVisibility(isSplit ? VISIBLE : GONE);
+        mButtonSplit.setText(isSplit ? "Merge" : "Split");
+    }
+
+    private double valueFromEditText(EditText editText) {
+        try {
+            return Double.valueOf(editText.getText().toString());
+        } catch (Exception e) {
+            return 0;
+        }
     }
 }

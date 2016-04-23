@@ -12,29 +12,32 @@
         android:gravity="center"
         android:orientation="vertical">
 
+        <AutoCompleteTextView
+            android:id="@+id/fragment_edit_transaction_edittext_notes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="5dp"
+            android:gravity="center"
+            android:hint="@string/transaction_location"
+            android:minWidth="100dp" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:text="@string/amount_descriptive" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <com.bclymer.dailybudget.views.RaisedButton
+            android:id="@+id/fragment_edit_transaction_button_split"
+            style="@style/Button.Gray"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:layout_margin="5dp"
+            android:width="180dp"
+            android:text="Split Evenly">
 
-            <CheckBox
-                android:id="@+id/fragment_edit_transaction_checkbox_paidforsomeone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Paid For Someone" />
-
-        </LinearLayout>
+        </com.bclymer.dailybudget.views.RaisedButton>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -94,16 +97,6 @@
             android:layout_height="wrap_content"
             android:calendarViewShown="false"
             android:spinnersShown="true" />
-
-        <AutoCompleteTextView
-            android:id="@+id/fragment_edit_transaction_edittext_notes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="5dp"
-            android:gravity="center"
-            android:hint="@string/transaction_location"
-            android:minWidth="100dp" />
 
         <com.bclymer.dailybudget.views.RaisedButton
             android:id="@+id/fragment_edit_transaction_button_add_transaction"
