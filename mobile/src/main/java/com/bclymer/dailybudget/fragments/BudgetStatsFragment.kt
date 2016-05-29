@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import com.bclymer.dailybudget.R
-import com.bclymer.dailybudget.models.Budget
+import com.bclymer.dailybudget.database.BudgetRepository
 import com.bclymer.dailybudget.models.BudgetStats
 import com.bclymer.dailybudget.utilities.ThreadManager
 import com.bclymer.dailybudget.utilities.Util
@@ -38,7 +38,11 @@ class BudgetStatsFragment : BaseDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val budget = Budget.getDao().queryForId(mBudgetId)
+        val budget = BudgetRepository.getById(mBudgetId)
+        if (budget == null) {
+            Util.toast("Couldn't find that budget?")
+            return
+        }
 
         dialog.setTitle(budget.name)
 

@@ -18,7 +18,6 @@ class BudgetApplication : Application() {
     }
 
     companion object {
-
         var instance: BudgetApplication by Delegates.notNull()
             private set
     }

@@ -48,6 +48,10 @@ internal abstract class BaseRepository<T>(private val clazz: KClass<T>) where T 
         }
     }
 
+    fun getById(id: Int): T? {
+        return where { equalTo("id", id).findFirst() }
+    }
+
     fun Realm.where(): RealmQuery<T> {
         return where(clazz.java)
     }

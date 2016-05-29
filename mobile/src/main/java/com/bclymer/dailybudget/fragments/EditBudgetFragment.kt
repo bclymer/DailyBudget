@@ -26,7 +26,6 @@ class EditBudgetFragment : BaseFragment() {
     private val mEditTextAmount: EditText by bindView(R.id.fragment_edit_budget_edittext_amount)
     private val mButtonDelete: Button by bindView(R.id.fragment_edit_budget_button_delete)
 
-    private var mBudget: Budget? = null
     private var mBudgetId = NO_BUDGET_ID_VALUE
 
     private var mCallback: BudgetDoneEditingCallback? = null
@@ -48,23 +47,27 @@ class EditBudgetFragment : BaseFragment() {
             mBudgetId = arguments.getInt(EXTRA_BUDGET_ID, NO_BUDGET_ID_VALUE)
         }
         if (mBudgetId != NO_BUDGET_ID_VALUE) {
-            BudgetRepository.monitorById(mBudgetId)
-            mBudget = Budget.getDao().queryForId(mBudgetId) // should be very very fast. Can run on main thread.
+            BudgetRepository.monitorById(mBudgetId).subscribe {
+                updateBudget(it)
+            }
         } else {
             mNewBudget = true
-            mBudget = BudgetRepository.createBudget()
+            updateBudget(BudgetRepository.createBudget())
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mEditTextName.text = mBudget!!.name
-        mEditTextDuration.setText(Integer.toString(mBudget!!.periodLengthInDays))
-        mEditTextAmount.setText(java.lang.Double.toString(mBudget!!.amountPerPeriod))
         if (!mNewBudget) {
             mButtonDelete.visibility = VISIBLE
         }
+    }
+
+    private fun updateBudget(budget: Budget) {
+        mEditTextName.text = budget.name
+        mEditTextDuration.setText(Integer.toString(budget.periodLengthInDays))
+        mEditTextAmount.setText(java.lang.Double.toString(budget.amountPerPeriod))
     }
 
     fun hasUnsavedContent(): Boolean {

@@ -11,7 +11,6 @@ import android.widget.BaseAdapter
 import android.widget.EditText
 import butterknife.OnClick
 import com.bclymer.dailybudget.R
-import com.bclymer.dailybudget.events.BudgetUpdatedEvent
 import com.bclymer.dailybudget.models.Budget
 import com.bclymer.dailybudget.models.Transaction
 import com.bclymer.dailybudget.utilities.ThreadManager
