@@ -17,9 +17,9 @@ import com.bclymer.dailybudget.utilities.Util
  */
 class BudgetView : RelativeLayout {
 
-    private var mOnEditClickListener: View.OnClickListener? = null
-    private var mOnViewTransactionsClickListener: View.OnClickListener? = null
-    private var mOnBudgetClickListener: View.OnClickListener? = null
+    private var mOnEditClickListener: (() -> Unit)? = null
+    private var mOnViewTransactionsClickListener: (() -> Unit)? = null
+    private var mOnBudgetClickListener: (() -> Unit)? = null
 
     constructor(context: Context) : super(context) {
         init()
@@ -37,15 +37,15 @@ class BudgetView : RelativeLayout {
         ButterKnife.bind(this, this)
     }
 
-    fun setOnEditClickListener(onEditClickListener: View.OnClickListener) {
+    fun setOnEditClickListener(onEditClickListener: (() -> Unit)) {
         mOnEditClickListener = onEditClickListener
     }
 
-    fun setOnViewTransactionsClickListener(onViewTransactionsClickListener: View.OnClickListener) {
+    fun setOnViewTransactionsClickListener(onViewTransactionsClickListener: () -> Unit) {
         mOnViewTransactionsClickListener = onViewTransactionsClickListener
     }
 
-    fun setOnBudgetClickListener(onBudgetClickListener: View.OnClickListener) {
+    fun setOnBudgetClickListener(onBudgetClickListener: () -> Unit) {
         mOnBudgetClickListener = onBudgetClickListener
     }
 
@@ -68,17 +68,17 @@ class BudgetView : RelativeLayout {
                 val finalRecycledView = recycledView
                 recycledView.findViewById(R.id.list_item_budget_imagebutton_viewtransactions).setOnClickListener {
                     if (finalRecycledView.mOnViewTransactionsClickListener != null) {
-                        finalRecycledView.mOnViewTransactionsClickListener!!.onClick(finalRecycledView)
+                        finalRecycledView.mOnViewTransactionsClickListener?.invoke()
                     }
                 }
                 recycledView.findViewById(R.id.list_item_budget_imagebutton_edit).setOnClickListener {
                     if (finalRecycledView.mOnEditClickListener != null) {
-                        finalRecycledView.mOnEditClickListener!!.onClick(finalRecycledView)
+                        finalRecycledView.mOnEditClickListener?.invoke()
                     }
                 }
                 recycledView.setOnClickListener(View.OnClickListener {
                     if (finalRecycledView.mOnBudgetClickListener != null) {
-                        finalRecycledView.mOnBudgetClickListener!!.onClick(finalRecycledView)
+                        finalRecycledView.mOnBudgetClickListener?.invoke()
                     }
                 })
                 recycledView.tag = holder

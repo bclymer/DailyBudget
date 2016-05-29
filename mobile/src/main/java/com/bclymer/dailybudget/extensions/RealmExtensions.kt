@@ -1,7 +1,7 @@
 package com.bclymer.dailybudget.extensions
 
-import com.bclymer.dailybudget.database.failOnBackgroundThread
-import com.bclymer.dailybudget.database.failOnMainThread
+import com.bclymer.dailybudget.utilities.failOnBackgroundThread
+import com.bclymer.dailybudget.utilities.failOnMainThread
 import io.realm.Realm
 import io.realm.RealmObject
 import io.realm.RealmQuery

@@ -93,9 +93,15 @@ class BudgetsFragment() : BaseFragment() {
             val budget = mBudgetList[position]
             val budgetView = BudgetView.createBudgetView(mInflater, view as BudgetView, viewGroup, budget)
 
-            budgetView.setOnViewTransactionsClickListener { BudgetTransactionsFragment.newInstance(budget.id).show(fragmentManager, BudgetTransactionsFragment.TAG) }
-            budgetView.setOnEditClickListener { mCallback.onBudgetSelected(budget.id) }
-            budgetView.setOnBudgetClickListener { EditTransactionFragment.newInstance(budget.id).show(fragmentManager, EditTransactionFragment.TAG) }
+            budgetView.setOnViewTransactionsClickListener {
+                BudgetTransactionsFragment.newInstance(budget.id).show(fragmentManager, BudgetTransactionsFragment.TAG)
+            }
+            budgetView.setOnEditClickListener {
+                mCallback.onBudgetSelected(budget.id)
+            }
+            budgetView.setOnBudgetClickListener {
+                EditTransactionFragment.newInstance(budget.id).show(fragmentManager, EditTransactionFragment.TAG)
+            }
 
             return budgetView
         }

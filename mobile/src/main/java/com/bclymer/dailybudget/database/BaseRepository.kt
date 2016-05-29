@@ -1,7 +1,7 @@
 package com.bclymer.dailybudget.database
 
-import android.os.Looper
 import com.bclymer.dailybudget.extensions.*
+import com.bclymer.dailybudget.utilities.failOnBackgroundThread
 import io.realm.Realm
 import io.realm.RealmObject
 import io.realm.RealmQuery
@@ -69,17 +69,4 @@ internal abstract class BaseRepository<T>(private val clazz: KClass<T>) where T 
     }
 
 
-}
-
-// TODO Find a place for these.
-fun failOnMainThread(msg: String) {
-    if (Looper.getMainLooper().isCurrentThread) {
-        throw IllegalStateException(msg)
-    }
-}
-
-fun failOnBackgroundThread(msg: String) {
-    if (!Looper.getMainLooper().isCurrentThread) {
-        throw IllegalStateException(msg)
-    }
 }

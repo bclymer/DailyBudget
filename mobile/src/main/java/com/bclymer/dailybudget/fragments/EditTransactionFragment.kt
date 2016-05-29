@@ -11,6 +11,7 @@ import android.view.WindowManager
 import android.widget.*
 import butterknife.OnClick
 import com.bclymer.dailybudget.R
+import com.bclymer.dailybudget.database.TransactionRepository
 import com.bclymer.dailybudget.events.BudgetUpdatedEvent
 import com.bclymer.dailybudget.models.Budget
 import com.bclymer.dailybudget.models.Transaction
@@ -129,12 +130,17 @@ class EditTransactionFragment() : BaseDialogFragment() {
 
     @OnClick(R.id.fragment_edit_transaction_button_add_transaction)
     protected fun addTransaction() {
+        val amountMe = mEditTextAmount.text.toString().toDouble()
+        val amountOther = mEditTextAmountOther.text.toString().toDouble()
+        val date = Date(mDatePicker.calendarView.date)
+        TransactionRepository.updateTransaction(mTransaction!!.id, amountMe, amountOther, date, isSplit, mEditTextAmount.text.toString())
+
         ThreadManager.runInBackgroundThenUi({
             if (mEditingTransaction) {
                 mBudget!!.cachedValue -= mTransaction!!.totalAmount // this will be undone later.
             }
             mTransaction!!.paidForSomeone = isSplit
-            mTransaction!!.date = Date(mDatePicker.calendarView.date)
+            mTransaction!!.date = null
 
             mTransaction!!.amount = -1 * java.lang.Double.valueOf(mEditTextAmount.text.toString())!!
             if (mTransaction!!.paidForSomeone) {
@@ -151,7 +157,6 @@ class EditTransactionFragment() : BaseDialogFragment() {
             mBudget!!.cachedValue += mTransaction!!.totalAmount
             mBudget!!.cachedDate = Date()
             // TODO mBudget.update();
-            mEventBus.post(BudgetUpdatedEvent(mBudget))
         }) {
             Util.toast("Transaction Saved")
             dismissAllowingStateLoss()
@@ -167,7 +172,6 @@ class EditTransactionFragment() : BaseDialogFragment() {
             @Override
             public void onDatabaseOperationFinished(int rows) {
                 if (rows > 0) {
-                    mEventBus.post(new BudgetUpdatedEvent(mBudget));
                     Util.toast("Transaction Deleted");
                     dismissAllowingStateLoss();
                 } else {

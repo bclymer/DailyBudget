@@ -107,7 +107,6 @@ class EditBudgetFragment : BaseFragment() {
             public void onDatabaseOperationFinished(int rows) {
                 if (rows > 0) {
                     Util.toast("Save Successful");
-                    mEventBus.post(new BudgetUpdatedEvent(mBudget));
                     mCallback.onBudgetDoneEditing();
                 } else {
                     Util.toast("Save Failed");

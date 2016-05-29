@@ -62,13 +62,6 @@ class BudgetTransactionsFragment : BaseDialogFragment() {
                 mAdapter!!.notifyDataSetChanged()
             }
         })
-
-        mEventBus.register(this)
-    }
-
-    override fun onDestroyView() {
-        mEventBus.unregister(this)
-        super.onDestroyView()
     }
 
     @OnClick(R.id.fragment_budget_transactions_button_new_transaction)
