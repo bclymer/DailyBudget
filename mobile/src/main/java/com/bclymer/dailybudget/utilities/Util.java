@@ -19,13 +19,13 @@ public class Util {
         ThreadManager.runOnUi(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(BudgetApplication.getApplication(), text, duration).show();
+                Toast.makeText(BudgetApplication.Companion.getApplication(), text, duration).show();
             }
         });
     }
 
     public static void toast(int recId, int duration) {
-        String text = BudgetApplication.getApplication().getResources().getString(recId);
+        String text = BudgetApplication.Companion.getApplication().getResources().getString(recId);
         toast(text, duration);
     }
 
@@ -34,7 +34,7 @@ public class Util {
     }
 
     public static void toast(int recId) {
-        String text = BudgetApplication.getApplication().getResources().getString(recId);
+        String text = BudgetApplication.Companion.getApplication().getResources().getString(recId);
         toast(text, Toast.LENGTH_SHORT);
     }
 

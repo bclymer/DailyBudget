@@ -13,7 +13,7 @@
         android:hint="Filter…" />
 
     <ListView
-        android:id="@android:id/list"
+        android:id="@+id/fragment_budget_transactions_listview"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_margin="5dp"
@@ -34,7 +34,7 @@
         android:layout_gravity="bottom|center_horizontal"
         android:orientation="horizontal">
 
-        <com.bclymer.dailybudget.views.RaisedButton
+        <Button
             android:id="@+id/fragment_budget_transactions_button_new_transaction"
             style="@style/Button.Blue"
             android:layout_width="wrap_content"
@@ -42,7 +42,7 @@
             android:layout_margin="10dp"
             android:text="@string/add_transaction" />
 
-        <com.bclymer.dailybudget.views.RaisedButton
+        <Button
             android:id="@+id/fragment_budget_transactions_button_stats"
             style="@style/Button.Gray"
             android:layout_width="wrap_content"

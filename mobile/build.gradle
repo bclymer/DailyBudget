@@ -1,4 +1,21 @@
+buildscript {
+    ext.kotlin_version = '1.0.2'
+    ext.googleSupportVersion = "23.4.0"
+    repositories {
+        jcenter()
+        maven {
+            url 'http://oss.sonatype.org/content/repositories/snapshots'
+        }
+    }
+    dependencies {
+        classpath "io.realm:realm-gradle-plugin:1.0.0"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'realm-android'
 
 android {
     compileSdkVersion compile_SdkVersion
@@ -13,7 +30,7 @@ android {
         applicationId application_id
         minSdkVersion min_SdkVersion
         targetSdkVersion target_SdkVersion
-        versionCode 1
+        versionCode 2
         versionName "1.0"
     }
     buildTypes {
@@ -22,19 +39,35 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:23.3.0'
-    compile 'de.greenrobot:eventbus:2.4.0'
+    compile "com.android.support:support-v4:$googleSupportVersion"
+    compile "com.android.support:recyclerview-v7:$googleSupportVersion"
+
     compile 'com.jakewharton:butterknife:7.0.1'
+
     compile 'com.j256.ormlite:ormlite-android:4.48'
     compile 'com.j256.ormlite:ormlite-core:4.48'
+
     compile 'com.nhaarman.listviewanimations:lib-core:3.1.0@aar'
     compile 'com.nhaarman.listviewanimations:lib-manipulation:3.1.0@aar'
     compile 'com.nineoldandroids:library:2.4.0'
+
     compile 'com.wrapp.floatlabelededittext:library:0.0.3'
+
+    compile libraries.rx_java
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
     wearApp project(':wear')
+    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha1'
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+}
+repositories {
+    maven {
+        url 'http://oss.sonatype.org/content/repositories/snapshots'
+    }
 }

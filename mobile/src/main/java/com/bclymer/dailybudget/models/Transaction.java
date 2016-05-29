@@ -2,11 +2,12 @@ package com.bclymer.dailybudget.models;
 
 import com.bclymer.dailybudget.database.AsyncRuntimeExceptionDao;
 import com.bclymer.dailybudget.database.DatabaseManager;
-import com.bclymer.dailybudget.database.DatabaseResource;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.Date;
+
+import io.realm.RealmObject;
 
 import static com.bclymer.dailybudget.models.Transaction.Columns.AMOUNT;
 import static com.bclymer.dailybudget.models.Transaction.Columns.AMOUNT_OTHER;
@@ -20,7 +21,7 @@ import static com.bclymer.dailybudget.models.Transaction.Columns.PAID_FOR_SOMEON
  * Created by bclymer on 9/26/2014.
  */
 @DatabaseTable
-public class Transaction extends DatabaseResource<Transaction, Integer> {
+public class Transaction extends RealmObject {
 
     @DatabaseField(columnName = ID, generatedId = true, index = true)
     public int id;
@@ -45,7 +46,7 @@ public class Transaction extends DatabaseResource<Transaction, Integer> {
         this.amount = amount;
     }
 
-    public static AsyncRuntimeExceptionDao<Transaction, Integer> getDao() {
+    public static AsyncRuntimeExceptionDao<Transaction, Integer> getDao2() {
         return DatabaseManager.getBaseDao(Transaction.class, Integer.class);
     }
 

@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <GridView
-        android:id="@android:id/list"
+        android:id="@+id/fragment_budgets_gridview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
@@ -20,7 +20,7 @@
         tools:listitem="@layout/list_item_budget" />
 
     <RelativeLayout
-        android:id="@android:id/empty"
+        android:id="@+id/fragment_budgets_empty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
@@ -36,7 +36,7 @@
             android:text="@string/no_budgets"
             android:textSize="22sp" />
 
-        <com.bclymer.dailybudget.views.RaisedButton
+        <Button
             android:id="@+id/fragment_budgets_emptyview_button_new_budget"
             style="@style/Button.Blue"
             android:layout_width="wrap_content"
