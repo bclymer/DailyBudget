@@ -1,7 +1,7 @@
 package com.bclymer.dailybudget.database
 
 import com.bclymer.dailybudget.models.Budget
-import com.bclymer.dailybudget.models.Transaction
+import com.bclymer.dailybudget.utilities.PrimaryKeyGenerator
 import com.bclymer.dailybudget.utilities.ThreadManager
 import com.bclymer.dailybudget.utilities.Util
 import java.util.*
@@ -26,7 +26,7 @@ internal object BudgetRepository : BaseRepository<Budget>(Budget::class) {
             calendar.time = budget.cachedDate
             for (i in 0..days - 1) {
                 calendar.add(Calendar.DAY_OF_YEAR, 1)
-                val transaction = Transaction(calendar.time, budget.amountPerPeriod)
+                val transaction = TransactionRepository.createAllowance(calendar.time, budget.amountPerPeriod)
                 transaction.budget = budget
                 budget.transactions.add(transaction)
             }
@@ -35,7 +35,8 @@ internal object BudgetRepository : BaseRepository<Budget>(Budget::class) {
     }
 
     fun createBudget(): Budget {
-        val budget = Budget()
+        val budget = mainRealm.createObject(Budget::class.java)
+        budget.id = PrimaryKeyGenerator.getId(Budget::class, mainRealm)
         budget.name = "New Budget"
         budget.amountPerPeriod = 10.0
         budget.periodLengthInDays = 1

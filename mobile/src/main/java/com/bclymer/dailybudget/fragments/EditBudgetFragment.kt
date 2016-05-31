@@ -10,11 +10,12 @@ import android.widget.TextView
 import butterknife.OnClick
 import com.bclymer.dailybudget.R
 import com.bclymer.dailybudget.database.BudgetRepository
+import com.bclymer.dailybudget.database.TransactionRepository
 import com.bclymer.dailybudget.models.Budget
-import com.bclymer.dailybudget.models.Transaction
 import com.bclymer.dailybudget.utilities.Util
 import com.travefy.travefy.core.bindView
 import java.util.*
+import kotlin.properties.Delegates
 
 /**
  * Created by bclymer on 9/26/2014.
@@ -27,6 +28,7 @@ class EditBudgetFragment : BaseFragment() {
     private val mButtonDelete: Button by bindView(R.id.fragment_edit_budget_button_delete)
 
     private var mBudgetId = NO_BUDGET_ID_VALUE
+    private var mBudget: Budget by Delegates.notNull()
 
     private var mCallback: BudgetDoneEditingCallback? = null
     private var mNewBudget = false
@@ -97,7 +99,7 @@ class EditBudgetFragment : BaseFragment() {
         mBudget!!.name = mEditTextName.text.toString()
         if (mNewBudget) {
             // TODO mBudget.create();
-            val transaction = Transaction(Date(), mBudget!!.amountPerPeriod)
+            val transaction = TransactionRepository.createAllowance(Date(), mBudget.amountPerPeriod)
             transaction.budget = mBudget
             mBudget!!.transactions.add(transaction)
             mBudget!!.cachedValue = mBudget!!.amountPerPeriod

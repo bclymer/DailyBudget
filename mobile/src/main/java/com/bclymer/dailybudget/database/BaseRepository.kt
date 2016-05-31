@@ -16,7 +16,7 @@ import kotlin.reflect.KClass
 internal abstract class BaseRepository<T>(private val clazz: KClass<T>) where T : RealmObject {
 
     companion object MainRealm {
-        private val mainRealm by lazy {
+        val mainRealm by lazy {
             val realm = Realm.getDefaultInstance()
             realm.isAutoRefresh = true
             realm

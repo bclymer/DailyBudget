@@ -11,8 +11,8 @@ import android.view.WindowManager
 import android.widget.*
 import butterknife.OnClick
 import com.bclymer.dailybudget.R
+import com.bclymer.dailybudget.database.BudgetRepository
 import com.bclymer.dailybudget.database.TransactionRepository
-import com.bclymer.dailybudget.events.BudgetUpdatedEvent
 import com.bclymer.dailybudget.models.Budget
 import com.bclymer.dailybudget.models.Transaction
 import com.bclymer.dailybudget.utilities.ThreadManager
@@ -46,12 +46,12 @@ class EditTransactionFragment() : BaseDialogFragment() {
 
         val budgetId = arguments.getInt(EXTRA_BUDGET_ID)
         val transactionId = arguments.getInt(EXTRA_TRANSACTION_ID, -1)
-        mBudget = Budget.getDao().queryForId(budgetId)
+        mBudget = BudgetRepository.getById(budgetId)
         if (transactionId == -1) {
             mTransaction = Transaction()
             mTransaction!!.budget = mBudget
         } else {
-            mTransaction = Transaction.getDao().queryForId(transactionId)
+            mTransaction = TransactionRepository.getById(transactionId)
             mEditingTransaction = true
         }
     }
@@ -89,10 +89,7 @@ class EditTransactionFragment() : BaseDialogFragment() {
 
             override fun afterTextChanged(s: Editable) {
                 try {
-                    val trans = Transaction.getDao().queryBuilder().selectColumns(
-                            Transaction.Columns.LOCATION,
-                            Transaction.Columns.AMOUNT,
-                            Transaction.Columns.AMOUNT_OTHER).where().like(Transaction.Columns.LOCATION, "%" + s.toString() + "%").query()
+                    val trans = TransactionRepository.searchByLocation(s.toString())
                     val unique = HashMap<String, Double>()
                     for (t in trans) {
                         if (t.location == null) continue

@@ -56,7 +56,7 @@ class TransactionView : LinearLayout {
 
         private var SIMPLE_DATE_FORMAT: SimpleDateFormat? = null
 
-        fun createTransactionView(inflater: LayoutInflater, recycledView: TransactionView?, parent: ViewGroup, transaction: Transaction): TransactionView {
+        fun createTransactionView(inflater: LayoutInflater, recycledView: TransactionView?, parent: ViewGroup?, transaction: Transaction): TransactionView {
             var recycledView = recycledView
             val holder: ViewHolder
             if (recycledView == null) {

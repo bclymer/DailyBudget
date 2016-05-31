@@ -1,8 +1,7 @@
 package com.bclymer.dailybudget
 
 import android.app.Application
-import com.bclymer.dailybudget.database.DatabaseManager
-import com.bclymer.dailybudget.models.DatabaseManager2
+import com.bclymer.dailybudget.models.DatabaseManager
 import kotlin.properties.Delegates
 
 /**
@@ -13,8 +12,7 @@ class BudgetApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
-        DatabaseManager.init(this)
-        DatabaseManager2.setup(this)
+        DatabaseManager.setup(this)
     }
 
     companion object {

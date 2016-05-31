@@ -89,9 +89,9 @@ class BudgetsFragment() : BaseFragment() {
 
         override fun getItemId(position: Int) = position.toLong()
 
-        override fun getView(position: Int, view: View, viewGroup: ViewGroup): View {
+        override fun getView(position: Int, view: View?, viewGroup: ViewGroup?): View {
             val budget = mBudgetList[position]
-            val budgetView = BudgetView.createBudgetView(mInflater, view as BudgetView, viewGroup, budget)
+            val budgetView = BudgetView.createBudgetView(mInflater, view as? BudgetView, viewGroup, budget)
 
             budgetView.setOnViewTransactionsClickListener {
                 BudgetTransactionsFragment.newInstance(budget.id).show(fragmentManager, BudgetTransactionsFragment.TAG)

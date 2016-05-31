@@ -20,7 +20,7 @@ class RealmModule {
 
 }
 
-object DatabaseManager2 {
+object DatabaseManager {
 
     // Realm has in `inMemory` option for unit tests.
     fun setup(context: Context) {
@@ -28,33 +28,6 @@ object DatabaseManager2 {
                 .schemaVersion(1)
                 .migration(Migration())
                 .modules(com.bclymer.dailybudget.models.RealmModule())
-                .initialData { realm ->
-                    // fill initial data
-
-                    val budgets = Budget.getDao().queryForAll()
-                    budgets.forEach {
-                        val budget = realm.createObject(Budget::class.java)
-                        budget.id = it.id
-                        budget.amountPerPeriod = it.amountPerPeriod
-                        budget.cachedDate = it.cachedDate
-                        budget.cachedValue = it.cachedValue
-                        budget.name = it.name
-                        budget.periodLengthInDays = it.periodLengthInDays
-                    }
-
-                    val transactions = Transaction.getDao().queryForAll()
-                    transactions.forEach {
-                        val transaction = realm.createObject(Transaction::class.java)
-                        transaction.id = it.id
-                        transaction.amount = it.amount
-                        transaction.amountOther = it.amountOther
-                        transaction.date = it.date
-                        transaction.location = it.location
-                        transaction.paidForSomeone = it.paidForSomeone
-                        transaction.budget = realm.where(Budget::class.java).equalTo("id", it.budget.id).findFirst()
-                        transaction.budget.transactions.add(transaction)
-                    }
-                }
                 .build()
         Realm.setDefaultConfiguration(realmConfiguration)
         Realm.getDefaultInstance()

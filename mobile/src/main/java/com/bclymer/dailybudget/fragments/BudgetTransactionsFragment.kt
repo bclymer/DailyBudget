@@ -11,9 +11,8 @@ import android.widget.BaseAdapter
 import android.widget.EditText
 import butterknife.OnClick
 import com.bclymer.dailybudget.R
-import com.bclymer.dailybudget.models.Budget
+import com.bclymer.dailybudget.database.BudgetRepository
 import com.bclymer.dailybudget.models.Transaction
-import com.bclymer.dailybudget.utilities.ThreadManager
 import com.bclymer.dailybudget.views.TransactionView
 import com.travefy.travefy.core.bindView
 import java.util.*
@@ -41,10 +40,12 @@ class BudgetTransactionsFragment : BaseDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val budget = Budget.getDao().queryForId(mBudgetId)
 
-        dialog.setTitle(budget.name)
-        mTransactionList = budget.sortedTransactions
+        // TODO monitor this.
+        val budget = BudgetRepository.getById(mBudgetId)
+
+        dialog.setTitle(budget!!.name)
+        mTransactionList = budget.transactions?.toList()
         mTransactionListFiltered = ArrayList(mTransactionList)
         mAdapter = TransactionAdapter()
         mListView.adapter = mAdapter
@@ -88,19 +89,6 @@ class BudgetTransactionsFragment : BaseDialogFragment() {
         }
     }
 
-    fun onEvent(event: BudgetUpdatedEvent) {
-        if (event.budget.id != mBudgetId) return
-
-        ThreadManager.runInBackgroundThenUi(Runnable {
-            mTransactionList = event.budget.sortedTransactions
-            filterFullList()
-        }, Runnable {
-            if (!isVisible || mListView == null) return@Runnable
-
-            mAdapter!!.notifyDataSetChanged()
-        })
-    }
-
     private inner class TransactionAdapter : BaseAdapter() {
 
         private val mInflater: LayoutInflater
@@ -121,9 +109,9 @@ class BudgetTransactionsFragment : BaseDialogFragment() {
             return position.toLong()
         }
 
-        override fun getView(position: Int, convertView: View, parent: ViewGroup): View {
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
             val transaction = mTransactionListFiltered!![position]
-            val transactionView = TransactionView.createTransactionView(mInflater, convertView as TransactionView, parent, transaction)
+            val transactionView = TransactionView.createTransactionView(mInflater, convertView as? TransactionView, parent, transaction)
             transactionView.setOnClickListener { EditTransactionFragment.newInstance(mBudgetId, transaction.id).show(fragmentManager, EditTransactionFragment.TAG) }
             return transactionView
         }

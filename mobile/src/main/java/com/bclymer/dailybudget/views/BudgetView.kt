@@ -57,7 +57,7 @@ class BudgetView : RelativeLayout {
 
     companion object {
 
-        fun createBudgetView(inflater: LayoutInflater, recycledView: BudgetView?, parent: ViewGroup, budget: Budget): BudgetView {
+        fun createBudgetView(inflater: LayoutInflater, recycledView: BudgetView?, parent: ViewGroup?, budget: Budget): BudgetView {
             var recycledView = recycledView
             val holder: ViewHolder
             if (recycledView == null) {
