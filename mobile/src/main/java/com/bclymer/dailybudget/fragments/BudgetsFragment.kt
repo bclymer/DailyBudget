@@ -89,6 +89,7 @@ class BudgetsFragment() : BaseFragment(R.layout.fragment_budgets) {
             budgetView.setOnViewTransactionsClickListener {
                 fragmentManager.beginTransaction()
                         .add(R.id.main_activity_fragment_main, BudgetTransactionsFragment.newInstance(budget.id), BudgetTransactionsFragment.TAG)
+                        .addToBackStack(null)
                         .commit()
             }
             budgetView.setOnEditClickListener {
@@ -97,6 +98,7 @@ class BudgetsFragment() : BaseFragment(R.layout.fragment_budgets) {
             budgetView.setOnBudgetClickListener {
                 fragmentManager.beginTransaction()
                         .add(R.id.main_activity_fragment_main, EditTransactionFragment.newInstance(budget.id), EditTransactionFragment.TAG)
+                        .addToBackStack(null)
                         .commit()
             }
 

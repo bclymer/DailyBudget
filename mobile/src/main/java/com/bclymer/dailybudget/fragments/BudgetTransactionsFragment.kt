@@ -10,7 +10,6 @@ import android.widget.AbsListView
 import android.widget.BaseAdapter
 import android.widget.Button
 import android.widget.EditText
-import com.bclymer.dailybudget.MainActivity
 import com.bclymer.dailybudget.R
 import com.bclymer.dailybudget.database.BudgetRepository
 import com.bclymer.dailybudget.database.TransactionRepository
@@ -50,6 +49,7 @@ class BudgetTransactionsFragment() : BaseFragment(R.layout.fragment_budget_trans
         TransactionRepository.monitorTransactions(mBudgetId).subscribeOnLifecycle(onNext = {
             mTransactionList = it
             mTransactionListFiltered = ArrayList(mTransactionList)
+            mAdapter.notifyDataSetChanged()
         })
 
         mListView.adapter = mAdapter
@@ -71,12 +71,14 @@ class BudgetTransactionsFragment() : BaseFragment(R.layout.fragment_budget_trans
         mButtonNewTransaction.setOnClickListener {
             fragmentManager.beginTransaction()
                     .add(R.id.main_activity_fragment_main, EditTransactionFragment.newInstance(mBudgetId), EditTransactionFragment.TAG)
+                    .addToBackStack(null)
                     .commit()
         }
 
         mButtonStats.setOnClickListener {
             fragmentManager.beginTransaction()
                     .add(R.id.main_activity_fragment_main, BudgetStatsFragment.newInstance(mBudgetId), BudgetStatsFragment.TAG)
+                    .addToBackStack(null)
                     .commit()
         }
     }
@@ -85,6 +87,7 @@ class BudgetTransactionsFragment() : BaseFragment(R.layout.fragment_budget_trans
         val filter = mEditTextFilter.text.toString()
         if (filter.length == 0) {
             mTransactionListFiltered = ArrayList(mTransactionList)
+            return
         }
         mTransactionListFiltered.clear()
         for (t in mTransactionList) {
@@ -119,6 +122,7 @@ class BudgetTransactionsFragment() : BaseFragment(R.layout.fragment_budget_trans
             transactionView.setOnClickListener {
                 fragmentManager.beginTransaction()
                         .add(R.id.main_activity_fragment_main, EditTransactionFragment.newInstance(mBudgetId, transaction.id), EditTransactionFragment.TAG)
+                        .addToBackStack(null)
                         .commit()
             }
             return transactionView

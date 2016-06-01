@@ -67,6 +67,7 @@ class EditBudgetFragment : BaseFragment(R.layout.fragment_edit_budget) {
 
         mButtonDelete.setOnClickListener {
             BudgetRepository.deleteBudget(mBudget)
+            fragmentManager.popBackStack()
             mCallback!!.onBudgetDoneEditing()
             Util.toast("Delete Successful")
         }
@@ -95,6 +96,7 @@ class EditBudgetFragment : BaseFragment(R.layout.fragment_edit_budget) {
                 mEditTextDuration.text.toString().toInt(),
                 mEditTextName.text.toString())
         Util.toast("Save Successful")
+        fragmentManager.popBackStack()
         mCallback!!.onBudgetDoneEditing()
     }
 

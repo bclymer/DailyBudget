@@ -20,7 +20,9 @@ class MainActivity : Activity(), BudgetSelectedCallback, BudgetDoneEditingCallba
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        fragmentManager.beginTransaction().add(R.id.main_activity_fragment_main, BudgetsFragment.newInstance()).commit()
+        fragmentManager.beginTransaction()
+                .add(R.id.main_activity_fragment_main, BudgetsFragment.newInstance())
+                .commit()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -39,7 +41,9 @@ class MainActivity : Activity(), BudgetSelectedCallback, BudgetDoneEditingCallba
     }
 
     private fun displayBudgetFragment(budgetId: Int) {
-        fragmentManager.beginTransaction().replace(R.id.main_activity_fragment_detail, EditBudgetFragment.newInstance(budgetId), EditBudgetFragment.TAG).commit()
+        fragmentManager.beginTransaction()
+                .replace(R.id.main_activity_fragment_detail, EditBudgetFragment.newInstance(budgetId), EditBudgetFragment.TAG)
+                .commit()
         if (!mDrawerLayout.isDrawerOpen(GravityCompat.END)) {
             mDrawerLayout.openDrawer(GravityCompat.END)
             mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.END)
@@ -51,10 +55,6 @@ class MainActivity : Activity(), BudgetSelectedCallback, BudgetDoneEditingCallba
     }
 
     override fun onBudgetDoneEditing() {
-        val fragment = fragmentManager.findFragmentByTag(EditBudgetFragment.TAG) as? EditBudgetFragment
-        if (fragment != null) {
-            fragmentManager.beginTransaction().remove(fragment).commit()
-        }
         if (mDrawerLayout.isDrawerOpen(GravityCompat.END)) {
             mDrawerLayout.closeDrawer(GravityCompat.END)
         }
@@ -64,6 +64,8 @@ class MainActivity : Activity(), BudgetSelectedCallback, BudgetDoneEditingCallba
     override fun onBackPressed() {
         if (mDrawerLayout.isDrawerOpen(GravityCompat.END)) {
             mDrawerLayout.closeDrawer(GravityCompat.END)
+        } else if (fragmentManager.backStackEntryCount > 0) {
+            fragmentManager.popBackStack()
         } else {
             super.onBackPressed()
         }

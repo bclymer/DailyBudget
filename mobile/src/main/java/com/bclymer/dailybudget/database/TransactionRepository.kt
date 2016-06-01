@@ -1,9 +1,10 @@
 package com.bclymer.dailybudget.database
 
-import com.bclymer.dailybudget.extensions.monitorAsync
+import com.bclymer.dailybudget.extensions.monitorSortedAsync
 import com.bclymer.dailybudget.models.Budget
 import com.bclymer.dailybudget.models.Transaction
 import io.realm.Case
+import io.realm.Sort
 import rx.Observable
 import java.util.*
 
@@ -21,7 +22,7 @@ internal object TransactionRepository : BaseRepository<Transaction>(Transaction:
     }
 
     fun monitorTransactions(budgetId: Int): Observable<List<Transaction>> {
-        return where { equalTo("budget.id", budgetId).monitorAsync() }
+        return where { equalTo("budget.id", budgetId).monitorSortedAsync("date", Sort.DESCENDING) }
     }
 
     fun searchByLocation(query: String): List<Transaction> {
