@@ -8,10 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AbsListView
 import android.widget.BaseAdapter
+import android.widget.Button
 import android.widget.EditText
-import butterknife.OnClick
+import com.bclymer.dailybudget.MainActivity
 import com.bclymer.dailybudget.R
 import com.bclymer.dailybudget.database.BudgetRepository
+import com.bclymer.dailybudget.database.TransactionRepository
 import com.bclymer.dailybudget.models.Transaction
 import com.bclymer.dailybudget.views.TransactionView
 import com.travefy.travefy.core.bindView
@@ -20,34 +22,36 @@ import java.util.*
 /**
  * Created by bclymer on 9/28/2014.
  */
-class BudgetTransactionsFragment : BaseDialogFragment() {
+class BudgetTransactionsFragment() : BaseFragment(R.layout.fragment_budget_transactions) {
 
     private val mListView: AbsListView by bindView(R.id.fragment_budget_transactions_listview)
     private val mEmptyView: ViewGroup by bindView(R.id.include_no_transactions_empty)
     private val mEditTextFilter: EditText by bindView(R.id.fragment_budget_transactions_edittext_filter)
+    private val mButtonNewTransaction: Button by bindView(R.id.fragment_budget_transactions_button_new_transaction)
+    private val mButtonStats: Button by bindView(R.id.fragment_budget_transactions_button_stats)
 
-    private var mAdapter: TransactionAdapter? = null
-    private var mTransactionList: List<Transaction>? = null
-    private var mTransactionListFiltered: MutableList<Transaction>? = null
+    private val mAdapter = TransactionAdapter()
+
+    private var mTransactionList: List<Transaction> = listOf()
+    private var mTransactionListFiltered: MutableList<Transaction> = mutableListOf()
 
     private var mBudgetId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mLayoutId = R.layout.fragment_budget_transactions
         mBudgetId = arguments.getInt(EXTRA_BUDGET_ID)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // TODO monitor this.
-        val budget = BudgetRepository.getById(mBudgetId)
+        (activity as MainActivity).actionBar.title = BudgetRepository.getById(mBudgetId)?.name
 
-        dialog.setTitle(budget!!.name)
-        mTransactionList = budget.transactions?.toList()
-        mTransactionListFiltered = ArrayList(mTransactionList)
-        mAdapter = TransactionAdapter()
+        TransactionRepository.monitorTransactions(mBudgetId).subscribeOnLifecycle(onNext = {
+            mTransactionList = it
+            mTransactionListFiltered = ArrayList(mTransactionList)
+        })
+
         mListView.adapter = mAdapter
         mListView.emptyView = mEmptyView
 
@@ -60,19 +64,21 @@ class BudgetTransactionsFragment : BaseDialogFragment() {
 
             override fun afterTextChanged(s: Editable) {
                 filterFullList()
-                mAdapter!!.notifyDataSetChanged()
+                mAdapter.notifyDataSetChanged()
             }
         })
-    }
 
-    @OnClick(R.id.fragment_budget_transactions_button_new_transaction)
-    protected fun clickedAddTransaction() {
-        EditTransactionFragment.newInstance(mBudgetId).show(fragmentManager, EditTransactionFragment.TAG)
-    }
+        mButtonNewTransaction.setOnClickListener {
+            fragmentManager.beginTransaction()
+                    .add(R.id.main_activity_fragment_main, EditTransactionFragment.newInstance(mBudgetId), EditTransactionFragment.TAG)
+                    .commit()
+        }
 
-    @OnClick(R.id.fragment_budget_transactions_button_stats)
-    protected fun clickedBudgetStats() {
-        BudgetStatsFragment.newInstance(mBudgetId).show(fragmentManager, BudgetStatsFragment.TAG)
+        mButtonStats.setOnClickListener {
+            fragmentManager.beginTransaction()
+                    .add(R.id.main_activity_fragment_main, BudgetStatsFragment.newInstance(mBudgetId), BudgetStatsFragment.TAG)
+                    .commit()
+        }
     }
 
     private fun filterFullList() {
@@ -80,29 +86,27 @@ class BudgetTransactionsFragment : BaseDialogFragment() {
         if (filter.length == 0) {
             mTransactionListFiltered = ArrayList(mTransactionList)
         }
-        mTransactionListFiltered!!.clear()
-        for (t in mTransactionList!!) {
+        mTransactionListFiltered.clear()
+        for (t in mTransactionList) {
             if (t.location == null) continue
             if (t.location.toLowerCase().contains(filter.toLowerCase())) {
-                mTransactionListFiltered!!.add(t)
+                mTransactionListFiltered.add(t)
             }
         }
     }
 
     private inner class TransactionAdapter : BaseAdapter() {
 
-        private val mInflater: LayoutInflater
-
-        init {
-            mInflater = activity.layoutInflater
+        private val mInflater: LayoutInflater by lazy {
+            activity.layoutInflater
         }
 
         override fun getCount(): Int {
-            return if (mTransactionListFiltered != null) mTransactionListFiltered!!.size else 0
+            return mTransactionListFiltered.size
         }
 
         override fun getItem(position: Int): Transaction {
-            return mTransactionListFiltered!![position]
+            return mTransactionListFiltered[position]
         }
 
         override fun getItemId(position: Int): Long {
@@ -110,9 +114,13 @@ class BudgetTransactionsFragment : BaseDialogFragment() {
         }
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-            val transaction = mTransactionListFiltered!![position]
+            val transaction = mTransactionListFiltered[position]
             val transactionView = TransactionView.createTransactionView(mInflater, convertView as? TransactionView, parent, transaction)
-            transactionView.setOnClickListener { EditTransactionFragment.newInstance(mBudgetId, transaction.id).show(fragmentManager, EditTransactionFragment.TAG) }
+            transactionView.setOnClickListener {
+                fragmentManager.beginTransaction()
+                        .add(R.id.main_activity_fragment_main, EditTransactionFragment.newInstance(mBudgetId, transaction.id), EditTransactionFragment.TAG)
+                        .commit()
+            }
             return transactionView
         }
     }

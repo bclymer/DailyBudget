@@ -45,10 +45,11 @@ android {
 }
 
 dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    
+    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha1'
     compile "com.android.support:support-v4:$googleSupportVersion"
     compile "com.android.support:recyclerview-v7:$googleSupportVersion"
-
-    compile 'com.jakewharton:butterknife:7.0.1'
 
     compile 'com.nhaarman.listviewanimations:lib-core:3.1.0@aar'
     compile 'com.nhaarman.listviewanimations:lib-manipulation:3.1.0@aar'
@@ -60,8 +61,6 @@ dependencies {
 
     compile fileTree(dir: 'libs', include: ['*.jar'])
     wearApp project(':wear')
-    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha1'
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
 repositories {
     maven {

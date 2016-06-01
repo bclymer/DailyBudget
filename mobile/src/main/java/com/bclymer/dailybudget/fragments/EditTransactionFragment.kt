@@ -9,7 +9,6 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.*
-import butterknife.OnClick
 import com.bclymer.dailybudget.R
 import com.bclymer.dailybudget.database.BudgetRepository
 import com.bclymer.dailybudget.database.TransactionRepository
@@ -24,7 +23,7 @@ import java.util.*
 /**
  * Created by bclymer on 9/28/2014.
  */
-class EditTransactionFragment() : BaseDialogFragment() {
+class EditTransactionFragment() : BaseFragment(R.layout.fragment_edit_transaction) {
 
     private val mEditTextAmount: EditText by bindView(R.id.fragment_edit_transaction_edittext_amount)
     private val mEditTextAmountOther: EditText by bindView(R.id.fragment_edit_transaction_edittext_amount_other)
@@ -42,7 +41,6 @@ class EditTransactionFragment() : BaseDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mLayoutId = R.layout.fragment_edit_transaction
 
         val budgetId = arguments.getInt(EXTRA_BUDGET_ID)
         val transactionId = arguments.getInt(EXTRA_TRANSACTION_ID, -1)
@@ -59,7 +57,7 @@ class EditTransactionFragment() : BaseDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        dialog.setTitle(mBudget!!.name)
+        // TODO dialog.setTitle(mBudget!!.name)
         val cal = Calendar.getInstance()
         if (mEditingTransaction) {
             cal.time = mTransaction!!.date
@@ -88,45 +86,59 @@ class EditTransactionFragment() : BaseDialogFragment() {
             }
 
             override fun afterTextChanged(s: Editable) {
-                try {
-                    val trans = TransactionRepository.searchByLocation(s.toString())
-                    val unique = HashMap<String, Double>()
-                    for (t in trans) {
-                        if (t.location == null) continue
-                        if (unique.containsKey(t.location)) {
-                            val oldValue = unique[t.location]!!
-                            unique.put(t.location, oldValue + t.totalAmount)
-                        } else {
-                            unique.put(t.location, t.totalAmount)
-                        }
-                    }
-                    val list = ArrayList(unique.entries)
-                    Collections.sort(list) { lhs, rhs ->
-                        if (lhs.value < rhs.value) {
-                            -1
-                        } else if (lhs.value > rhs.value) {
-                            1
-                        } else {
-                            0
-                        }
-                    }
-                    val finalUgh = ArrayList<String>()
-                    for (entry in list) {
-                        finalUgh.add(entry.key)
-                    }
-                    val adapter = ArrayAdapter(activity, android.R.layout.simple_dropdown_item_1line, finalUgh)
-                    mEditTextNotes.setAdapter(adapter)
-                    mEditTextNotes.showDropDown()
-                } catch (e: SQLException) {
-                    e.printStackTrace()
-                }
-
+                textChanged(s.toString())
             }
         })
+
+        mButtonDelete.setOnClickListener {
+            deleteTransaction()
+        }
+
+        mButtonSplit.setOnClickListener {
+            splitEvenly()
+        }
+
+        mButtonSave.setOnClickListener {
+            addTransaction()
+        }
     }
 
-    @OnClick(R.id.fragment_edit_transaction_button_add_transaction)
-    protected fun addTransaction() {
+    private fun textChanged(query: String) {
+        try {
+            val trans = TransactionRepository.searchByLocation(query)
+            val unique = HashMap<String, Double>()
+            for (t in trans) {
+                if (t.location == null) continue
+                if (unique.containsKey(t.location)) {
+                    val oldValue = unique[t.location]!!
+                    unique.put(t.location, oldValue + t.totalAmount)
+                } else {
+                    unique.put(t.location, t.totalAmount)
+                }
+            }
+            val list = ArrayList(unique.entries)
+            Collections.sort(list) { lhs, rhs ->
+                if (lhs.value < rhs.value) {
+                    -1
+                } else if (lhs.value > rhs.value) {
+                    1
+                } else {
+                    0
+                }
+            }
+            val finalUgh = ArrayList<String>()
+            for (entry in list) {
+                finalUgh.add(entry.key)
+            }
+            val adapter = ArrayAdapter(activity, android.R.layout.simple_dropdown_item_1line, finalUgh)
+            mEditTextNotes.setAdapter(adapter)
+            mEditTextNotes.showDropDown()
+        } catch (e: SQLException) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun addTransaction() {
         val amountMe = mEditTextAmount.text.toString().toDouble()
         val amountOther = mEditTextAmountOther.text.toString().toDouble()
         val date = Date(mDatePicker.calendarView.date)
@@ -156,12 +168,11 @@ class EditTransactionFragment() : BaseDialogFragment() {
             // TODO mBudget.update();
         }) {
             Util.toast("Transaction Saved")
-            dismissAllowingStateLoss()
+            fragmentManager.popBackStack()
         }
     }
 
-    @OnClick(R.id.fragment_edit_transaction_button_delete_transaction)
-    protected fun deleteTransaction() {
+    private fun deleteTransaction() {
         // TODO mTransaction.delete();
         mBudget!!.transactions.remove(mTransaction)
         mBudget!!.cachedValue -= mTransaction!!.totalAmount
@@ -178,8 +189,7 @@ class EditTransactionFragment() : BaseDialogFragment() {
         }); */
     }
 
-    @OnClick(R.id.fragment_edit_transaction_button_split)
-    protected fun splitEvenly() {
+    private fun splitEvenly() {
         if (isSplit) {
             val currentValue = valueFromEditText(mEditTextAmount)
             val otherValue = valueFromEditText(mEditTextAmountOther)
@@ -214,7 +224,7 @@ class EditTransactionFragment() : BaseDialogFragment() {
         private val EXTRA_BUDGET_ID = "extra_budget_id"
         private val EXTRA_TRANSACTION_ID = "extra_transaction_id"
 
-        @JvmOverloads fun newInstance(budgetId: Int, transactionId: Int = NO_TRANSACTION_ID_VALUE): EditTransactionFragment {
+        fun newInstance(budgetId: Int, transactionId: Int = NO_TRANSACTION_ID_VALUE): EditTransactionFragment {
             val fragment = EditTransactionFragment()
             val bundle = Bundle(2)
             bundle.putInt(EXTRA_BUDGET_ID, budgetId)

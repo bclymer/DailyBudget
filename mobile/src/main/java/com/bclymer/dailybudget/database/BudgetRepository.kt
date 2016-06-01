@@ -2,7 +2,6 @@ package com.bclymer.dailybudget.database
 
 import com.bclymer.dailybudget.models.Budget
 import com.bclymer.dailybudget.utilities.PrimaryKeyGenerator
-import com.bclymer.dailybudget.utilities.ThreadManager
 import com.bclymer.dailybudget.utilities.Util
 import java.util.*
 
@@ -17,9 +16,7 @@ internal object BudgetRepository : BaseRepository<Budget>(Budget::class) {
         val today = Date()
         if (Util.isSameDay(today, budget.cachedDate)) return
 
-        // TODO realm transaction
-
-        ThreadManager.runInBackground {
+        mainRealm.executeTransaction {
             val days = Util.getDaysBetweenDates(budget.cachedDate, today)
             budget.cachedValue += days * budget.amountPerPeriod
             val calendar = GregorianCalendar()
@@ -31,6 +28,12 @@ internal object BudgetRepository : BaseRepository<Budget>(Budget::class) {
                 budget.transactions.add(transaction)
             }
             budget.cachedDate = today
+        }
+    }
+
+    fun deleteBudget(budget: Budget) {
+        mainRealm.executeTransaction {
+            budget.deleteFromRealm()
         }
     }
 

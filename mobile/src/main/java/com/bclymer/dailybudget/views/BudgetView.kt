@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
 import android.widget.TextView
-import butterknife.ButterKnife
 import com.bclymer.dailybudget.R
 import com.bclymer.dailybudget.models.Budget
 import com.bclymer.dailybudget.utilities.Util
@@ -21,21 +20,11 @@ class BudgetView : RelativeLayout {
     private var mOnViewTransactionsClickListener: (() -> Unit)? = null
     private var mOnBudgetClickListener: (() -> Unit)? = null
 
-    constructor(context: Context) : super(context) {
-        init()
-    }
+    constructor(context: Context) : super(context)
 
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-        init()
-    }
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
 
-    constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(context, attrs, defStyle) {
-        init()
-    }
-
-    private fun init() {
-        ButterKnife.bind(this, this)
-    }
+    constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(context, attrs, defStyle)
 
     fun setOnEditClickListener(onEditClickListener: (() -> Unit)) {
         mOnEditClickListener = onEditClickListener

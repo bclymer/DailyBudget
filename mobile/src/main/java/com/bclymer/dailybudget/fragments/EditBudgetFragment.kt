@@ -7,10 +7,10 @@ import android.view.View.VISIBLE
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import butterknife.OnClick
 import com.bclymer.dailybudget.R
 import com.bclymer.dailybudget.database.BudgetRepository
 import com.bclymer.dailybudget.database.TransactionRepository
+import com.bclymer.dailybudget.extensions.filterOutNulls
 import com.bclymer.dailybudget.models.Budget
 import com.bclymer.dailybudget.utilities.Util
 import com.travefy.travefy.core.bindView
@@ -20,12 +20,13 @@ import kotlin.properties.Delegates
 /**
  * Created by bclymer on 9/26/2014.
  */
-class EditBudgetFragment : BaseFragment() {
+class EditBudgetFragment : BaseFragment(R.layout.fragment_edit_budget) {
 
     private val mEditTextName: TextView by bindView(R.id.fragment_edit_budget_name)
     private val mEditTextDuration: EditText by bindView(R.id.fragment_edit_budget_edittext_duration)
     private val mEditTextAmount: EditText by bindView(R.id.fragment_edit_budget_edittext_amount)
     private val mButtonDelete: Button by bindView(R.id.fragment_edit_budget_button_delete)
+    private val mButtonSave: Button by bindView(R.id.fragment_edit_budget_button_save)
 
     private var mBudgetId = NO_BUDGET_ID_VALUE
     private var mBudget: Budget by Delegates.notNull()
@@ -44,17 +45,30 @@ class EditBudgetFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mLayoutId = R.layout.fragment_edit_budget
         if (arguments != null) {
             mBudgetId = arguments.getInt(EXTRA_BUDGET_ID, NO_BUDGET_ID_VALUE)
         }
         if (mBudgetId != NO_BUDGET_ID_VALUE) {
-            BudgetRepository.monitorById(mBudgetId).subscribe {
-                updateBudget(it)
-            }
+            BudgetRepository.monitorById(mBudgetId)
+                    .filterOutNulls()
+                    .subscribeOnLifecycle(onNext = {
+                        mBudget = it
+                        updateBudget()
+                    })
         } else {
             mNewBudget = true
-            updateBudget(BudgetRepository.createBudget())
+            mBudget = BudgetRepository.createBudget()
+            updateBudget()
+        }
+
+        mButtonSave.setOnClickListener {
+            saveChanges()
+        }
+
+        mButtonDelete.setOnClickListener {
+            BudgetRepository.deleteBudget(mBudget)
+            mCallback!!.onBudgetDoneEditing()
+            Util.toast("Delete Successful")
         }
     }
 
@@ -66,43 +80,22 @@ class EditBudgetFragment : BaseFragment() {
         }
     }
 
-    private fun updateBudget(budget: Budget) {
-        mEditTextName.text = budget.name
-        mEditTextDuration.setText(Integer.toString(budget.periodLengthInDays))
-        mEditTextAmount.setText(java.lang.Double.toString(budget.amountPerPeriod))
-    }
-
-    fun hasUnsavedContent(): Boolean {
-        return java.lang.Double.valueOf(mEditTextAmount.text.toString()) !== mBudget!!.amountPerPeriod ||
-                Integer.valueOf(mEditTextDuration.text.toString()) !== mBudget!!.periodLengthInDays ||
-                mEditTextName.text.toString() != mBudget!!.name
-    }
-
-    val budgetName: String
-        get() = mBudget!!.name
-
-    @OnClick(R.id.fragment_edit_budget_button_save)
-    protected fun onSave() {
-        saveChanges()
-    }
-
-    @OnClick(R.id.fragment_edit_budget_button_delete)
-    protected fun onDelete() {
-        //TODO mBudget.delete();
-        mCallback!!.onBudgetDoneEditing()
-        Util.toast("Delete Successful")
+    private fun updateBudget() {
+        mEditTextName.text = mBudget.name
+        mEditTextDuration.setText(Integer.toString(mBudget.periodLengthInDays))
+        mEditTextAmount.setText(java.lang.Double.toString(mBudget.amountPerPeriod))
     }
 
     fun saveChanges() {
-        mBudget!!.amountPerPeriod = java.lang.Double.valueOf(mEditTextAmount.text.toString())!!
-        mBudget!!.periodLengthInDays = Integer.valueOf(mEditTextDuration.text.toString())!!
-        mBudget!!.name = mEditTextName.text.toString()
+        mBudget.amountPerPeriod = java.lang.Double.valueOf(mEditTextAmount.text.toString())!!
+        mBudget.periodLengthInDays = Integer.valueOf(mEditTextDuration.text.toString())!!
+        mBudget.name = mEditTextName.text.toString()
         if (mNewBudget) {
             // TODO mBudget.create();
             val transaction = TransactionRepository.createAllowance(Date(), mBudget.amountPerPeriod)
             transaction.budget = mBudget
-            mBudget!!.transactions.add(transaction)
-            mBudget!!.cachedValue = mBudget!!.amountPerPeriod
+            mBudget.transactions.add(transaction)
+            mBudget.cachedValue = mBudget.amountPerPeriod
         }
         /* TODO mBudget.updateAsync(new DatabaseOperationFinishedCallback() {
             @Override

@@ -1,13 +1,11 @@
 package com.bclymer.dailybudget
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.os.Bundle
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.view.Menu
 import android.view.MenuItem
-import butterknife.ButterKnife
 import com.bclymer.dailybudget.fragments.BudgetsFragment
 import com.bclymer.dailybudget.fragments.BudgetsFragment.BudgetSelectedCallback
 import com.bclymer.dailybudget.fragments.EditBudgetFragment
@@ -21,7 +19,6 @@ class MainActivity : Activity(), BudgetSelectedCallback, BudgetDoneEditingCallba
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        ButterKnife.bind(this)
 
         fragmentManager.beginTransaction().add(R.id.main_activity_fragment_main, BudgetsFragment.newInstance()).commit()
     }
@@ -34,27 +31,11 @@ class MainActivity : Activity(), BudgetSelectedCallback, BudgetDoneEditingCallba
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_new_budget -> {
-                verifyAndShowNewBudgetFragment()
+                displayBudgetFragment(EditBudgetFragment.NO_BUDGET_ID_VALUE)
                 return true
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun verifyAndShowNewBudgetFragment() {
-        verifyAndShowBudgetFragment(EditBudgetFragment.NO_BUDGET_ID_VALUE)
-    }
-
-    private fun verifyAndShowBudgetFragment(budgetId: Int) {
-        val fragment = fragmentManager.findFragmentByTag(EditBudgetFragment.TAG) as? EditBudgetFragment
-        if (fragment != null && fragment.hasUnsavedContent()) {
-            AlertDialog.Builder(this).setTitle(getString(R.string.unsaved_changes)).setMessage(getString(R.string.unsaved_changes_message).replace("{0}", fragment.budgetName)).setNegativeButton(getString(R.string.cancel), null).setNeutralButton(getString(R.string.discard_changes)) { dialog, which -> displayBudgetFragment(budgetId) }.setPositiveButton(getString(R.string.save_changes)) { dialog, which ->
-                fragment.saveChanges()
-                displayBudgetFragment(budgetId)
-            }.show()
-        } else {
-            displayBudgetFragment(budgetId)
-        }
     }
 
     private fun displayBudgetFragment(budgetId: Int) {
@@ -66,7 +47,7 @@ class MainActivity : Activity(), BudgetSelectedCallback, BudgetDoneEditingCallba
     }
 
     override fun onBudgetSelected(budgetId: Int) {
-        verifyAndShowBudgetFragment(budgetId)
+        displayBudgetFragment(budgetId)
     }
 
     override fun onBudgetDoneEditing() {
@@ -82,15 +63,7 @@ class MainActivity : Activity(), BudgetSelectedCallback, BudgetDoneEditingCallba
 
     override fun onBackPressed() {
         if (mDrawerLayout.isDrawerOpen(GravityCompat.END)) {
-            val fragment = fragmentManager.findFragmentByTag(EditBudgetFragment.TAG) as? EditBudgetFragment
-            if (fragment != null && fragment.hasUnsavedContent()) {
-                AlertDialog.Builder(this).setTitle(getString(R.string.unsaved_changes)).setMessage(getString(R.string.unsaved_changes_message).replace("{0}", fragment.budgetName)).setNegativeButton(getString(R.string.cancel), null).setNeutralButton(getString(R.string.discard_changes)) { dialog, which -> mDrawerLayout.closeDrawer(GravityCompat.END) }.setPositiveButton(getString(R.string.save_changes)) { dialog, which ->
-                    fragment.saveChanges()
-                    mDrawerLayout.closeDrawer(GravityCompat.END)
-                }.show()
-            } else {
-                mDrawerLayout.closeDrawer(GravityCompat.END)
-            }
+            mDrawerLayout.closeDrawer(GravityCompat.END)
         } else {
             super.onBackPressed()
         }

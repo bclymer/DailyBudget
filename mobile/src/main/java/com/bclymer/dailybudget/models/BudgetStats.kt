@@ -1,6 +1,5 @@
 package com.bclymer.dailybudget.models
 
-import com.bclymer.dailybudget.database.TransactionRepository
 import com.bclymer.dailybudget.utilities.Util
 import java.util.*
 
@@ -15,7 +14,7 @@ class BudgetStats(private val budget: Budget) {
     var places: MutableMap<String, Double> = HashMap()
 
     init {
-        val transactions = TransactionRepository.getAll()
+        val transactions = budget.transactions.toList()
         if (transactions.size == 0) {
             Util.toast("No Transactions")
         } else {

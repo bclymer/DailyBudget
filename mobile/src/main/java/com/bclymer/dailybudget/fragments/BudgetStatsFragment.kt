@@ -3,10 +3,10 @@ package com.bclymer.dailybudget.fragments
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
+import com.bclymer.dailybudget.MainActivity
 import com.bclymer.dailybudget.R
 import com.bclymer.dailybudget.database.BudgetRepository
 import com.bclymer.dailybudget.models.BudgetStats
-import com.bclymer.dailybudget.utilities.ThreadManager
 import com.bclymer.dailybudget.utilities.Util
 import com.travefy.travefy.core.bindView
 
@@ -21,7 +21,7 @@ import com.travefy.travefy.core.bindView
  * 2) A graph of money spent per day, week, and month.
  * 3) Be able to select any place and bring up a list of only those transactions.
  */
-class BudgetStatsFragment : BaseDialogFragment() {
+class BudgetStatsFragment() : BaseFragment(R.layout.fragment_budget_stats) {
 
     private val mTextViewTotalAmount: TextView by bindView(R.id.fragment_budget_stats_textview_totalamount)
     private val mTextViewAmountPerDay: TextView by bindView(R.id.fragment_budget_stats_textview_amountperday)
@@ -31,7 +31,6 @@ class BudgetStatsFragment : BaseDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mLayoutId = R.layout.fragment_budget_stats
         mBudgetId = arguments.getInt(EXTRA_BUDGET_ID)
     }
 
@@ -44,22 +43,17 @@ class BudgetStatsFragment : BaseDialogFragment() {
             return
         }
 
-        dialog.setTitle(budget.name)
+        (activity as MainActivity).actionBar.title = budget.name
 
-        ThreadManager.runInBackground {
-            val stats = BudgetStats(budget)
-            ThreadManager.runOnUi {
-                mTextViewTotalAmount.text = "Total: " + Util.makeLikeMoney(stats.totalSpent)
+        val stats = BudgetStats(budget)
+        mTextViewTotalAmount.text = "Total: " + Util.makeLikeMoney(stats.totalSpent)
+        mTextViewAmountPerDay.text = "Per Day: " + Util.makeLikeMoney(stats.spentPerDay)
 
-                mTextViewAmountPerDay.text = "Per Day: " + Util.makeLikeMoney(stats.spentPerDay)
-
-                val stringBuilder = StringBuilder("Favorite Places\n")
-                for (entry in stats.places.entries) {
-                    stringBuilder.append(entry.key).append(": ").append(Util.makeLikeMoney(entry.value)).append("\n")
-                }
-                mTextViewSortedPlaces.text = stringBuilder.toString()
-            }
+        val stringBuilder = StringBuilder("Favorite Places\n")
+        for (entry in stats.places.entries) {
+            stringBuilder.append(entry.key).append(": ").append(Util.makeLikeMoney(entry.value)).append("\n")
         }
+        mTextViewSortedPlaces.text = stringBuilder.toString()
 
     }
 

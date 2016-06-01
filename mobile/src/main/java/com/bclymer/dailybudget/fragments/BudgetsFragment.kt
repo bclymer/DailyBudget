@@ -6,9 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.Button
 import android.widget.GridView
-import butterknife.OnClick
-import butterknife.OnItemClick
 import com.bclymer.dailybudget.R
 import com.bclymer.dailybudget.database.BudgetRepository
 import com.bclymer.dailybudget.models.Budget
@@ -21,14 +20,16 @@ import kotlin.properties.Delegates
 /**
  * Created by bclymer on 9/26/2014.
  */
-class BudgetsFragment() : BaseFragment() {
+class BudgetsFragment() : BaseFragment(R.layout.fragment_budgets) {
 
     private val mGridView: GridView by bindView(R.id.fragment_budgets_gridview)
     private val mEmptyView: ViewGroup by bindView(R.id.fragment_budgets_empty)
+    private val mButtonCreateBudget: Button by bindView(R.id.fragment_budgets_emptyview_button_new_budget)
 
     private val mAdapter: AnimationAdapter by lazy {
         ScaleInAnimationAdapter(BudgetAdapter())
     }
+
     private var mBudgetList: List<Budget> = listOf()
 
     private var mCallback: BudgetSelectedCallback by Delegates.notNull()
@@ -42,33 +43,25 @@ class BudgetsFragment() : BaseFragment() {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        mLayoutId = R.layout.fragment_budgets
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // TODO: Loading indicator.
-        BudgetRepository.monitorAll().subscribe {
+        BudgetRepository.monitorAll().subscribeOnLifecycle(onNext = {
             it.forEach { BudgetRepository.updateCache(it) }
             mBudgetList = it
             mAdapter.notifyDataSetChanged()
-        }
+        })
 
         mAdapter.setAbsListView(mGridView)
         mGridView.adapter = mAdapter
         mGridView.emptyView = mEmptyView
-    }
 
-    @OnItemClick(android.R.id.list)
-    protected fun onBudgetClick(position: Int) {
-        mCallback.onBudgetSelected(mBudgetList[position].id)
-    }
+        mGridView.setOnItemClickListener { adapterView, view, position, id ->
+            mCallback.onBudgetSelected(mBudgetList[position].id)
+        }
 
-    @OnClick(R.id.fragment_budgets_emptyview_button_new_budget)
-    protected fun onCreateBudgetClick() {
-        mCallback.onBudgetSelected(EditBudgetFragment.NO_BUDGET_ID_VALUE)
+        mButtonCreateBudget.setOnClickListener {
+            mCallback.onBudgetSelected(EditBudgetFragment.NO_BUDGET_ID_VALUE)
+        }
     }
 
     interface BudgetSelectedCallback {
@@ -94,13 +87,17 @@ class BudgetsFragment() : BaseFragment() {
             val budgetView = BudgetView.createBudgetView(mInflater, view as? BudgetView, viewGroup, budget)
 
             budgetView.setOnViewTransactionsClickListener {
-                BudgetTransactionsFragment.newInstance(budget.id).show(fragmentManager, BudgetTransactionsFragment.TAG)
+                fragmentManager.beginTransaction()
+                        .add(R.id.main_activity_fragment_main, BudgetTransactionsFragment.newInstance(budget.id), BudgetTransactionsFragment.TAG)
+                        .commit()
             }
             budgetView.setOnEditClickListener {
                 mCallback.onBudgetSelected(budget.id)
             }
             budgetView.setOnBudgetClickListener {
-                EditTransactionFragment.newInstance(budget.id).show(fragmentManager, EditTransactionFragment.TAG)
+                fragmentManager.beginTransaction()
+                        .add(R.id.main_activity_fragment_main, EditTransactionFragment.newInstance(budget.id), EditTransactionFragment.TAG)
+                        .commit()
             }
 
             return budgetView

@@ -40,12 +40,8 @@ internal abstract class BaseRepository<T>(private val clazz: KClass<T>) where T 
         return loadDb { where().func() }
     }
 
-    fun monitorById(id: Int): Observable<T> {
-        return where {
-            equalTo("id", id)
-                    .monitorSingleAsync()
-                    .filterOutNulls()
-        }
+    fun monitorById(id: Int): Observable<T?> {
+        return where { equalTo("id", id).monitorSingleAsync() }
     }
 
     fun getById(id: Int): T? {
