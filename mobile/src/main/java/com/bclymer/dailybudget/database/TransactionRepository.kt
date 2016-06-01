@@ -42,10 +42,4 @@ internal object TransactionRepository : BaseRepository<Transaction>(Transaction:
 
     }
 
-    fun delete(transaction: Transaction) {
-        mainRealm.executeTransaction {
-            transaction.deleteFromRealm()
-        }
-    }
-
 }

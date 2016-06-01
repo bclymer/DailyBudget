@@ -10,11 +10,10 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.*
 import com.bclymer.dailybudget.R
+import com.bclymer.dailybudget.database.BaseRepository
 import com.bclymer.dailybudget.database.BudgetRepository
 import com.bclymer.dailybudget.database.TransactionRepository
-import com.bclymer.dailybudget.models.Budget
 import com.bclymer.dailybudget.models.Transaction
-import com.bclymer.dailybudget.utilities.ThreadManager
 import com.bclymer.dailybudget.utilities.Util
 import com.travefy.travefy.core.bindView
 import java.sql.SQLException
@@ -34,38 +33,33 @@ class EditTransactionFragment() : BaseFragment(R.layout.fragment_edit_transactio
     private val mButtonSplit: Button by bindView(R.id.fragment_edit_transaction_button_split)
     private val mLayoutOther: ViewGroup by bindView(R.id.fragment_edit_transaction_layout_other)
 
-    private var mBudget: Budget? = null
-    private var mTransaction: Transaction? = null
+    private var mBudgetId: Int = -1
+    private var mTransactionId: Int = -1
     private var mEditingTransaction = false
     private var isSplit = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val budgetId = arguments.getInt(EXTRA_BUDGET_ID)
-        val transactionId = arguments.getInt(EXTRA_TRANSACTION_ID, -1)
-        mBudget = BudgetRepository.getById(budgetId)
-        if (transactionId == -1) {
-            mTransaction = Transaction()
-            mTransaction!!.budget = mBudget
-        } else {
-            mTransaction = TransactionRepository.getById(transactionId)
-            mEditingTransaction = true
-        }
+        mBudgetId = arguments.getInt(EXTRA_BUDGET_ID)
+        mTransactionId = arguments.getInt(EXTRA_TRANSACTION_ID, -1)
+        mEditingTransaction = (mTransactionId != -1)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // TODO dialog.setTitle(mBudget!!.name)
+        activity.actionBar.title = BudgetRepository.getById(mBudgetId)?.name
+
         val cal = Calendar.getInstance()
         if (mEditingTransaction) {
-            cal.time = mTransaction!!.date
-            mEditTextAmount.setText(java.lang.Double.toString(-1 * mTransaction!!.amount))
-            mEditTextAmountOther.setText(java.lang.Double.toString(-1 * mTransaction!!.amountOther))
-            mLayoutOther.visibility = if (mTransaction!!.paidForSomeone) VISIBLE else GONE
-            mEditTextNotes.setText(mTransaction!!.location)
-            isSplit = mTransaction!!.paidForSomeone
+            val transaction = TransactionRepository.getById(mTransactionId)!!
+            cal.time = transaction.date
+            mEditTextAmount.setText(java.lang.Double.toString(-1 * transaction.amount))
+            mEditTextAmountOther.setText(java.lang.Double.toString(-1 * transaction.amountOther))
+            mLayoutOther.visibility = if (transaction.paidForSomeone) VISIBLE else GONE
+            mEditTextNotes.setText(transaction.location)
+            isSplit = transaction.paidForSomeone
             mButtonSplit.text = if (isSplit) "Merge" else "Split"
             mButtonSave.setText(R.string.update_transaction)
             mButtonDelete.visibility = VISIBLE
@@ -142,51 +136,51 @@ class EditTransactionFragment() : BaseFragment(R.layout.fragment_edit_transactio
         val amountMe = mEditTextAmount.text.toString().toDouble()
         val amountOther = mEditTextAmountOther.text.toString().toDouble()
         val date = Date(mDatePicker.calendarView.date)
-        TransactionRepository.updateTransaction(mTransaction!!.id, amountMe, amountOther, date, isSplit, mEditTextAmount.text.toString())
+        TransactionRepository.updateTransaction(mTransactionId, amountMe, amountOther, date, isSplit, mEditTextAmount.text.toString())
 
-        ThreadManager.runInBackgroundThenUi({
-            if (mEditingTransaction) {
-                mBudget!!.cachedValue -= mTransaction!!.totalAmount // this will be undone later.
-            }
-            mTransaction!!.paidForSomeone = isSplit
-            mTransaction!!.date = null
+        BaseRepository.mainRealm.executeTransaction {
 
-            mTransaction!!.amount = -1 * java.lang.Double.valueOf(mEditTextAmount.text.toString())!!
-            if (mTransaction!!.paidForSomeone) {
-                mTransaction!!.amountOther = -1 * java.lang.Double.valueOf(mEditTextAmountOther.text.toString())!!
-            } else {
-                mTransaction!!.amountOther = 0.0
-            }
-            mTransaction!!.location = mEditTextNotes.text.toString()
+            val transaction = TransactionRepository.getById(mTransactionId) ?: it.createObject(Transaction::class.java)
+            val budget = BudgetRepository.getById(mBudgetId)!!
+
             if (mEditingTransaction) {
-                // TODO mTransaction.update();
-            } else {
-                mBudget!!.transactions.add(mTransaction)
+                budget.cachedValue -= transaction.totalAmount // this will be undone later.
             }
-            mBudget!!.cachedValue += mTransaction!!.totalAmount
-            mBudget!!.cachedDate = Date()
-            // TODO mBudget.update();
-        }) {
-            Util.toast("Transaction Saved")
-            fragmentManager.popBackStack()
+
+            transaction.paidForSomeone = isSplit
+            transaction.date = null
+
+            transaction.amount = -1 * java.lang.Double.valueOf(mEditTextAmount.text.toString())!!
+            if (transaction.paidForSomeone) {
+                transaction.amountOther = -1 * java.lang.Double.valueOf(mEditTextAmountOther.text.toString())!!
+            } else {
+                transaction.amountOther = 0.0
+            }
+            transaction.location = mEditTextNotes.text.toString()
+            if (!mEditingTransaction) {
+                budget.transactions.add(transaction)
+                transaction.budget = budget
+            }
+            budget.cachedValue += transaction.totalAmount
+            budget.cachedDate = Date()
         }
+
+        Util.toast("Transaction Saved")
+        fragmentManager.popBackStack()
     }
 
     private fun deleteTransaction() {
-        // TODO mTransaction.delete();
-        mBudget!!.transactions.remove(mTransaction)
-        mBudget!!.cachedValue -= mTransaction!!.totalAmount
-        /* TODO mBudget.updateAsync(new DatabaseOperationFinishedCallback() {
-            @Override
-            public void onDatabaseOperationFinished(int rows) {
-                if (rows > 0) {
-                    Util.toast("Transaction Deleted");
-                    dismissAllowingStateLoss();
-                } else {
-                    Util.toast("Delete Failed");
-                }
-            }
-        }); */
+        val transaction = TransactionRepository.getById(mTransactionId)!!
+        val budget = BudgetRepository.getById(mBudgetId)!!
+
+        BaseRepository.mainRealm.executeTransaction {
+            budget.cachedValue -= transaction.totalAmount
+        }
+
+        TransactionRepository.delete(transaction)
+
+        Util.toast("Transaction Deleted");
+        fragmentManager.popBackStack()
     }
 
     private fun splitEvenly() {

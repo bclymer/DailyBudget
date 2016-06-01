@@ -43,7 +43,7 @@ class BudgetStatsFragment() : BaseFragment(R.layout.fragment_budget_stats) {
             return
         }
 
-        (activity as MainActivity).actionBar.title = budget.name
+        activity.actionBar.title = budget.name
 
         val stats = BudgetStats(budget)
         mTextViewTotalAmount.text = "Total: " + Util.makeLikeMoney(stats.totalSpent)

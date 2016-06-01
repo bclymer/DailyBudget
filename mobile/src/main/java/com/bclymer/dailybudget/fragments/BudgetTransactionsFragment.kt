@@ -45,7 +45,7 @@ class BudgetTransactionsFragment() : BaseFragment(R.layout.fragment_budget_trans
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (activity as MainActivity).actionBar.title = BudgetRepository.getById(mBudgetId)?.name
+        activity.actionBar.title = BudgetRepository.getById(mBudgetId)?.name
 
         TransactionRepository.monitorTransactions(mBudgetId).subscribeOnLifecycle(onNext = {
             mTransactionList = it

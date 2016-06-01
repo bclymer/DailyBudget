@@ -31,6 +31,18 @@ internal abstract class BaseRepository<T>(private val clazz: KClass<T>) where T 
         return where { findAll().toList() }
     }
 
+    fun delete(t: T) {
+        mainRealm.executeTransaction {
+            t.deleteFromRealm()
+        }
+    }
+
+    fun deleteById(id: Int) {
+        mainRealm.executeTransaction {
+            getById(id)?.deleteFromRealm()
+        }
+    }
+
     inline fun <T> loadDb(func: Realm.() -> T): T {
         failOnBackgroundThread("Load db uses the main realm, and can only be called on the main thread")
         return mainRealm.func()
