@@ -1,6 +1,7 @@
 package com.bclymer.dailybudget.database
 
 import com.bclymer.dailybudget.extensions.monitorAsync
+import com.bclymer.dailybudget.models.Budget
 import com.bclymer.dailybudget.models.Transaction
 import io.realm.Case
 import rx.Observable
@@ -12,13 +13,6 @@ import java.util.*
  */
 
 internal object TransactionRepository : BaseRepository<Transaction>(Transaction::class) {
-
-    fun createAllowance(date: Date, allowance: Double): Transaction {
-        val transaction = mainRealm.createObject(Transaction::class.java)
-        transaction.date = date
-        transaction.amount = allowance
-        return transaction
-    }
 
     fun updateTransaction(id: Int, amountMe: Double, amountOther: Double, date: Date, isSplit: Boolean, location: String?) {
         mainRealm.executeTransaction { realm ->
@@ -32,6 +26,20 @@ internal object TransactionRepository : BaseRepository<Transaction>(Transaction:
 
     fun searchByLocation(query: String): List<Transaction> {
         return where { contains("location", query, Case.INSENSITIVE).findAll().toList() }
+    }
+
+    fun addAllowanceTransaction(budget: Budget, date: Date) {
+        mainRealm.executeTransaction { realm ->
+            val transaction = realm.createObject(Transaction::class.java)
+            transaction.date = date
+            transaction.amount = budget.amountPerPeriod
+            transaction.budget = budget
+            budget.transactions.add(transaction)
+        }
+    }
+
+    fun addTransaction(budget: Budget, amountMe: Double, amountOther: Double, date: Date, isSplit: Boolean, location: String?) {
+
     }
 
     fun delete(transaction: Transaction) {

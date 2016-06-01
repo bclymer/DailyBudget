@@ -214,7 +214,6 @@ class EditTransactionFragment() : BaseFragment(R.layout.fragment_edit_transactio
         } catch (e: Exception) {
             return 0.0
         }
-
     }
 
     companion object {

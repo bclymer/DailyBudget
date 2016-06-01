@@ -87,27 +87,15 @@ class EditBudgetFragment : BaseFragment(R.layout.fragment_edit_budget) {
     }
 
     fun saveChanges() {
-        mBudget.amountPerPeriod = java.lang.Double.valueOf(mEditTextAmount.text.toString())!!
-        mBudget.periodLengthInDays = Integer.valueOf(mEditTextDuration.text.toString())!!
-        mBudget.name = mEditTextName.text.toString()
         if (mNewBudget) {
-            // TODO mBudget.create();
-            val transaction = TransactionRepository.createAllowance(Date(), mBudget.amountPerPeriod)
-            transaction.budget = mBudget
-            mBudget.transactions.add(transaction)
-            mBudget.cachedValue = mBudget.amountPerPeriod
+            TransactionRepository.addAllowanceTransaction(mBudget, Date())
         }
-        /* TODO mBudget.updateAsync(new DatabaseOperationFinishedCallback() {
-            @Override
-            public void onDatabaseOperationFinished(int rows) {
-                if (rows > 0) {
-                    Util.toast("Save Successful");
-                    mCallback.onBudgetDoneEditing();
-                } else {
-                    Util.toast("Save Failed");
-                }
-            }
-        }); */
+        BudgetRepository.updateBudget(mBudget,
+                mEditTextAmount.text.toString().toDouble(),
+                mEditTextDuration.text.toString().toInt(),
+                mEditTextName.text.toString())
+        Util.toast("Save Successful")
+        mCallback!!.onBudgetDoneEditing()
     }
 
     interface BudgetDoneEditingCallback {
