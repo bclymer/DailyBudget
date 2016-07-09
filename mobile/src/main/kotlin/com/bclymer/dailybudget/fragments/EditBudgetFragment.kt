@@ -28,15 +28,13 @@ class EditBudgetFragment() : BaseFragment() {
 
     private var mBudgetId = NO_BUDGET_ID_VALUE
 
-    private var mCallback: BudgetDoneEditingCallback? = null
+    private val mCallback: BudgetDoneEditingCallback by lazy { activity as BudgetDoneEditingCallback }
     private var mNewBudget = false
 
     override fun onAttach(activity: Activity) {
         super.onAttach(activity)
         if (activity !is BudgetDoneEditingCallback) {
             throw RuntimeException("Activity $activity must implement BudgetDoneEditingCallback to display EditBudgetFragment")
-        } else {
-            mCallback = activity
         }
     }
 
@@ -82,7 +80,7 @@ class EditBudgetFragment() : BaseFragment() {
                 .flatMap { budget -> BudgetRepository.deleteBudget(mBudgetId).map { budget } }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ budget ->
-                    mCallback!!.onBudgetDoneEditing()
+                    mCallback.onBudgetDoneEditing()
                     mEventBus.post(BudgetUpdatedEvent(budget, true))
                     Util.toast("Delete Successful")
                 }) {
@@ -100,7 +98,7 @@ class EditBudgetFragment() : BaseFragment() {
                     .subscribe({ budget ->
                         Util.toast("Save Successful")
                         mEventBus.post(BudgetUpdatedEvent(budget))
-                        mCallback!!.onBudgetDoneEditing()
+                        mCallback.onBudgetDoneEditing()
                     }) {
                         Util.toast("Save Failed")
                     }
@@ -110,7 +108,7 @@ class EditBudgetFragment() : BaseFragment() {
                     .subscribe({ budget ->
                         Util.toast("Save Successful")
                         mEventBus.post(BudgetUpdatedEvent(budget))
-                        mCallback!!.onBudgetDoneEditing()
+                        mCallback.onBudgetDoneEditing()
                     }) {
                         Util.toast("Save Failed")
                     }

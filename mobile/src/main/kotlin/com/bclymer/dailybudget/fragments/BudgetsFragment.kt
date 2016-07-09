@@ -18,7 +18,6 @@ import com.nhaarman.listviewanimations.appearance.AnimationAdapter
 import com.nhaarman.listviewanimations.appearance.simple.ScaleInAnimationAdapter
 import rx.android.schedulers.AndroidSchedulers
 import java.util.*
-import kotlin.properties.Delegates
 
 /**
  * Created by bclymer on 9/26/2014.
@@ -32,14 +31,12 @@ class BudgetsFragment() : BaseFragment() {
     private var mAdapter: AnimationAdapter = ScaleInAnimationAdapter(BudgetAdapter())
     private var mBudgetList: MutableList<Budget> = arrayListOf()
 
-    private var mCallback: BudgetSelectedCallback by Delegates.notNull()
+    private val mCallback: BudgetSelectedCallback by lazy { activity as BudgetSelectedCallback }
 
     override fun onAttach(activity: Activity) {
         super.onAttach(activity)
         if (activity !is BudgetSelectedCallback) {
             throw RuntimeException("Activity $activity must implement BudgetSelectedCallback to display BudgetsFragment")
-        } else {
-            mCallback = activity
         }
     }
 
