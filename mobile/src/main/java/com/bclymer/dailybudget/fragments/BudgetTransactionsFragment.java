@@ -107,7 +107,7 @@ public class BudgetTransactionsFragment extends BaseDialogFragment {
 
     @OnClick(R.id.fragment_budget_transactions_button_stats)
     protected void clickedBudgetStats() {
-        BudgetStatsFragment.newInstance(mBudgetId).show(getFragmentManager(), BudgetStatsFragment.TAG);
+        BudgetStatsFragment.Companion.newInstance(mBudgetId).show(getFragmentManager(), BudgetStatsFragment.Companion.getTAG());
     }
 
     private void filterFullList() {
