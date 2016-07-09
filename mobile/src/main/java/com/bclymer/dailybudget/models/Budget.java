@@ -118,7 +118,7 @@ public class Budget extends DatabaseResource<Budget, Integer> {
         }
         cachedDate = today;
         if (update() > 0) {
-            EventBus.getDefault().post(new BudgetUpdatedEvent(Budget.this));
+            EventBus.getDefault().post(new BudgetUpdatedEvent(this, false));
         }
     }
 

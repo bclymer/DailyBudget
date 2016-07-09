@@ -59,7 +59,7 @@ public class BudgetTransactionsFragment extends BaseDialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mLayoutId = R.layout.fragment_budget_transactions;
+        setMLayoutId(R.layout.fragment_budget_transactions);
         mBudgetId = getArguments().getInt(EXTRA_BUDGET_ID);
     }
 
@@ -91,12 +91,12 @@ public class BudgetTransactionsFragment extends BaseDialogFragment {
             }
         });
 
-        mEventBus.register(this);
+        getMEventBus().register(this);
     }
 
     @Override
     public void onDestroyView() {
-        mEventBus.unregister(this);
+        getMEventBus().unregister(this);
         super.onDestroyView();
     }
 
@@ -125,12 +125,12 @@ public class BudgetTransactionsFragment extends BaseDialogFragment {
     }
 
     public void onEvent(final BudgetUpdatedEvent event) {
-        if (event.budget.id != mBudgetId) return;
+        if (event.getBudget().id != mBudgetId) return;
 
         ThreadManager.runInBackgroundThenUi(new Runnable() {
             @Override
             public void run() {
-                mTransactionList = event.budget.getSortedTransactions();
+                mTransactionList = event.getBudget().getSortedTransactions();
                 filterFullList();
             }
         }, new Runnable() {

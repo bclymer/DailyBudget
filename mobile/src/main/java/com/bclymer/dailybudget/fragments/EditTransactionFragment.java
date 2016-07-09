@@ -85,7 +85,7 @@ public class EditTransactionFragment extends BaseDialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mLayoutId = R.layout.fragment_edit_transaction;
+        setMLayoutId(R.layout.fragment_edit_transaction);
 
         int budgetId = getArguments().getInt(EXTRA_BUDGET_ID);
         int transactionId = getArguments().getInt(EXTRA_TRANSACTION_ID, -1);
@@ -207,7 +207,7 @@ public class EditTransactionFragment extends BaseDialogFragment {
                 mBudget.cachedValue += mTransaction.getTotalAmount();
                 mBudget.cachedDate = new Date();
                 mBudget.update();
-                mEventBus.post(new BudgetUpdatedEvent(mBudget));
+                getMEventBus().post(new BudgetUpdatedEvent(mBudget, false));
             }
         }, new Runnable() {
             @Override
@@ -227,7 +227,7 @@ public class EditTransactionFragment extends BaseDialogFragment {
             @Override
             public void onDatabaseOperationFinished(int rows) {
                 if (rows > 0) {
-                    mEventBus.post(new BudgetUpdatedEvent(mBudget));
+                    getMEventBus().post(new BudgetUpdatedEvent(mBudget, false));
                     Util.toast("Transaction Deleted");
                     dismissAllowingStateLoss();
                 } else {
