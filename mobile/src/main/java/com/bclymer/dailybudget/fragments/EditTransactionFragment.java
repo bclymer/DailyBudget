@@ -212,7 +212,7 @@ public class EditTransactionFragment extends BaseDialogFragment {
         }, new Runnable() {
             @Override
             public void run() {
-                Util.toast("Transaction Saved");
+                Util.INSTANCE.toast("Transaction Saved");
                 dismissAllowingStateLoss();
             }
         });
@@ -228,10 +228,10 @@ public class EditTransactionFragment extends BaseDialogFragment {
             public void onDatabaseOperationFinished(int rows) {
                 if (rows > 0) {
                     getMEventBus().post(new BudgetUpdatedEvent(mBudget, false));
-                    Util.toast("Transaction Deleted");
+                    Util.INSTANCE.toast("Transaction Deleted");
                     dismissAllowingStateLoss();
                 } else {
-                    Util.toast("Delete Failed");
+                    Util.INSTANCE.toast("Delete Failed");
                 }
             }
         });

@@ -60,7 +60,7 @@ public class TransactionView extends LinearLayout {
             holder = (ViewHolder) recycledView.getTag();
         }
         holder.date.setText(SIMPLE_DATE_FORMAT.format(transaction.date));
-        holder.amount.setText(Util.makeLikeMoney(transaction.amount));
+        holder.amount.setText(Util.INSTANCE.makeLikeMoney(transaction.amount));
         if (TextUtils.isEmpty(transaction.location)) {
             holder.notes.setVisibility(GONE);
             holder.amountOther.setVisibility(GONE);
@@ -68,7 +68,7 @@ public class TransactionView extends LinearLayout {
             holder.notes.setVisibility(VISIBLE);
             holder.notes.setText(transaction.location);
             holder.amountOther.setVisibility(VISIBLE);
-            holder.amountOther.setText(Util.makeLikeMoney(transaction.amountOther));
+            holder.amountOther.setText(Util.INSTANCE.makeLikeMoney(transaction.amountOther));
         }
         holder.paidForSomeone.setVisibility(transaction.paidForSomeone ? VISIBLE : GONE);
         return recycledView;

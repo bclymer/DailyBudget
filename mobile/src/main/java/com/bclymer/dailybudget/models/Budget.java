@@ -104,9 +104,9 @@ public class Budget extends DatabaseResource<Budget, Integer> {
 
     public void updateCache() {
         final Date today = new Date();
-        if (Util.isSameDay(today, cachedDate)) return;
+        if (Util.INSTANCE.isSameDay(today, cachedDate)) return;
 
-        long days = Util.getDaysBetweenDates(cachedDate, today);
+        long days = Util.INSTANCE.getDaysBetweenDates(cachedDate, today);
         cachedValue += days * amountPerPeriod;
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(cachedDate);

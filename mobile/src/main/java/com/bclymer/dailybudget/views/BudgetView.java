@@ -75,7 +75,7 @@ public class BudgetView extends RelativeLayout {
             holder = (ViewHolder) recycledView.getTag();
         }
         holder.name.setText(budget.name);
-        holder.amount.setText(Util.makeLikeMoney(budget.cachedValue));
+        holder.amount.setText(Util.INSTANCE.makeLikeMoney(budget.cachedValue));
         return recycledView;
     }
 
