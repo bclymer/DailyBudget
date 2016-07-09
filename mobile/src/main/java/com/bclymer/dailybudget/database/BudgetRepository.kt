@@ -13,6 +13,16 @@ object BudgetRepository : BaseRepository() { // TODO no really you need to do th
 
     private val budgetDao = Budget.getDao()
 
+    fun getBudgets(): Observable<List<Budget>> {
+        val obs = Observable.create<List<Budget>> {
+            it.onStart()
+            val budgets = budgetDao.queryForAll()
+            it.onNext(budgets.toList())
+            it.onCompleted()
+        }
+        return obs.subscribeOn(Schedulers.io())
+    }
+
     fun getBudget(budgetId: Int): Observable<Budget> {
         val obs = Observable.create<Budget> {
             it.onStart()

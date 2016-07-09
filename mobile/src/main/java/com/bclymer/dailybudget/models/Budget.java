@@ -4,7 +4,6 @@ import com.bclymer.dailybudget.database.AsyncRuntimeExceptionDao;
 import com.bclymer.dailybudget.database.DatabaseManager;
 import com.bclymer.dailybudget.database.DatabaseResource;
 import com.bclymer.dailybudget.events.BudgetUpdatedEvent;
-import com.bclymer.dailybudget.utilities.ThreadManager;
 import com.bclymer.dailybudget.utilities.Util;
 import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
@@ -107,25 +106,20 @@ public class Budget extends DatabaseResource<Budget, Integer> {
         final Date today = new Date();
         if (Util.isSameDay(today, cachedDate)) return;
 
-        ThreadManager.runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                long days = Util.getDaysBetweenDates(cachedDate, today);
-                cachedValue += days * amountPerPeriod;
-                Calendar calendar = new GregorianCalendar();
-                calendar.setTime(cachedDate);
-                for (int i = 0; i < days; i++) {
-                    calendar.add(Calendar.DAY_OF_YEAR, 1);
-                    Transaction transaction = new Transaction(calendar.getTime(), amountPerPeriod);
-                    transaction.budget = Budget.this;
-                    transactions.add(transaction);
-                }
-                cachedDate = today;
-                if (update() > 0) {
-                    EventBus.getDefault().post(new BudgetUpdatedEvent(Budget.this));
-                }
-            }
-        });
+        long days = Util.getDaysBetweenDates(cachedDate, today);
+        cachedValue += days * amountPerPeriod;
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(cachedDate);
+        for (int i = 0; i < days; i++) {
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
+            Transaction transaction = new Transaction(calendar.getTime(), amountPerPeriod);
+            transaction.budget = Budget.this;
+            transactions.add(transaction);
+        }
+        cachedDate = today;
+        if (update() > 0) {
+            EventBus.getDefault().post(new BudgetUpdatedEvent(Budget.this));
+        }
     }
 
     public List<Transaction> getSortedTransactions() {

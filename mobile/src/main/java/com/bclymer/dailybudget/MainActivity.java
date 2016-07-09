@@ -29,7 +29,7 @@ public class MainActivity extends Activity implements BudgetSelectedCallback, Bu
         ButterKnife.bind(this);
 
         getFragmentManager().beginTransaction()
-                .add(R.id.main_activity_fragment_main, BudgetsFragment.newInstance())
+                .add(R.id.main_activity_fragment_main, BudgetsFragment.Companion.newInstance())
                 .commit();
     }
 
