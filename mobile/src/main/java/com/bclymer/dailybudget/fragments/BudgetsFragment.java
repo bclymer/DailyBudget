@@ -23,7 +23,6 @@ import butterknife.OnClick;
 import butterknife.OnItemClick;
 
 import static android.view.View.OnClickListener;
-import static com.bclymer.dailybudget.fragments.EditBudgetFragment.NO_BUDGET_ID_VALUE;
 
 /**
  * Created by bclymer on 9/26/2014.
@@ -57,7 +56,7 @@ public class BudgetsFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mLayoutId = R.layout.fragment_budgets;
+        setMLayoutId(R.layout.fragment_budgets);
     }
 
     @Override
@@ -74,12 +73,12 @@ public class BudgetsFragment extends BaseFragment {
         mAdapter.setAbsListView(mGridView);
         mGridView.setAdapter(mAdapter);
         mGridView.setEmptyView(mEmptyView);
-        mEventBus.register(this);
+        getMEventBus().register(this);
     }
 
     @Override
     public void onDestroyView() {
-        mEventBus.unregister(this);
+        getMEventBus().unregister(this);
         super.onDestroyView();
     }
 
@@ -90,7 +89,7 @@ public class BudgetsFragment extends BaseFragment {
 
     @OnClick(R.id.fragment_budgets_emptyview_button_new_budget)
     protected void onCreateBudgetClick() {
-        mCallback.onBudgetSelected(NO_BUDGET_ID_VALUE);
+        mCallback.onBudgetSelected(EditBudgetFragment.Companion.getNO_BUDGET_ID_VALUE());
     }
 
     public void onEventMainThread(BudgetUpdatedEvent event) {

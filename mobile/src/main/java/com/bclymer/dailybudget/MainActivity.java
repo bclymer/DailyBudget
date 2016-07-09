@@ -15,7 +15,6 @@ import butterknife.ButterKnife;
 
 import static com.bclymer.dailybudget.fragments.BudgetsFragment.BudgetSelectedCallback;
 import static com.bclymer.dailybudget.fragments.EditBudgetFragment.BudgetDoneEditingCallback;
-import static com.bclymer.dailybudget.fragments.EditBudgetFragment.NO_BUDGET_ID_VALUE;
 
 
 public class MainActivity extends Activity implements BudgetSelectedCallback, BudgetDoneEditingCallback {
@@ -44,7 +43,7 @@ public class MainActivity extends Activity implements BudgetSelectedCallback, Bu
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_new_budget:
-                displayBudgetFragment(NO_BUDGET_ID_VALUE);
+                displayBudgetFragment(EditBudgetFragment.Companion.getNO_BUDGET_ID_VALUE());
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -52,7 +51,7 @@ public class MainActivity extends Activity implements BudgetSelectedCallback, Bu
 
     private void displayBudgetFragment(final int budgetId) {
         getFragmentManager().beginTransaction()
-                .replace(R.id.main_activity_fragment_detail, EditBudgetFragment.newInstance(budgetId), EditBudgetFragment.TAG)
+                .replace(R.id.main_activity_fragment_detail, EditBudgetFragment.Companion.newInstance(budgetId), EditBudgetFragment.Companion.getTAG())
                 .commit();
         if (!mDrawerLayout.isDrawerOpen(GravityCompat.END)) {
             mDrawerLayout.openDrawer(GravityCompat.END);
@@ -67,7 +66,7 @@ public class MainActivity extends Activity implements BudgetSelectedCallback, Bu
 
     @Override
     public void onBudgetDoneEditing() {
-        final EditBudgetFragment fragment = (EditBudgetFragment) getFragmentManager().findFragmentByTag(EditBudgetFragment.TAG);
+        final EditBudgetFragment fragment = (EditBudgetFragment) getFragmentManager().findFragmentByTag(EditBudgetFragment.Companion.getTAG());
         if (fragment != null) {
             getFragmentManager().beginTransaction()
                     .remove(fragment)
