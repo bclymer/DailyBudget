@@ -1,8 +1,6 @@
 package com.bclymer.dailybudget;
 
 import android.app.Application;
-import android.app.backup.BackupManager;
-import android.util.Log;
 
 import com.bclymer.dailybudget.database.DatabaseManager;
 import com.bclymer.dailybudget.events.BudgetUpdatedEvent;
@@ -29,8 +27,8 @@ public class BudgetApplication extends Application {
     }
 
     public void onEventMainThread(BudgetUpdatedEvent event) {
-        Log.v(getClass().getSimpleName(), "Requesting Backup");
-        BackupManager.dataChanged(getPackageName());
+        //Log.v(getClass().getSimpleName(), "Requesting Backup");
+        //BackupManager.dataChanged(getPackageName());
     }
 
 }

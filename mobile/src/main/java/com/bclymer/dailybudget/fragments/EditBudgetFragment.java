@@ -1,6 +1,6 @@
 package com.bclymer.dailybudget.fragments;
 
-import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -8,18 +8,20 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.bclymer.dailybudget.R;
+import com.bclymer.dailybudget.database.BudgetRepository;
 import com.bclymer.dailybudget.events.BudgetUpdatedEvent;
 import com.bclymer.dailybudget.models.Budget;
-import com.bclymer.dailybudget.models.Transaction;
 import com.bclymer.dailybudget.utilities.Util;
-
-import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.OnClick;
+import kotlin.Unit;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.functions.Func1;
 
 import static android.view.View.VISIBLE;
-import static com.bclymer.dailybudget.database.AsyncRuntimeExceptionDao.DatabaseOperationFinishedCallback;
 
 /**
  * Created by bclymer on 9/26/2014.
@@ -40,7 +42,6 @@ public class EditBudgetFragment extends BaseFragment {
     @Bind(R.id.fragment_edit_budget_button_delete)
     protected Button mButtonDelete;
 
-    private Budget mBudget;
     private int mBudgetId = NO_BUDGET_ID_VALUE;
 
     private BudgetDoneEditingCallback mCallback;
@@ -55,12 +56,12 @@ public class EditBudgetFragment extends BaseFragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        if (!(activity instanceof BudgetDoneEditingCallback)) {
-            throw new RuntimeException("Activity " + activity + " must implement BudgetDoneEditingCallback to display EditBudgetFragment");
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (!(context instanceof BudgetDoneEditingCallback)) {
+            throw new RuntimeException("Activity " + context + " must implement BudgetDoneEditingCallback to display EditBudgetFragment");
         } else {
-            mCallback = (BudgetDoneEditingCallback) activity;
+            mCallback = (BudgetDoneEditingCallback) context;
         }
     }
 
@@ -68,37 +69,35 @@ public class EditBudgetFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mLayoutId = R.layout.fragment_edit_budget;
-        if (getArguments() != null) {
-            mBudgetId = getArguments().getInt(EXTRA_BUDGET_ID, NO_BUDGET_ID_VALUE);
-        }
-        if (mBudgetId != NO_BUDGET_ID_VALUE) {
-            mBudget = Budget.getDao().queryForId(mBudgetId); // should be very very fast. Can run on main thread.
-        } else {
-            mNewBudget = true;
-            mBudget = Budget.createBudget();
-        }
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mEditTextName.setText(mBudget.name);
-        mEditTextDuration.setText(Integer.toString(mBudget.periodLengthInDays));
-        mEditTextAmount.setText(Double.toString(mBudget.amountPerPeriod));
-        if (!mNewBudget) {
+        if (getArguments() != null) {
+            mBudgetId = getArguments().getInt(EXTRA_BUDGET_ID, NO_BUDGET_ID_VALUE);
+        }
+        if (mBudgetId != NO_BUDGET_ID_VALUE) {
             mButtonDelete.setVisibility(VISIBLE);
+            BudgetRepository.INSTANCE.getBudget(mBudgetId)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Action1<Budget>() {
+                        @Override
+                        public void call(Budget budget) {
+                            configureWithBudget(budget);
+                        }
+                    });
+        } else {
+            mNewBudget = true;
+            configureWithBudget(Budget.createBudget());
         }
     }
 
-    public boolean hasUnsavedContent() {
-        return Double.valueOf(mEditTextAmount.getText().toString()) != mBudget.amountPerPeriod ||
-                Integer.valueOf(mEditTextDuration.getText().toString()) != mBudget.periodLengthInDays ||
-                !mEditTextName.getText().toString().equals(mBudget.name);
-    }
-
-    public String getBudgetName() {
-        return mBudget.name;
+    private void configureWithBudget(Budget budget) {
+        mEditTextName.setText(budget.name);
+        mEditTextDuration.setText(Integer.toString(budget.periodLengthInDays));
+        mEditTextAmount.setText(Double.toString(budget.amountPerPeriod));
     }
 
     @OnClick(R.id.fragment_edit_budget_button_save)
@@ -108,38 +107,75 @@ public class EditBudgetFragment extends BaseFragment {
 
     @OnClick(R.id.fragment_edit_budget_button_delete)
     protected void onDelete() {
-        mBudget.delete();
-        mCallback.onBudgetDoneEditing();
-        mEventBus.post(new BudgetUpdatedEvent(mBudget, true));
-        Util.toast("Delete Successful");
+        // I eventually need to refactor the events system so I don't need all this jank.
+        BudgetRepository.INSTANCE.getBudget(mBudgetId)
+                .flatMap(new Func1<Budget, Observable<Budget>>() {
+                    @Override
+                    public Observable<Budget> call(final Budget budget) {
+                        return BudgetRepository.INSTANCE.deleteBudget(mBudgetId).map(new Func1<Unit, Budget>() {
+                            @Override
+                            public Budget call(Unit unit) {
+                                return budget;
+                            }
+                        });
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Budget>() {
+                    @Override
+                    public void call(Budget budget) {
+                        mCallback.onBudgetDoneEditing();
+                        mEventBus.post(new BudgetUpdatedEvent(budget, true));
+                        Util.toast("Delete Successful");
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        Util.toast("Delete Failed");
+                    }
+                });
     }
 
     public void saveChanges() {
-        mBudget.amountPerPeriod = Double.valueOf(mEditTextAmount.getText().toString());
-        mBudget.periodLengthInDays = Integer.valueOf(mEditTextDuration.getText().toString());
-        mBudget.name = mEditTextName.getText().toString();
+        double amountPerPeriod = Double.valueOf(mEditTextAmount.getText().toString());
+        int periodLengthInDays = Integer.valueOf(mEditTextDuration.getText().toString());
+        String name = mEditTextName.getText().toString();
         if (mNewBudget) {
-            mBudget.create();
-            Transaction transaction = new Transaction(new Date(), mBudget.amountPerPeriod);
-            transaction.budget = mBudget;
-            mBudget.transactions.add(transaction);
-            mBudget.cachedValue = mBudget.amountPerPeriod;
+            BudgetRepository.INSTANCE.createBudget(name, amountPerPeriod, periodLengthInDays)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Action1<Budget>() {
+                        @Override
+                        public void call(Budget budget) {
+                            Util.toast("Save Successful");
+                            mEventBus.post(new BudgetUpdatedEvent(budget));
+                            mCallback.onBudgetDoneEditing();
+                        }
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            Util.toast("Save Failed");
+                        }
+                    });
+        } else {
+            BudgetRepository.INSTANCE.updateBudget(mBudgetId, name, amountPerPeriod, periodLengthInDays)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Action1<Budget>() {
+                        @Override
+                        public void call(Budget budget) {
+                            Util.toast("Save Successful");
+                            mEventBus.post(new BudgetUpdatedEvent(budget));
+                            mCallback.onBudgetDoneEditing();
+                        }
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            Util.toast("Save Failed");
+                        }
+                    });
         }
-        mBudget.updateAsync(new DatabaseOperationFinishedCallback() {
-            @Override
-            public void onDatabaseOperationFinished(int rows) {
-                if (rows > 0) {
-                    Util.toast("Save Successful");
-                    mEventBus.post(new BudgetUpdatedEvent(mBudget));
-                    mCallback.onBudgetDoneEditing();
-                } else {
-                    Util.toast("Save Failed");
-                }
-            }
-        });
     }
 
     public interface BudgetDoneEditingCallback {
-        public void onBudgetDoneEditing();
+        void onBudgetDoneEditing();
     }
 }
