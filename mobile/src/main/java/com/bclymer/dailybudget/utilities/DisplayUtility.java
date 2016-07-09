@@ -8,7 +8,7 @@ import com.bclymer.dailybudget.BudgetApplication;
 public class DisplayUtility {
 
     public static int dpToPixels(int dp) {
-        return (int) (BudgetApplication.getApplication().getResources().getDisplayMetrics().density * (float) dp + 0.5f);
+        return (int) (BudgetApplication.Companion.getApplication().getResources().getDisplayMetrics().density * (float) dp + 0.5f);
     }
 
 }
