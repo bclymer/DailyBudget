@@ -1,7 +1,5 @@
 package com.bclymer.dailybudget.models
 
-import com.bclymer.dailybudget.database.AsyncRuntimeExceptionDao
-import com.bclymer.dailybudget.database.DatabaseManager
 import com.bclymer.dailybudget.database.DatabaseResource
 import com.bclymer.dailybudget.models.Transaction.Columns.AMOUNT
 import com.bclymer.dailybudget.models.Transaction.Columns.AMOUNT_OTHER
@@ -54,12 +52,6 @@ class Transaction : DatabaseResource<Transaction, Int> {
         const val LOCATION = "notes"
         const val PAID_FOR_SOMEONE = "paid_for_someone"
         const val FOREIGN_BUDGET = "budget_id"
-    }
-
-    companion object {
-
-        val dao: AsyncRuntimeExceptionDao<Transaction, Int>
-            get() = DatabaseManager.getBaseDao<AsyncRuntimeExceptionDao<Transaction, Int>, Transaction, Int>(Transaction::class.java, Int::class.java)
     }
 
 }

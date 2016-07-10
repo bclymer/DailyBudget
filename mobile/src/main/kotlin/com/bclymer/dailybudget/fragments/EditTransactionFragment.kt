@@ -13,16 +13,13 @@ import butterknife.bindView
 import com.bclymer.dailybudget.R
 import com.bclymer.dailybudget.database.BudgetRepository
 import com.bclymer.dailybudget.database.TransactionRepository
-import com.bclymer.dailybudget.events.BudgetUpdatedEvent
 import com.bclymer.dailybudget.extensions.date
-import com.bclymer.dailybudget.models.Budget
 import com.bclymer.dailybudget.models.Transaction
-import com.bclymer.dailybudget.utilities.ThreadManager
 import com.bclymer.dailybudget.utilities.Util
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
-import java.sql.SQLException
 import java.util.*
+import kotlin.properties.Delegates
 
 /**
  * Created by bclymer on 9/28/2014.
@@ -38,22 +35,21 @@ class EditTransactionFragment() : BaseDialogFragment(R.layout.fragment_edit_tran
     private val mButtonSplit: Button by bindView(R.id.fragment_edit_transaction_button_split)
     private val mLayoutOther: ViewGroup by bindView(R.id.fragment_edit_transaction_layout_other)
 
-    private var mBudget: Budget? = null
-    private var mTransaction: Transaction? = null
+    private var mTransactionId: Int by Delegates.notNull()
+    private var mBudgetId: Int by Delegates.notNull()
     private var mEditingTransaction = false
     private var isSplit = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val budgetId = arguments.getInt(EXTRA_BUDGET_ID)
+        mBudgetId = arguments.getInt(EXTRA_BUDGET_ID)
         val transactionId = arguments.getInt(EXTRA_TRANSACTION_ID, -1)
 
-        BudgetRepository.getBudget(budgetId)
+        BudgetRepository.getBudget(mBudgetId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext {
                     dialog.setTitle(it.name)
-                    mBudget = it
                 }
                 .flatMap {
                     val transaction: Transaction
@@ -68,7 +64,7 @@ class EditTransactionFragment() : BaseDialogFragment(R.layout.fragment_edit_tran
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { transaction ->
-                    mTransaction = transaction
+                    mTransactionId = transaction.id
                     val cal = Calendar.getInstance()
                     if (mEditingTransaction) {
                         cal.time = transaction.date
@@ -92,6 +88,7 @@ class EditTransactionFragment() : BaseDialogFragment(R.layout.fragment_edit_tran
         // show keyboard
         activity.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
 
+        // TODO should be RxBindings observable, debounced a bit.
         mEditTextNotes.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
             }
@@ -118,86 +115,46 @@ class EditTransactionFragment() : BaseDialogFragment(R.layout.fragment_edit_tran
     }
 
     private fun textChanged(query: String) {
-        try {
-            val trans = Transaction.dao.queryBuilder().selectColumns(
-                    Transaction.Columns.LOCATION,
-                    Transaction.Columns.AMOUNT,
-                    Transaction.Columns.AMOUNT_OTHER).where().like(Transaction.Columns.LOCATION, "%$query%").query()
-
-            val unique = HashMap<String, Double>()
-            trans.filter { (it.location?.length ?: 0) > 0 }
-                    .forEach {
-                        if (unique.containsKey(it.location)) {
-                            val oldValue = unique[it.location]!!
-                            unique.put(it.location!!, oldValue + it.totalAmount)
-                        } else {
-                            unique.put(it.location!!, it.totalAmount)
-                        }
-                    }
-
-            val list = ArrayList(unique.entries)
-            Collections.sort(list) { lhs, rhs ->
-                if (lhs.value < rhs.value) {
-                    -1
-                } else if (lhs.value > rhs.value) {
-                    1
-                } else {
-                    0
+        TransactionRepository.searchTransactionLocations(query)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    val adapter = ArrayAdapter(activity, android.R.layout.simple_dropdown_item_1line, it)
+                    mEditTextNotes.setAdapter(adapter)
+                    mEditTextNotes.showDropDown()
                 }
-            }
-            val finalUgh = ArrayList<String>(list.map { it.key })
-            val adapter = ArrayAdapter(activity, android.R.layout.simple_dropdown_item_1line, finalUgh)
-            mEditTextNotes.setAdapter(adapter)
-            mEditTextNotes.showDropDown()
-        } catch (e: SQLException) {
-            e.printStackTrace()
-        }
     }
 
     private fun addTransaction() {
-        ThreadManager.runInBackgroundThenUi({
-            if (mEditingTransaction) {
-                mBudget!!.cachedValue -= mTransaction!!.totalAmount // this will be undone later.
-            }
-            mTransaction!!.paidForSomeone = isSplit
-            Date()
-            mTransaction!!.date = mDatePicker.date()
-
-            mTransaction!!.amount = -1 * java.lang.Double.valueOf(mEditTextAmount.text.toString())!!
-            if (mTransaction!!.paidForSomeone) {
-                mTransaction!!.amountOther = -1 * java.lang.Double.valueOf(mEditTextAmountOther.text.toString())!!
-            } else {
-                mTransaction!!.amountOther = 0.0
-            }
-            mTransaction!!.location = mEditTextNotes.text.toString()
-            if (mEditingTransaction) {
-                mTransaction!!.update()
-            } else {
-                mBudget!!.transactions?.add(mTransaction)
-            }
-            mBudget!!.cachedValue += mTransaction!!.totalAmount
-            mBudget!!.cachedDate = Date()
-            mBudget!!.update()
-            mEventBus.post(BudgetUpdatedEvent(mBudget!!, false))
-        }) {
-            Util.toast("Transaction Saved")
-            dismissAllowingStateLoss()
+        val amount = -1 * valueFromEditText(mEditTextAmount)
+        val amountOther = -1 * valueFromEditText(mEditTextAmountOther)
+        val location = mEditTextNotes.text.toString()
+        val date = mDatePicker.date()
+        if (mEditingTransaction) {
+            TransactionRepository.updateTransaction(mTransactionId, amount, amountOther, date, location)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe {
+                        Util.toast("Transaction Saved")
+                        dismissAllowingStateLoss()
+                    }
+        } else {
+            TransactionRepository.createTransaction(mBudgetId, amount, amountOther, date, location)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe {
+                        Util.toast("Transaction Saved")
+                        dismissAllowingStateLoss()
+                    }
         }
     }
 
     private fun deleteTransaction() {
-        mTransaction!!.delete()
-        mBudget!!.transactions?.remove(mTransaction)
-        mBudget!!.cachedValue -= mTransaction!!.totalAmount
-        mBudget!!.updateAsync { rows ->
-            if (rows > 0) {
-                mEventBus.post(BudgetUpdatedEvent(mBudget!!, false))
-                Util.toast("Transaction Deleted")
-                dismissAllowingStateLoss()
-            } else {
-                Util.toast("Delete Failed")
-            }
-        }
+        TransactionRepository.deleteTransaction(mTransactionId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    Util.toast("Transaction Deleted")
+                    dismissAllowingStateLoss()
+                }, {
+                    Util.toast("Delete Failed")
+                })
     }
 
     private fun splitEvenly() {
@@ -206,7 +163,7 @@ class EditTransactionFragment() : BaseDialogFragment(R.layout.fragment_edit_tran
             val otherValue = valueFromEditText(mEditTextAmountOther)
             val sum = Math.round((currentValue + otherValue) * 100).toDouble() / 100.0
             mEditTextAmount.setText(java.lang.Double.toString(sum))
-            mEditTextAmountOther.setText(null)
+            mEditTextAmountOther.text = null
         } else {
             val currentValue = valueFromEditText(mEditTextAmount)
             val myValue = Math.ceil(currentValue * 50) / 100
