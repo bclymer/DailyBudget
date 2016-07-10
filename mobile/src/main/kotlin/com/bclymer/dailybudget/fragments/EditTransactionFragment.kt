@@ -51,6 +51,7 @@ class EditTransactionFragment() : BaseDialogFragment() {
         BudgetRepository.getBudget(budgetId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
+                    dialog.setTitle(it.name)
                     mBudget = it
                     if (transactionId == -1) {
                         mTransaction = Transaction()
@@ -66,7 +67,6 @@ class EditTransactionFragment() : BaseDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        dialog.setTitle(mBudget!!.name)
         val cal = Calendar.getInstance()
         if (mEditingTransaction) {
             cal.time = mTransaction!!.date

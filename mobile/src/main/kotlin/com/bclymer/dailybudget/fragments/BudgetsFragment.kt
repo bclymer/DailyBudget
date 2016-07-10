@@ -48,13 +48,12 @@ class BudgetsFragment() : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        BudgetRepository.getBudgets()
-                .doOnNext { it.forEach { it.updateCache() } }
+        BudgetRepository.updateAndGetBudgets()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
+                .subscribe {
                     mBudgetList = it.toMutableList()
                     mAdapter.notifyDataSetChanged()
-                })
+                }
 
         mAdapter.setAbsListView(mGridView)
         mGridView.adapter = mAdapter
@@ -82,7 +81,7 @@ class BudgetsFragment() : BaseFragment() {
                 if (event.deleted) {
                     mBudgetList.remove(event.budget)
                 } else {
-                    event.budget.cloneInto(budget)
+                    BudgetRepository.cloneBudget(from = event.budget, to = budget)
                 }
                 mAdapter.notifyDataSetChanged()
                 return

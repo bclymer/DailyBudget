@@ -1,8 +1,11 @@
 package com.bclymer.dailybudget.database
 
+import com.bclymer.dailybudget.events.BudgetUpdatedEvent
 import com.bclymer.dailybudget.models.Budget
 import com.bclymer.dailybudget.models.BudgetStats
 import com.bclymer.dailybudget.models.Transaction
+import com.bclymer.dailybudget.utilities.Util
+import de.greenrobot.event.EventBus
 import rx.Observable
 import rx.schedulers.Schedulers
 import java.util.*
@@ -14,14 +17,45 @@ object BudgetRepository : BaseRepository() { // TODO no really you need to do th
 
     private val budgetDao = DatabaseManager.getBaseDao<AsyncRuntimeExceptionDao<Budget, Int>, Budget, Int>(Budget::class.java, Int::class.java)
 
-    fun getBudgets(): Observable<List<Budget>> {
+    fun cloneBudget(from: Budget, to: Budget) {
+        to.cachedValue = from.cachedValue
+        to.cachedDate = from.cachedDate
+        to.transactions = from.transactions
+        to.amountPerPeriod = from.amountPerPeriod
+        to.periodLengthInDays = from.periodLengthInDays
+        to.name = from.name
+    }
+
+    fun updateAndGetBudgets(): Observable<List<Budget>> {
         val obs = Observable.create<List<Budget>> {
             it.onStart()
             val budgets = budgetDao.queryForAll()
             it.onNext(budgets.toList())
             it.onCompleted()
         }
-        return obs.subscribeOn(Schedulers.io())
+        return obs
+                .doOnNext { it.forEach { updateCache(it) } }
+                .subscribeOn(Schedulers.io())
+    }
+
+    private fun updateCache(budget: Budget) {
+        val today = Date()
+        if (Util.isSameDay(today, budget.cachedDate)) return
+
+        val days = Util.getDaysBetweenDates(budget.cachedDate, today)
+        budget.cachedValue += days * budget.amountPerPeriod
+        val calendar = GregorianCalendar()
+        calendar.time = budget.cachedDate
+        for (i in 0..days - 1) {
+            calendar.add(Calendar.DAY_OF_YEAR, 1)
+            val transaction = Transaction(calendar.time, budget.amountPerPeriod)
+            transaction.budget = budget
+            budget.transactions.add(transaction)
+        }
+        budget.cachedDate = today
+        if (budget.update() > 0) {
+            EventBus.getDefault().post(BudgetUpdatedEvent(budget, false))
+        }
     }
 
     fun getBudget(budgetId: Int): Observable<Budget> {
@@ -40,8 +74,13 @@ object BudgetRepository : BaseRepository() { // TODO no really you need to do th
 
     fun getBudgetStats(budgetId: Int): Observable<BudgetStats> {
         return getBudget(budgetId)
+                .flatMap { budget ->
+                    TransactionRepository.getBudgetTransactions(budgetId).map { transactions ->
+                        budget to transactions
+                    }
+                }
                 .map {
-                    BudgetStats(it)
+                    BudgetStats(it.first, it.second)
                 }
                 .subscribeOn(Schedulers.io())
     }

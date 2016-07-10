@@ -6,7 +6,7 @@ import java.util.*
 /**
  * Created by brianclymer on 9/7/15.
  */
-class BudgetStats(private val budget: Budget) {
+class BudgetStats(private val budget: Budget, private val transactions: List<Transaction>) {
 
     var totalSpent: Double = 0.toDouble()
     var totalAllowance: Double = 0.toDouble()
@@ -14,7 +14,6 @@ class BudgetStats(private val budget: Budget) {
     var places: MutableMap<String, Double> = HashMap()
 
     init {
-        val transactions = budget.sortedTransactions
         if (transactions.size == 0) {
             Util.toast("No Transactions")
         } else {
