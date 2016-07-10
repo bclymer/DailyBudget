@@ -50,7 +50,7 @@ object BudgetRepository : BaseRepository() { // TODO no really you need to do th
             calendar.add(Calendar.DAY_OF_YEAR, 1)
             val transaction = Transaction(calendar.time, budget.amountPerPeriod)
             transaction.budget = budget
-            budget.transactions.add(transaction)
+            budget.transactions?.add(transaction)
         }
         budget.cachedDate = today
         if (budget.update() > 0) {
@@ -95,7 +95,7 @@ object BudgetRepository : BaseRepository() { // TODO no really you need to do th
 
             val transaction = Transaction(Date(), amountPerPeriod)
             transaction.budget = budget
-            budget.transactions.add(transaction)
+            budget.transactions?.add(transaction)
             budget.cachedValue = amountPerPeriod
 
             budget.create()

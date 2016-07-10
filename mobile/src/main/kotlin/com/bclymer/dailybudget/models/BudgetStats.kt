@@ -30,10 +30,10 @@ class BudgetStats(private val budget: Budget, private val transactions: List<Tra
                 }
 
                 val location: String
-                if (transaction.location == null || transaction.location.trim { it <= ' ' }.length == 0) {
+                if ((transaction.location?.trim { it <= ' ' }?.length ?: 0) == 0) {
                     location = "<None>"
                 } else {
-                    location = transaction.location
+                    location = transaction.location!!
                 }
 
                 totalSpent -= transaction.totalAmount

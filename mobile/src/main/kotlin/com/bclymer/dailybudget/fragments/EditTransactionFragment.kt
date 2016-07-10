@@ -119,7 +119,7 @@ class EditTransactionFragment() : BaseDialogFragment(R.layout.fragment_edit_tran
 
     private fun textChanged(query: String) {
         try {
-            val trans = Transaction.getDao().queryBuilder().selectColumns(
+            val trans = Transaction.dao.queryBuilder().selectColumns(
                     Transaction.Columns.LOCATION,
                     Transaction.Columns.AMOUNT,
                     Transaction.Columns.AMOUNT_OTHER).where().like(Transaction.Columns.LOCATION, "%$query%").query()
@@ -129,9 +129,9 @@ class EditTransactionFragment() : BaseDialogFragment(R.layout.fragment_edit_tran
                     .forEach {
                         if (unique.containsKey(it.location)) {
                             val oldValue = unique[it.location]!!
-                            unique.put(it.location, oldValue + it.totalAmount)
+                            unique.put(it.location!!, oldValue + it.totalAmount)
                         } else {
-                            unique.put(it.location, it.totalAmount)
+                            unique.put(it.location!!, it.totalAmount)
                         }
                     }
 
@@ -173,7 +173,7 @@ class EditTransactionFragment() : BaseDialogFragment(R.layout.fragment_edit_tran
             if (mEditingTransaction) {
                 mTransaction!!.update()
             } else {
-                mBudget!!.transactions.add(mTransaction)
+                mBudget!!.transactions?.add(mTransaction)
             }
             mBudget!!.cachedValue += mTransaction!!.totalAmount
             mBudget!!.cachedDate = Date()
@@ -187,7 +187,7 @@ class EditTransactionFragment() : BaseDialogFragment(R.layout.fragment_edit_tran
 
     private fun deleteTransaction() {
         mTransaction!!.delete()
-        mBudget!!.transactions.remove(mTransaction)
+        mBudget!!.transactions?.remove(mTransaction)
         mBudget!!.cachedValue -= mTransaction!!.totalAmount
         mBudget!!.updateAsync { rows ->
             if (rows > 0) {

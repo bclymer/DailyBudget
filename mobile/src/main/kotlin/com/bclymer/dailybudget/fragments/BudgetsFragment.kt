@@ -114,9 +114,9 @@ class BudgetsFragment() : BaseFragment(R.layout.fragment_budgets) {
             val budget = mBudgetList[position]
             val budgetView = BudgetView.createBudgetView(mInflater, view as? BudgetView, viewGroup, budget)
 
-            budgetView.setOnViewTransactionsClickListener { BudgetTransactionsFragment.newInstance(budget.id).show(fragmentManager, BudgetTransactionsFragment.TAG) }
-            budgetView.setOnEditClickListener { mCallback.onBudgetSelected(budget.id) }
-            budgetView.setOnBudgetClickListener { EditTransactionFragment.newInstance(budget.id).show(fragmentManager, EditTransactionFragment.TAG) }
+            budgetView.setOnViewTransactionsClickListener(View.OnClickListener { BudgetTransactionsFragment.newInstance(budget.id).show(fragmentManager, BudgetTransactionsFragment.TAG) })
+            budgetView.setOnEditClickListener(View.OnClickListener { mCallback.onBudgetSelected(budget.id) })
+            budgetView.setOnBudgetClickListener(View.OnClickListener { EditTransactionFragment.newInstance(budget.id).show(fragmentManager, EditTransactionFragment.TAG) })
 
             return budgetView
         }
