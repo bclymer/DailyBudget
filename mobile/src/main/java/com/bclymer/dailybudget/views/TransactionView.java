@@ -66,9 +66,9 @@ public class TransactionView extends LinearLayout {
         } else {
             holder.notes.setVisibility(VISIBLE);
             holder.notes.setText(transaction.location);
-            holder.amountOther.setVisibility(VISIBLE);
-            holder.amountOther.setText(Util.INSTANCE.makeLikeMoney(transaction.amountOther));
         }
+        holder.amountOther.setVisibility(VISIBLE);
+        holder.amountOther.setText(Util.INSTANCE.makeLikeMoney(transaction.amountOther));
         holder.paidForSomeone.setVisibility(transaction.paidForSomeone ? VISIBLE : GONE);
         return recycledView;
     }

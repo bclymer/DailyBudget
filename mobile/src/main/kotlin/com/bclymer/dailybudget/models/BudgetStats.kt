@@ -24,18 +24,23 @@ class BudgetStats(private val budget: Budget, private val transactions: List<Tra
             totalDays = Util.getDaysBetweenDates(firstTransaction.date, Date()) + 1
 
             for (transaction in transactions) {
-                if (transaction.location == null || transaction.location.trim { it <= ' ' }.length == 0 || transaction.totalAmount > 0) {
-                    if (transaction.totalAmount > 0) {
-                        totalAllowance += transaction.totalAmount
-                    }
+                if (transaction.totalAmount > 0) {
+                    totalAllowance += transaction.totalAmount
                     continue
                 }
 
-                totalSpent -= transaction.totalAmount
-                if (places.containsKey(transaction.location)) {
-                    places.put(transaction.location, places[transaction.location]!! - transaction.totalAmount)
+                val location: String
+                if (transaction.location == null || transaction.location.trim { it <= ' ' }.length == 0) {
+                    location = "<None>"
                 } else {
-                    places.put(transaction.location, -transaction.totalAmount)
+                    location = transaction.location
+                }
+
+                totalSpent -= transaction.totalAmount
+                if (places.containsKey(location)) {
+                    places.put(location, places[location]!! - transaction.totalAmount)
+                } else {
+                    places.put(location, -transaction.totalAmount)
                 }
             }
 

@@ -12,12 +12,14 @@ import android.widget.*
 import butterknife.bindView
 import com.bclymer.dailybudget.R
 import com.bclymer.dailybudget.database.BudgetRepository
+import com.bclymer.dailybudget.database.TransactionRepository
 import com.bclymer.dailybudget.events.BudgetUpdatedEvent
 import com.bclymer.dailybudget.extensions.date
 import com.bclymer.dailybudget.models.Budget
 import com.bclymer.dailybudget.models.Transaction
 import com.bclymer.dailybudget.utilities.ThreadManager
 import com.bclymer.dailybudget.utilities.Util
+import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import java.sql.SQLException
 import java.util.*
@@ -45,44 +47,53 @@ class EditTransactionFragment() : BaseDialogFragment() {
         super.onCreate(savedInstanceState)
         mLayoutId = R.layout.fragment_edit_transaction
 
-        val budgetId = arguments.getInt(EXTRA_BUDGET_ID)
-        val transactionId = arguments.getInt(EXTRA_TRANSACTION_ID, -1)
-
-        BudgetRepository.getBudget(budgetId)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe {
-                    dialog.setTitle(it.name)
-                    mBudget = it
-                    if (transactionId == -1) {
-                        mTransaction = Transaction()
-                        mTransaction!!.budget = it
-                    } else {
-                        mTransaction = Transaction.getDao().queryForId(transactionId)
-                        mEditingTransaction = true
-                    }
-                }
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val cal = Calendar.getInstance()
-        if (mEditingTransaction) {
-            cal.time = mTransaction!!.date
-            mEditTextAmount.setText(java.lang.Double.toString(-1 * mTransaction!!.amount))
-            mEditTextAmountOther.setText(java.lang.Double.toString(-1 * mTransaction!!.amountOther))
-            mLayoutOther.visibility = if (mTransaction!!.paidForSomeone) VISIBLE else GONE
-            mEditTextNotes.setText(mTransaction!!.location)
-            isSplit = mTransaction!!.paidForSomeone
-            mButtonSplit.text = if (isSplit) "Merge" else "Split"
-            mButtonSave.setText(R.string.update_transaction)
-            mButtonDelete.visibility = VISIBLE
-        }
-        val year = cal.get(Calendar.YEAR)
-        val month = cal.get(Calendar.MONTH)
-        val day = cal.get(Calendar.DAY_OF_MONTH)
-        mDatePicker.init(year, month, day, null)
+        val budgetId = arguments.getInt(EXTRA_BUDGET_ID)
+        val transactionId = arguments.getInt(EXTRA_TRANSACTION_ID, -1)
+
+        BudgetRepository.getBudget(budgetId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext {
+                    dialog.setTitle(it.name)
+                    mBudget = it
+                }
+                .flatMap {
+                    val transaction: Transaction
+                    if (transactionId == -1) {
+                        transaction = Transaction()
+                        transaction.budget = it
+                        Observable.just(transaction)
+                    } else {
+                        mEditingTransaction = true
+                        TransactionRepository.getTransaction(transactionId)
+                    }
+                }
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext { transaction ->
+                    mTransaction = transaction
+                    val cal = Calendar.getInstance()
+                    if (mEditingTransaction) {
+                        cal.time = transaction.date
+                        mEditTextAmount.setText(java.lang.Double.toString(-1 * transaction.amount))
+                        mEditTextAmountOther.setText(java.lang.Double.toString(-1 * transaction.amountOther))
+                        mLayoutOther.visibility = if (transaction.paidForSomeone) VISIBLE else GONE
+                        mEditTextNotes.setText(transaction.location)
+                        isSplit = transaction.paidForSomeone
+                        mButtonSplit.text = if (isSplit) "Merge" else "Split"
+                        mButtonSave.setText(R.string.update_transaction)
+                        mButtonDelete.visibility = VISIBLE
+                    }
+                    val year = cal.get(Calendar.YEAR)
+                    val month = cal.get(Calendar.MONTH)
+                    val day = cal.get(Calendar.DAY_OF_MONTH)
+                    mDatePicker.init(year, month, day, null)
+                }
+                .subscribe()
+
         mEditTextNotes.requestFocus()
         // show keyboard
         activity.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
