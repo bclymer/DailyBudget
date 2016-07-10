@@ -56,7 +56,7 @@ class EditBudgetFragment() : BaseFragment() {
                     .subscribe { budget -> configureWithBudget(budget) }
         } else {
             mNewBudget = true
-            configureWithBudget(Budget.createBudget())
+            configureWithBudget(BudgetRepository.getPlaceholderBudget())
         }
 
         mButtonSave.setOnClickListener {

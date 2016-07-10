@@ -6,7 +6,6 @@ import android.widget.TextView
 import butterknife.bindView
 import com.bclymer.dailybudget.R
 import com.bclymer.dailybudget.database.BudgetRepository
-import com.bclymer.dailybudget.models.Budget
 import com.bclymer.dailybudget.utilities.Util
 import rx.android.schedulers.AndroidSchedulers
 
@@ -38,8 +37,11 @@ class BudgetStatsFragment() : BaseDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val budget = Budget.getDao().queryForId(mBudgetId)
-        dialog.setTitle(budget.name)
+        BudgetRepository.getBudget(mBudgetId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    dialog.setTitle(it.name)
+                }
 
         BudgetRepository.getBudgetStats(mBudgetId)
                 .observeOn(AndroidSchedulers.mainThread())

@@ -1,7 +1,5 @@
 package com.bclymer.dailybudget.models;
 
-import com.bclymer.dailybudget.database.AsyncRuntimeExceptionDao;
-import com.bclymer.dailybudget.database.DatabaseManager;
 import com.bclymer.dailybudget.database.DatabaseResource;
 import com.bclymer.dailybudget.events.BudgetUpdatedEvent;
 import com.bclymer.dailybudget.utilities.Util;
@@ -53,21 +51,6 @@ public class Budget extends DatabaseResource<Budget, Integer> {
     public ForeignCollection<Transaction> transactions;
 
     public BudgetStats budgetStats;
-
-    public static Budget createBudget() {
-        Budget budget = new Budget();
-        budget.name = "New Budget";
-        budget.amountPerPeriod = 10.0;
-        budget.periodLengthInDays = 1;
-        budget.cachedValue = 0.0;
-        budget.cachedDate = new Date();
-        budget.transactions = getDao().getEmptyForeignCollection(Columns.TRANSACTIONS);
-        return budget;
-    }
-
-    public static AsyncRuntimeExceptionDao<Budget, Integer> getDao() {
-        return DatabaseManager.getBaseDao(Budget.class, Integer.class);
-    }
 
     public static List<Transaction> getSortedTransactions(int budgetId) {
         try {

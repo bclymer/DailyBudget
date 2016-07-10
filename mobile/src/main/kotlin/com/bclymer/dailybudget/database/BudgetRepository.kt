@@ -12,7 +12,7 @@ import java.util.*
  */
 object BudgetRepository : BaseRepository() { // TODO no really you need to do this one. Dagger 2 not static.
 
-    private val budgetDao = Budget.getDao()
+    private val budgetDao = DatabaseManager.getBaseDao<AsyncRuntimeExceptionDao<Budget, Int>, Budget, Int>(Budget::class.java, Int::class.java)
 
     fun getBudgets(): Observable<List<Budget>> {
         val obs = Observable.create<List<Budget>> {
@@ -49,7 +49,7 @@ object BudgetRepository : BaseRepository() { // TODO no really you need to do th
     fun createBudget(name: String, amountPerPeriod: Double, periodLengthInDays: Int): Observable<Budget> {
         val obs = Observable.create<Budget> {
             it.onStart()
-            val budget = Budget.createBudget()
+            val budget = getPlaceholderBudget()
             budget.name = name
             budget.amountPerPeriod = amountPerPeriod
             budget.periodLengthInDays = periodLengthInDays
@@ -65,6 +65,17 @@ object BudgetRepository : BaseRepository() { // TODO no really you need to do th
             it.onCompleted()
         }
         return obs.subscribeOn(Schedulers.io())
+    }
+
+    fun getPlaceholderBudget(): Budget {
+        val budget = Budget()
+        budget.name = "New Budget"
+        budget.amountPerPeriod = 10.0
+        budget.periodLengthInDays = 1
+        budget.cachedValue = 0.0
+        budget.cachedDate = Date()
+        budget.transactions = budgetDao.getEmptyForeignCollection(Budget.Columns.TRANSACTIONS)
+        return budget
     }
 
     fun updateBudget(budgetId: Int, name: String, amountPerPeriod: Double, periodLengthInDays: Int): Observable<Budget> {

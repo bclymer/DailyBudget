@@ -11,12 +11,14 @@ import android.view.WindowManager
 import android.widget.*
 import butterknife.bindView
 import com.bclymer.dailybudget.R
+import com.bclymer.dailybudget.database.BudgetRepository
 import com.bclymer.dailybudget.events.BudgetUpdatedEvent
 import com.bclymer.dailybudget.extensions.date
 import com.bclymer.dailybudget.models.Budget
 import com.bclymer.dailybudget.models.Transaction
 import com.bclymer.dailybudget.utilities.ThreadManager
 import com.bclymer.dailybudget.utilities.Util
+import rx.android.schedulers.AndroidSchedulers
 import java.sql.SQLException
 import java.util.*
 
@@ -45,14 +47,20 @@ class EditTransactionFragment() : BaseDialogFragment() {
 
         val budgetId = arguments.getInt(EXTRA_BUDGET_ID)
         val transactionId = arguments.getInt(EXTRA_TRANSACTION_ID, -1)
-        mBudget = Budget.getDao().queryForId(budgetId)
-        if (transactionId == -1) {
-            mTransaction = Transaction()
-            mTransaction!!.budget = mBudget
-        } else {
-            mTransaction = Transaction.getDao().queryForId(transactionId)
-            mEditingTransaction = true
-        }
+
+        BudgetRepository.getBudget(budgetId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    mBudget = it
+                    if (transactionId == -1) {
+                        mTransaction = Transaction()
+                        mTransaction!!.budget = it
+                    } else {
+                        mTransaction = Transaction.getDao().queryForId(transactionId)
+                        mEditingTransaction = true
+                    }
+                }
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
