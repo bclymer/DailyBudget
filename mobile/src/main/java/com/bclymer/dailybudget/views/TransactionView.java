@@ -63,7 +63,6 @@ public class TransactionView extends LinearLayout {
         holder.amount.setText(Util.INSTANCE.makeLikeMoney(transaction.amount));
         if (TextUtils.isEmpty(transaction.location)) {
             holder.notes.setVisibility(GONE);
-            holder.amountOther.setVisibility(GONE);
         } else {
             holder.notes.setVisibility(VISIBLE);
             holder.notes.setText(transaction.location);
