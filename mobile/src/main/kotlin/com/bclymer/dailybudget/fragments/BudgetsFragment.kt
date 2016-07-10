@@ -8,11 +8,13 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.Button
 import android.widget.GridView
+import android.widget.TextView
 import butterknife.bindView
 import com.bclymer.dailybudget.R
 import com.bclymer.dailybudget.database.BudgetRepository
 import com.bclymer.dailybudget.events.BudgetUpdatedEvent
 import com.bclymer.dailybudget.models.Budget
+import com.bclymer.dailybudget.utilities.Util
 import com.bclymer.dailybudget.views.BudgetView
 import com.nhaarman.listviewanimations.appearance.AnimationAdapter
 import com.nhaarman.listviewanimations.appearance.simple.ScaleInAnimationAdapter
@@ -27,6 +29,7 @@ class BudgetsFragment() : BaseFragment(R.layout.fragment_budgets) {
     private val mGridView: GridView by bindView(android.R.id.list)
     private val mEmptyView: ViewGroup by bindView(android.R.id.empty)
     private val mButtonNewBudget: Button by bindView(R.id.fragment_budgets_emptyview_button_new_budget)
+    private val mTextViewTotalBudget: TextView by bindView(R.id.fragment_budgets_textview_total)
 
     private var mAdapter: AnimationAdapter = ScaleInAnimationAdapter(BudgetAdapter())
     private var mBudgetList: MutableList<Budget> = arrayListOf()
@@ -47,6 +50,7 @@ class BudgetsFragment() : BaseFragment(R.layout.fragment_budgets) {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     mBudgetList = it.toMutableList()
+                    updateTotalBudget()
                     mAdapter.notifyDataSetChanged()
                 }
 
@@ -78,13 +82,18 @@ class BudgetsFragment() : BaseFragment(R.layout.fragment_budgets) {
                 } else {
                     BudgetRepository.cloneBudget(from = event.budget, to = budget)
                 }
+                updateTotalBudget()
                 mAdapter.notifyDataSetChanged()
                 return
             }
         }
-
         mBudgetList.add(event.budget)
+        updateTotalBudget()
         mAdapter.notifyDataSetChanged()
+    }
+
+    private fun updateTotalBudget() {
+        mTextViewTotalBudget.text = "Total Budget: ${Util.makeLikeMoney(mBudgetList.sumByDouble { it.amountPerPeriod })}"
     }
 
     interface BudgetSelectedCallback {

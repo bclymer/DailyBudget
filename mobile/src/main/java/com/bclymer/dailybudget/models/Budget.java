@@ -52,4 +52,19 @@ public class Budget extends DatabaseResource<Budget, Integer> {
         public static final String TRANSACTIONS = "transactions";
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Budget budget = (Budget) o;
+
+        return id == budget.id;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
 }
