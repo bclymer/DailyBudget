@@ -18,7 +18,7 @@ import rx.android.schedulers.AndroidSchedulers
 /**
  * Created by bclymer on 9/26/2014.
  */
-class EditBudgetFragment() : BaseFragment() {
+class EditBudgetFragment() : BaseFragment(R.layout.fragment_edit_budget) {
 
     private val mEditTextName: TextView by bindView(R.id.fragment_edit_budget_name)
     private val mEditTextDuration: EditText by bindView(R.id.fragment_edit_budget_edittext_duration)
@@ -36,11 +36,6 @@ class EditBudgetFragment() : BaseFragment() {
         if (activity !is BudgetDoneEditingCallback) {
             throw RuntimeException("Activity $activity must implement BudgetDoneEditingCallback to display EditBudgetFragment")
         }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        mLayoutId = R.layout.fragment_edit_budget
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

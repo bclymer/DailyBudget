@@ -23,7 +23,7 @@ import java.util.*
 /**
  * Created by bclymer on 9/28/2014.
  */
-class BudgetTransactionsFragment() : BaseDialogFragment() {
+class BudgetTransactionsFragment() : BaseDialogFragment(R.layout.fragment_budget_transactions) {
 
     private val mListView: AbsListView by bindView(android.R.id.list)
     private val mEmptyView: ViewGroup by bindView(android.R.id.empty)
@@ -43,7 +43,6 @@ class BudgetTransactionsFragment() : BaseDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mLayoutId = R.layout.fragment_budget_transactions
         mBudgetId = arguments.getInt(EXTRA_BUDGET_ID)
     }
 

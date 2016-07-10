@@ -27,7 +27,7 @@ import java.util.*
 /**
  * Created by bclymer on 9/28/2014.
  */
-class EditTransactionFragment() : BaseDialogFragment() {
+class EditTransactionFragment() : BaseDialogFragment(R.layout.fragment_edit_transaction) {
 
     private val mEditTextAmount: EditText by bindView(R.id.fragment_edit_transaction_edittext_amount)
     private val mEditTextAmountOther: EditText by bindView(R.id.fragment_edit_transaction_edittext_amount_other)
@@ -42,12 +42,6 @@ class EditTransactionFragment() : BaseDialogFragment() {
     private var mTransaction: Transaction? = null
     private var mEditingTransaction = false
     private var isSplit = false
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        mLayoutId = R.layout.fragment_edit_transaction
-
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

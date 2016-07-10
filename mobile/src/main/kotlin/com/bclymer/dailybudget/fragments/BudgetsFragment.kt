@@ -22,7 +22,7 @@ import java.util.*
 /**
  * Created by bclymer on 9/26/2014.
  */
-class BudgetsFragment() : BaseFragment() {
+class BudgetsFragment() : BaseFragment(R.layout.fragment_budgets) {
 
     private val mGridView: GridView by bindView(android.R.id.list)
     private val mEmptyView: ViewGroup by bindView(android.R.id.empty)
@@ -38,11 +38,6 @@ class BudgetsFragment() : BaseFragment() {
         if (activity !is BudgetSelectedCallback) {
             throw RuntimeException("Activity $activity must implement BudgetSelectedCallback to display BudgetsFragment")
         }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        mLayoutId = R.layout.fragment_budgets
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

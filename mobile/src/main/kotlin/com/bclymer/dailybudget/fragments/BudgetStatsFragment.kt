@@ -20,7 +20,7 @@ import rx.android.schedulers.AndroidSchedulers
  * 2) A graph of money spent per day, week, and month.
  * 3) Be able to select any place and bring up a list of only those transactions.
  */
-class BudgetStatsFragment() : BaseDialogFragment() {
+class BudgetStatsFragment() : BaseDialogFragment(R.layout.fragment_budget_stats) {
 
     private val mTextViewTotalAmount: TextView by bindView(R.id.fragment_budget_stats_textview_totalamount)
     private val mTextViewAmountPerDay: TextView by bindView(R.id.fragment_budget_stats_textview_amountperday)
@@ -30,7 +30,6 @@ class BudgetStatsFragment() : BaseDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mLayoutId = R.layout.fragment_budget_stats
         mBudgetId = arguments.getInt(EXTRA_BUDGET_ID)
     }
 
