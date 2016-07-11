@@ -129,21 +129,17 @@ class EditTransactionFragment() : BaseDialogFragment(R.layout.fragment_edit_tran
         val amountOther = -1 * valueFromEditText(mEditTextAmountOther)
         val location = mEditTextNotes.text.toString()
         val date = mDatePicker.date()
+        val obs: Observable<Transaction>
         if (mEditingTransaction) {
-            TransactionRepository.updateTransaction(mTransactionId, amount, amountOther, date, location)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe {
-                        Util.toast("Transaction Saved")
-                        dismissAllowingStateLoss()
-                    }
+            obs = TransactionRepository.updateTransaction(mTransactionId, amount, amountOther, date, location)
         } else {
-            TransactionRepository.createTransaction(mBudgetId, amount, amountOther, date, location)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe {
-                        Util.toast("Transaction Saved")
-                        dismissAllowingStateLoss()
-                    }
+            obs = TransactionRepository.createTransaction(mBudgetId, amount, amountOther, date, location)
         }
+        obs.observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    Util.toast("Transaction Saved")
+                    dismissAllowingStateLoss()
+                }
     }
 
     private fun deleteTransaction() {
